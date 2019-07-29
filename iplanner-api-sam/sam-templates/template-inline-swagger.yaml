@@ -3,64 +3,94 @@ Transform: 'AWS::Serverless-2016-10-31'
 Description: iBox - iPlanner Swagger API
 Resources:
   EventTable:
-    Type: AWS::Serverless::SimpleTable
+    Type: AWS::DynamoDB::Table
     Properties:
-      PrimaryKey:
-          Name: id
-          Type: Number
-      TableName: PLANNER_EVENT
+      AttributeDefinitions:
+        - AttributeName: "Activity"
+          AttributeType: "S"
+        -
+          AttributeName: "Creator"
+          AttributeType: "S"
+        -
+          AttributeName: "Start"
+          AttributeType: "S"
+      KeySchema:
+        -
+          AttributeName: "Creator"
+          KeyType: "HASH"
+        -
+          AttributeName: "Start"
+          KeyType: "RANGE"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      TableName: "iplanner_events"
+      LocalSecondaryIndexes:
+        -
+          IndexName: "EventKindLocalSecondaryIndex"
+          KeySchema:
+            -
+              AttributeName: "Creator"
+              KeyType: "HASH"
+            -
+              AttributeName: "Activity"
+              KeyType: "RANGE"
+          Projection:
+            NonKeyAttributes:
+              - "Start"
+            ProjectionType: "INCLUDE"
   AddEventFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: ibox_iplanner_add_event_function.add_event_handler
+      Handler: iplanner_add_event_function.add_event_handler
       Runtime: python3.7
       Timeout: 50
       MemorySize: 512
-      CodeUri: ../target/aws-lambda-0.1.0-SNAPSHOT.jar
+      CodeUri: ../dist/iplanner-functions-1.0.0.zip
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref PersonTable
+            TableName: !Ref EventTable
       Environment:
         Variables:
-          TABLE_NAME: !Ref PersonTable
+          TABLE_NAME: !Ref EventTable
       Events:
-        StoreApi:
+        AddEventApi:
           Type: Api
           Properties:
-            Path: /persons
+            Path: /events
             Method: PUT
             RestApiId:
-                Ref: MyApi
-  GetPersonByHTTPParamFunction:
+                Ref: iPlannerApi
+  GetEventFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.baeldung.lambda.apigateway.APIDemoHandler::handleGetByParam
-      Runtime: java8
-      Timeout: 15
+      Handler: iplanner_get_event_function.get_event_handler
+      Runtime: python3.7
+      Timeout: 50
       MemorySize: 512
-      CodeUri: ../target/aws-lambda-0.1.0-SNAPSHOT.jar
+      CodeUri: ../dist/iplanner-functions-1.0.0.zip
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref PersonTable
+            TableName: !Ref EventTable
       Environment:
         Variables:
-          TABLE_NAME: !Ref PersonTable
+          TABLE_NAME: !Ref EventTable
       Events:
-        GetByPathApi:
+        GetEventByPathApi:
           Type: Api
           Properties:
-            Path: /persons/{id}
+            Path: /events/{id}
             Method: GET
             RestApiId:
-                Ref: MyApi
-        GetByQueryApi:
+                Ref: iPlannerApi
+        GetEventByQueryApi:
           Type: Api
           Properties:
-            Path: /persons
+            Path: /events
             Method: GET
             RestApiId:
-                Ref: MyApi
-  MyApi:
+                Ref: iPlannerApi
+  iPlannerApi:
     Type: AWS::Serverless::Api
     Properties:
       StageName: test
@@ -68,9 +98,9 @@ Resources:
       DefinitionBody:
         swagger: "2.0"
         info:
-          title: "TestAPI"
+          title: "iPlanner API"
         paths:
-          /persons:
+          /events:
             get:
               parameters:
               - name: "id"
@@ -81,18 +111,18 @@ Resources:
                 \ headers"
               x-amazon-apigateway-integration:
                 uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetPersonByHTTPParamFunction.Arn}/invocations
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetEventFunction.Arn}/invocations
                 responses: {}
                 httpMethod: "POST"
                 type: "aws_proxy"
             put:
               x-amazon-apigateway-integration:
                 uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${StorePersonFunction.Arn}/invocations
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddEventFunction.Arn}/invocations
                 responses: {}
                 httpMethod: "POST"
                 type: "aws_proxy"
-          /persons/{id}:
+          /events/{id}:
             get:
               parameters:
               - name: "id"
@@ -102,7 +132,7 @@ Resources:
               responses: {}
               x-amazon-apigateway-integration:
                 uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetPersonByHTTPParamFunction.Arn}/invocations
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetEventFunction.Arn}/invocations
                 responses: {}
                 httpMethod: "POST"
                 type: "aws_proxy"
