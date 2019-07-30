@@ -42,11 +42,11 @@ Resources:
   AddEventFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: iplanner_add_event_function.add_event_handler
+      Handler: iplanner_event_functions.add_event_handler
       Runtime: python3.7
       Timeout: 50
       MemorySize: 512
-      CodeUri: ../dist/iplanner-functions-1.0.0.zip
+      CodeUri: ../iplanner-functions/iplanner-functions.zip
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref EventTable
@@ -64,11 +64,11 @@ Resources:
   GetEventFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: iplanner_get_event_function.get_event_handler
+      Handler: iplanner_event_functions.get_event_handler
       Runtime: python3.7
       Timeout: 50
       MemorySize: 512
-      CodeUri: ../dist/iplanner-functions-1.0.0.zip
+      CodeUri: ../iplanner-functions/iplanner-functions.zip
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref EventTable

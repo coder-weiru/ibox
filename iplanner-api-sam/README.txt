@@ -3,11 +3,10 @@
 ##Instructions
 
 #Build Distribution Artifact
-
-
+zip iplanner-functions/*.* iplanner-functions/iplanner-functions.zip
 
 #Packaging
-aws cloudformation package --template-file ./sam-templates/template-inline-swagger.yaml --s3-bucket ibox-sam-bucket --output-template-file ./sam-templates/packaged-template.yml
+aws cloudformation package --template-file ./sam-templates/template-inline-swagger.yml --s3-bucket ibox-sam-bucket --output-template-file ./sam-templates/packaged-template.yml
 
 #Deploying
 aws cloudformation deploy --template-file ./sam-templates/packaged-template.yml --stack-name iplanner-api-sam-stack  --capabilities CAPABILITY_IAM
