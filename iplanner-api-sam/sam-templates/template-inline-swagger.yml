@@ -1,6 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 Description: iBox - iPlanner Swagger API
+
 Resources:
   EventTable:
     Type: AWS::DynamoDB::Table
@@ -60,7 +61,7 @@ Resources:
             Path: /events
             Method: PUT
             RestApiId:
-                Ref: iPlannerApi
+                Ref: ApiGatewayApi
   GetEventFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -82,40 +83,40 @@ Resources:
             Path: /events/{id}
             Method: GET
             RestApiId:
-                Ref: iPlannerApi
+                Ref: ApiGatewayApi
         GetEventByQueryApi:
           Type: Api
           Properties:
             Path: /events
             Method: GET
             RestApiId:
-                Ref: iPlannerApi
-  iPlannerApi:
+                Ref: ApiGatewayApi
+  ApiGatewayApi:
     Type: AWS::Serverless::Api
     Properties:
       StageName: test
       EndpointConfiguration: REGIONAL
       DefinitionBody:
-        swagger: "2.0"
+        openapi: "3.0.0"
         info:
-          title: "iPlanner API"
+          title: iPlanner API
+          version: 1.0.0
         paths:
           /events:
-            get:
-              parameters:
-              - name: "id"
-                in: "query"
-                required: true
-                type: "string"
-              x-amazon-apigateway-request-validator: "Validate query string parameters and\
-                \ headers"
-              x-amazon-apigateway-integration:
-                uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetEventFunction.Arn}/invocations
-                responses: {}
-                httpMethod: "POST"
-                type: "aws_proxy"
-            put:
+            post:
+              summary: Create an event
+              operationId: createEvents
+              tags:
+                - events
+              responses:
+                '201':
+                  description: Null response
+                default:
+                  description: unexpected error
+                  content:
+                    application/json:
+                      schema:
+                        $ref: "#/components/schemas/Error"
               x-amazon-apigateway-integration:
                 uri:
                   Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddEventFunction.Arn}/invocations
@@ -124,18 +125,112 @@ Resources:
                 type: "aws_proxy"
           /events/{id}:
             get:
+              summary: Info for a specific event
+              operationId: getEventById
+              tags:
+                - events
               parameters:
-              - name: "id"
-                in: "path"
-                required: true
-                type: "string"
-              responses: {}
+                - name: id
+                  in: path
+                  required: true
+                  description: The id of the event to retrieve
+                  schema:
+                    type: string
+              responses:
+                '200':
+                  description: Expected response to a valid request
+                  content:
+                    application/json:
+                      schema:
+                        $ref: "#/components/schemas/Event"
+                default:
+                  description: unexpected error
+                  content:
+                    application/json:
+                      schema:
+                        $ref: "#/components/schemas/Error"
               x-amazon-apigateway-integration:
                 uri:
                   Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetEventFunction.Arn}/invocations
                 responses: {}
                 httpMethod: "POST"
                 type: "aws_proxy"
+        components:
+          schemas:
+            Event:
+              required:
+                - id
+                - summary
+                - creator
+                - start
+                - activity
+              properties:
+                id:
+                  type: integer
+                  format: int64
+                summary:
+                  type: string
+                description:
+                  type: string
+                creator:
+                  $ref: "#/components/schemas/User"
+                created:
+                  example: 1995-09-07T10:40:52Z
+                  format: date-time
+                  type: string
+                updated:
+                  example: 1995-09-07T10:40:52Z
+                  format: date-time
+                  type: string
+                start:
+                  example: 1995-09-07T10:40:52Z
+                  format: date-time
+                  type: string
+                end:
+                  example: 1995-09-07T10:40:52Z
+                  format: date-time
+                  type: string
+                activity:
+                  type: string
+                status:
+                  type: string
+                location:
+                  type: string
+                endTimeUnspecified:
+                  type: boolean
+                recurrence:
+                  type: array
+                  items:
+                    type: string
+            Events:
+              type: array
+              items:
+                $ref: "#/components/schemas/Event"
+            User:
+              required:
+                - id
+                - email
+                - displayName
+                - self
+              properties:
+                id:
+                  type: string
+                email:
+                  type: string
+                displayName:
+                  type: string
+                self:
+                  type: boolean
+            Error:
+              required:
+                - code
+                - message
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                message:
+                  type: string
         x-amazon-apigateway-request-validators:
           Validate query string parameters and headers:
             validateRequestParameters: true
