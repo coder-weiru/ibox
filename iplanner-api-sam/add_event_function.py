@@ -1,16 +1,19 @@
 from __future__ import print_function
 from boto3 import resource
+import json
 
 
-class MissingRequiredElementException(Exception): pass
+class MissingRequiredElementException(Exception):
+    pass
 
 
 dynamodb_resource = resource('dynamodb')
+
 event_table = dynamodb_resource.Table("iplanner_events")
 
 
-def add_event_handler(event, context):
-    # print("Got event\n" + json.dumps(event, indent=2))
+def lambda_handler(event: object, context: object) -> object:
+    print("Got event\n" + json.dumps(event, indent=2))
 
     if event['body']:
         json_array = event['body']

@@ -47,7 +47,7 @@ Resources:
       Runtime: python3.7
       Timeout: 50
       MemorySize: 512
-      CodeUri: ../iplanner-functions/iplanner-functions.zip
+      CodeUri: add_event_function.py
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref EventTable
