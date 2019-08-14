@@ -7,15 +7,15 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
-        - AttributeName: "Activity"
+        - AttributeName: "Id"
           AttributeType: "S"
-        -
-          AttributeName: "Creator"
+        - AttributeName: "Creator"
           AttributeType: "S"
-        -
-          AttributeName: "Start"
+        - AttributeName: "Start"
           AttributeType: "S"
       KeySchema:
+        - AttributeName: "Id"
+          KeyType: "HASH"
         -
           AttributeName: "Creator"
           KeyType: "HASH"
@@ -26,20 +26,18 @@ Resources:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"
       TableName: "iplanner_events"
-      LocalSecondaryIndexes:
+      GlobalSecondaryIndexes:
         -
-          IndexName: "EventKindLocalSecondaryIndex"
+          IndexName: "CreatorEventsByStart-GSI"
           KeySchema:
             -
               AttributeName: "Creator"
               KeyType: "HASH"
             -
-              AttributeName: "Activity"
+              AttributeName: "Start"
               KeyType: "RANGE"
           Projection:
-            NonKeyAttributes:
-              - "Start"
-            ProjectionType: "INCLUDE"
+            ProjectionType: "ALL"
   AddEventFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -47,7 +45,7 @@ Resources:
       Runtime: python3.7
       Timeout: 50
       MemorySize: 512
-      CodeUri: ../iplanner-functions/iplanner-functions.zip
+      CodeUri: add_event_function.py
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref EventTable
