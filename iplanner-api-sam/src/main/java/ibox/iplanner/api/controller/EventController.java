@@ -7,7 +7,6 @@ import ibox.iplanner.api.util.DateTimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.ws.rs.PathParam;
 import java.time.Instant;
@@ -21,7 +20,6 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 
 @RestController
-@EnableWebMvc
 public class EventController {
 
     private EventDataService eventDataService;
