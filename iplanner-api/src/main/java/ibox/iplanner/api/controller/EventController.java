@@ -47,7 +47,7 @@ public class EventController {
     }
 
     @RequestMapping(path = "/events/createdBy/{creatorId}", method = RequestMethod.GET)
-    public List<Event> listEvents(@PathVariable("creatorId") @NotBlank final Optional<String> creatorId,
+    public List<Event> listEvents(@PathVariable("creatorId") @Pattern(regexp="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}") final String creatorId,
                                   @RequestParam("start") final Optional<String> start,
                                   @RequestParam("end") final Optional<String> end,
                                   @RequestParam("limit") final Optional<Integer> limit) {
@@ -65,11 +65,7 @@ public class EventController {
             timeWindowEnd = DateTimeUtil.parseUTCDatetime(end.get());
         }
 
-        List<Event> events = Arrays.asList(new Event[]{});
-        if (creatorId.isPresent()) {
-            events = eventDataService.getMyEventsWithinTime(creatorId.get(), timeWindowStart, timeWindowEnd, queryLimit);
-        }
-        return events;
+        return eventDataService.getMyEventsWithinTime(creatorId, timeWindowStart, timeWindowEnd, queryLimit);
     }
 
     @RequestMapping(path = "/events/{eventId}", method = RequestMethod.GET)

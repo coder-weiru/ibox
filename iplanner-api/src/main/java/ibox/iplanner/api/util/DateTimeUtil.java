@@ -1,10 +1,6 @@
 package ibox.iplanner.api.util;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Date;
-import java.util.Optional;
 
 public class DateTimeUtil {
 
@@ -15,16 +11,6 @@ public class DateTimeUtil {
     }
 
     public static Instant parseUTCDatetime(String timeStr) {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        Optional<Date> datetime = null;
-        try {
-            datetime = Optional.of(df.parse(timeStr));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        if (datetime.isPresent()) {
-            return datetime.get().toInstant();
-        }
-        return null;
+        return Instant.parse(timeStr);
     }
 }

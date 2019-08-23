@@ -261,16 +261,12 @@ public class EventControllerCreateEventTest {
 
         doThrow(amazonDynamoDBException).when(eventDataServiceMock).addEvents(any(List.class));
 
-        verifyInternalServerErrorMessage(Arrays.asList(new Event[] {
-                event
-        }), amazonDynamoDBException);
-    }
-
-    private void verifyInternalServerErrorMessage(List<Event> events, AmazonServiceException mockException) throws Exception {
         mockMvc.perform(post("/events")
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(JsonUtil.toJsonString(events)))
+                .content(JsonUtil.toJsonString(Arrays.asList(new Event[] {
+                        event
+                }))))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -279,11 +275,11 @@ public class EventControllerCreateEventTest {
                 .andExpect(jsonPath("$.error").value("Internal Server Error"))
                 .andExpect(jsonPath("$.message").exists())
                 .andExpect(jsonPath("$.errorDetails").isNotEmpty())
-                .andExpect(jsonPath("$.errorDetails[0]").value(containsString(mockException.getStatusCode()+"")))
-                .andExpect(jsonPath("$.errorDetails[1]").value(containsString(mockException.getErrorCode())))
-                .andExpect(jsonPath("$.errorDetails[2]").value(containsString(mockException.getErrorMessage())))
-                .andExpect(jsonPath("$.errorDetails[3]").value(containsString(mockException.getServiceName())))
-                .andExpect(jsonPath("$.errorDetails[4]").value(containsString(mockException.getRequestId())));
+                .andExpect(jsonPath("$.errorDetails[0]").value(containsString(amazonDynamoDBException.getStatusCode()+"")))
+                .andExpect(jsonPath("$.errorDetails[1]").value(containsString(amazonDynamoDBException.getErrorCode())))
+                .andExpect(jsonPath("$.errorDetails[2]").value(containsString(amazonDynamoDBException.getErrorMessage())))
+                .andExpect(jsonPath("$.errorDetails[3]").value(containsString(amazonDynamoDBException.getServiceName())))
+                .andExpect(jsonPath("$.errorDetails[4]").value(containsString(amazonDynamoDBException.getRequestId())));
 
     }
 }

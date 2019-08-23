@@ -1,6 +1,5 @@
 package ibox.iplanner.api.controller;
 
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.dynamodbv2.model.AmazonDynamoDBException;
 import ibox.iplanner.api.model.Event;
 import ibox.iplanner.api.service.EventDataService;
@@ -72,13 +71,13 @@ public class EventControllerGetEventTest {
                 .andExpect(jsonPath("$.recurrence", hasSize(event.getRecurrence().size())))
                 .andExpect(jsonPath("$.recurrence", hasItems(event.getRecurrence().toArray(new String[event.getRecurrence().size()]))));
 
-        ArgumentCaptor<String> requestCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> eventIdCaptor = ArgumentCaptor.forClass(String.class);
 
-        verify(eventDataServiceMock, times(1)).getEvent(requestCaptor.capture());
+        verify(eventDataServiceMock, times(1)).getEvent(eventIdCaptor.capture());
 
         verifyNoMoreInteractions(eventDataServiceMock);
 
-        String argument = requestCaptor.getValue();
+        String argument = eventIdCaptor.getValue();
 
         assertThat(argument, is(equalTo(event.getId())));
     }
@@ -106,17 +105,13 @@ public class EventControllerGetEventTest {
         AmazonDynamoDBException amazonDynamoDBException = new AmazonDynamoDBException("dynamo db error");
         amazonDynamoDBException.setStatusCode(HttpStatus.NOT_FOUND.value());
         amazonDynamoDBException.setErrorCode("AWSERR");
-        amazonDynamoDBException.setServiceName("PutItem");
+        amazonDynamoDBException.setServiceName("GetItem");
         amazonDynamoDBException.setRequestId("request1");
         amazonDynamoDBException.setErrorMessage("error message");
 
         doThrow(amazonDynamoDBException).when(eventDataServiceMock).getEvent(any(String.class));
 
-        verifyInternalServerErrorMessage(event.getId(), amazonDynamoDBException);
-    }
-
-    private void verifyInternalServerErrorMessage(String eventId, AmazonServiceException mockException) throws Exception {
-        mockMvc.perform(get("/events/" + eventId)
+        mockMvc.perform(get("/events/" + event.getId())
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print())
@@ -127,11 +122,11 @@ public class EventControllerGetEventTest {
                 .andExpect(jsonPath("$.error").value("Internal Server Error"))
                 .andExpect(jsonPath("$.message").exists())
                 .andExpect(jsonPath("$.errorDetails").isNotEmpty())
-                .andExpect(jsonPath("$.errorDetails[0]").value(containsString(mockException.getStatusCode()+"")))
-                .andExpect(jsonPath("$.errorDetails[1]").value(containsString(mockException.getErrorCode())))
-                .andExpect(jsonPath("$.errorDetails[2]").value(containsString(mockException.getErrorMessage())))
-                .andExpect(jsonPath("$.errorDetails[3]").value(containsString(mockException.getServiceName())))
-                .andExpect(jsonPath("$.errorDetails[4]").value(containsString(mockException.getRequestId())));
-
+                .andExpect(jsonPath("$.errorDetails[0]").value(containsString(amazonDynamoDBException.getStatusCode()+"")))
+                .andExpect(jsonPath("$.errorDetails[1]").value(containsString(amazonDynamoDBException.getErrorCode())))
+                .andExpect(jsonPath("$.errorDetails[2]").value(containsString(amazonDynamoDBException.getErrorMessage())))
+                .andExpect(jsonPath("$.errorDetails[3]").value(containsString(amazonDynamoDBException.getServiceName())))
+                .andExpect(jsonPath("$.errorDetails[4]").value(containsString(amazonDynamoDBException.getRequestId())));
     }
+
 }
