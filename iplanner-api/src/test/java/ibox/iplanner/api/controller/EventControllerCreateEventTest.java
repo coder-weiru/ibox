@@ -2,7 +2,6 @@ package ibox.iplanner.api.controller;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.dynamodbv2.model.AmazonDynamoDBException;
-import ibox.iplanner.api.exception.GlobalExceptionHandler;
 import ibox.iplanner.api.model.Event;
 import ibox.iplanner.api.model.User;
 import ibox.iplanner.api.service.EventDataService;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -40,8 +38,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @WebMvcTest(EventController.class)
 @AutoConfigureMockMvc
-
-@Import({GlobalExceptionHandler.class})
 public class EventControllerCreateEventTest {
 
     @MockBean

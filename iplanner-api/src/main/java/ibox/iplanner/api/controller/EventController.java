@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.ws.rs.PathParam;
+import javax.validation.constraints.Pattern;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -47,7 +47,7 @@ public class EventController {
     }
 
     @RequestMapping(path = "/events/createdBy/{creatorId}", method = RequestMethod.GET)
-    public List<Event> listEvents(@PathParam("creatorId") @NotBlank final Optional<String> creatorId,
+    public List<Event> listEvents(@PathVariable("creatorId") @NotBlank final Optional<String> creatorId,
                                   @RequestParam("start") final Optional<String> start,
                                   @RequestParam("end") final Optional<String> end,
                                   @RequestParam("limit") final Optional<Integer> limit) {
@@ -73,7 +73,8 @@ public class EventController {
     }
 
     @RequestMapping(path = "/events/{eventId}", method = RequestMethod.GET)
-    public Event getEvent(@PathParam("eventId") @NotBlank final String eventId) {
+    public Event getEvent(@PathVariable("eventId")
+                          @Pattern(regexp="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}") final String eventId) {
         return eventDataService.getEvent(eventId);
     }
 
