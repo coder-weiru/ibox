@@ -1,6 +1,8 @@
 package ibox.iplanner.api.controller;
 
-import ibox.iplanner.api.exception.ControllerExceptionHandler;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.services.dynamodbv2.model.AmazonDynamoDBException;
+import ibox.iplanner.api.exception.GlobalExceptionHandler;
 import ibox.iplanner.api.model.Event;
 import ibox.iplanner.api.model.User;
 import ibox.iplanner.api.service.EventDataService;
@@ -14,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,10 +24,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.equalToObject;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsEqual.equalToObject;
 import static org.hamcrest.core.IsIterableContaining.hasItems;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
@@ -37,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(EventController.class)
 @AutoConfigureMockMvc
 
-@Import({ControllerExceptionHandler.class})
+@Import({GlobalExceptionHandler.class})
 public class EventControllerCreateEventTest {
 
     @MockBean
@@ -245,6 +249,45 @@ public class EventControllerCreateEventTest {
                 .andExpect(jsonPath("$.error").value("Bad Request"))
                 .andExpect(jsonPath("$.message").exists())
                 .andExpect(jsonPath("$.errorDetails").isNotEmpty());
+
+    }
+
+    @Test
+    public void createEvent_shouldReturnInternalServerErrorMessageIfAmazonServiceExceptionIsThrown() throws Exception {
+        Event event = EventUtil.anyEvent();
+
+        AmazonDynamoDBException amazonDynamoDBException = new AmazonDynamoDBException("dynamo db error");
+        amazonDynamoDBException.setStatusCode(HttpStatus.NOT_FOUND.value());
+        amazonDynamoDBException.setErrorCode("AWSERR");
+        amazonDynamoDBException.setServiceName("PutItem");
+        amazonDynamoDBException.setRequestId("request1");
+        amazonDynamoDBException.setErrorMessage("error message");
+
+        doThrow(amazonDynamoDBException).when(eventDataServiceMock).addEvents(any(List.class));
+
+        verifyInternalServerErrorMessage(Arrays.asList(new Event[] {
+                event
+        }), amazonDynamoDBException);
+    }
+
+    private void verifyInternalServerErrorMessage(List<Event> events, AmazonServiceException mockException) throws Exception {
+        mockMvc.perform(post("/events")
+                .accept(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(JsonUtil.toJsonString(events)))
+                .andDo(print())
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print())
+                .andExpect(jsonPath("$.status").value("500"))
+                .andExpect(jsonPath("$.error").value("Internal Server Error"))
+                .andExpect(jsonPath("$.message").exists())
+                .andExpect(jsonPath("$.errorDetails").isNotEmpty())
+                .andExpect(jsonPath("$.errorDetails[0]").value(containsString(mockException.getStatusCode()+"")))
+                .andExpect(jsonPath("$.errorDetails[1]").value(containsString(mockException.getErrorCode())))
+                .andExpect(jsonPath("$.errorDetails[2]").value(containsString(mockException.getErrorMessage())))
+                .andExpect(jsonPath("$.errorDetails[3]").value(containsString(mockException.getServiceName())))
+                .andExpect(jsonPath("$.errorDetails[4]").value(containsString(mockException.getRequestId())));
 
     }
 }
