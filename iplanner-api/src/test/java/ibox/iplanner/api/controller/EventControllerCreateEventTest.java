@@ -1,6 +1,8 @@
 package ibox.iplanner.api.controller;
 
+import ibox.iplanner.api.exception.ControllerExceptionHandler;
 import ibox.iplanner.api.model.Event;
+import ibox.iplanner.api.model.User;
 import ibox.iplanner.api.service.EventDataService;
 import ibox.iplanner.api.service.EventUtil;
 import ibox.iplanner.api.util.JsonUtil;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,6 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @WebMvcTest(EventController.class)
 @AutoConfigureMockMvc
+
+@Import({ControllerExceptionHandler.class})
 public class EventControllerCreateEventTest {
 
     @MockBean
@@ -43,7 +48,7 @@ public class EventControllerCreateEventTest {
 
     @Test
     public void createEvent_shouldInvokeEventDateServiceWithEventList() throws Exception {
-        List<Event> events = Arrays.asList(new Event[] {
+        List<Event> events = Arrays.asList(new Event[]{
                 EventUtil.anyEvent(),
                 EventUtil.anyEvent(),
                 EventUtil.anyEvent()
@@ -172,5 +177,74 @@ public class EventControllerCreateEventTest {
         assertThat(argument.get(2).getEnd(), is(equalToObject(events.get(2).getEnd())));
         assertThat(argument.get(2).getEndTimeUnspecified(), is(equalToObject(events.get(2).getEndTimeUnspecified())));
         assertThat(argument.get(2).getRecurrence(), is(hasItems(events.get(2).getRecurrence().toArray(new String[events.get(2).getRecurrence().size()]))));
+    }
+
+    @Test
+    public void createEvent_shouldReturnBadRequestMessageIfMissingSummary() throws Exception {
+        Event event = EventUtil.anyEvent();
+        event.setSummary(null);
+
+        verifyBadRequestMessage(Arrays.asList(new Event[] {
+                event
+        }));
+    }
+
+    @Test
+    public void createEvent_shouldReturnBadRequestMessageIfMissingCreator() throws Exception {
+        Event event = EventUtil.anyEvent();
+        event.setCreator(null);
+
+        verifyBadRequestMessage(Arrays.asList(new Event[] {
+                event
+        }));
+    }
+
+    @Test
+    public void createEvent_shouldReturnBadRequestMessageIfCreatorInvalid() throws Exception {
+        Event event = EventUtil.anyEvent();
+
+        User creator = new User();
+
+        event.setCreator(creator);
+
+        verifyBadRequestMessage(Arrays.asList(new Event[] {
+                event
+        }));
+    }
+
+    @Test
+    public void createEvent_shouldReturnBadRequestMessageIfMissingActivity() throws Exception {
+        Event event = EventUtil.anyEvent();
+        event.setActivity(null);
+
+        verifyBadRequestMessage(Arrays.asList(new Event[] {
+                event
+        }));
+    }
+
+    @Test
+    public void createEvent_shouldReturnBadRequestMessageIfMissingStartTime() throws Exception {
+        Event event = EventUtil.anyEvent();
+        event.setStart(null);
+
+        verifyBadRequestMessage(Arrays.asList(new Event[] {
+                event
+        }));
+    }
+
+    private void verifyBadRequestMessage(List<Event> events) throws Exception {
+        mockMvc.perform(post("/events")
+                .accept(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(JsonUtil.toJsonString(events)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print())
+                .andExpect(jsonPath("$.status").value("400"))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").exists())
+                .andExpect(jsonPath("$.errorDetails").isNotEmpty());
+
     }
 }

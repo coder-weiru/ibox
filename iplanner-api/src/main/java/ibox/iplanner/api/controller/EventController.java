@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.ws.rs.PathParam;
 import java.time.Instant;
 import java.util.Arrays;
@@ -20,6 +22,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 
 @RestController
+@Validated
 public class EventController {
 
     private EventDataService eventDataService;
@@ -30,7 +33,7 @@ public class EventController {
     }
 
     @RequestMapping(path = "/events", method = RequestMethod.POST)
-    public List<Event> createEvent(@Validated @RequestBody final List<Event> newEvents) {
+    public List<Event> createEvent(@Valid @RequestBody final List<Event> newEvents) {
 
         List<Event> dbEvents = newEvents.stream().map(e-> {
             Event dbEvent = e;
@@ -43,8 +46,8 @@ public class EventController {
         return dbEvents;
     }
 
-    @RequestMapping(path = "/events/{creatorId}", method = RequestMethod.GET)
-    public List<Event> listEvents(@PathParam("creatorId") final Optional<String> creatorId,
+    @RequestMapping(path = "/events/createdBy/{creatorId}", method = RequestMethod.GET)
+    public List<Event> listEvents(@PathParam("creatorId") @NotBlank final Optional<String> creatorId,
                                   @RequestParam("start") final Optional<String> start,
                                   @RequestParam("end") final Optional<String> end,
                                   @RequestParam("limit") final Optional<Integer> limit) {
@@ -70,7 +73,7 @@ public class EventController {
     }
 
     @RequestMapping(path = "/events/{eventId}", method = RequestMethod.GET)
-    public Event getEvent(@PathParam("eventId") final String eventId) {
+    public Event getEvent(@PathParam("eventId") @NotBlank final String eventId) {
         return eventDataService.getEvent(eventId);
     }
 

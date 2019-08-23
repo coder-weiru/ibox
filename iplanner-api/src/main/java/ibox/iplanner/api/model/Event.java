@@ -1,6 +1,7 @@
 package ibox.iplanner.api.model;
 
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.Set;
@@ -11,6 +12,8 @@ public class Event {
     @NotNull(message = "Summary {javax.validation.constraints.NotNull.message}")
     private String summary;
     private String description;
+
+    @Valid
     @NotNull(message = "Creator {javax.validation.constraints.NotNull.message}")
     private User creator;
     @NotNull(message = "Created Time {javax.validation.constraints.NotNull.message}")
