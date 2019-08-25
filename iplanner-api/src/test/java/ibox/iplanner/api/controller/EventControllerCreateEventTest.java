@@ -1,6 +1,5 @@
 package ibox.iplanner.api.controller;
 
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.dynamodbv2.model.AmazonDynamoDBException;
 import ibox.iplanner.api.model.Event;
 import ibox.iplanner.api.model.User;
@@ -26,7 +25,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsEqual.equalToObject;
 import static org.hamcrest.core.IsIterableContaining.hasItems;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
@@ -57,7 +55,7 @@ public class EventControllerCreateEventTest {
         doNothing().when(eventDataServiceMock).addEvents(any(List.class));
 
         mockMvc.perform(post("/events")
-                .accept(MediaType.APPLICATION_JSON_UTF8)
+                //.accept(MediaType.APPLICATION_JSON_UTF8)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(JsonUtil.toJsonString(events)))
                 .andDo(print())
@@ -127,55 +125,55 @@ public class EventControllerCreateEventTest {
         List<Event> argument = requestCaptor.getValue();
 
         assertThat(argument.size(), is(equalTo(events.size())));
-        assertThat(argument.get(0).getId(), not(equalToObject(events.get(0).getId())));
-        assertThat(argument.get(0).getSummary(), is(equalToObject(events.get(0).getSummary())));
-        assertThat(argument.get(0).getDescription(), is(equalToObject(events.get(0).getDescription())));
-        assertThat(argument.get(0).getActivity(), is(equalToObject(events.get(0).getActivity())));
-        assertThat(argument.get(0).getStatus(), is(equalToObject(events.get(0).getStatus())));
-        assertThat(argument.get(0).getLocation(), is(equalToObject(events.get(0).getLocation())));
-        assertThat(argument.get(0).getCreator().getId(), is(equalToObject(events.get(0).getCreator().getId())));
-        assertThat(argument.get(0).getCreator().getEmail(), is(equalToObject(events.get(0).getCreator().getEmail())));
-        assertThat(argument.get(0).getCreator().getDisplayName(), is(equalToObject(events.get(0).getCreator().getDisplayName())));
-        assertThat(argument.get(0).getCreator().getSelf(), is(equalToObject(events.get(0).getCreator().getSelf())));
-        assertThat(argument.get(0).getCreated(), is(equalToObject(events.get(0).getCreated())));
-        assertThat(argument.get(0).getUpdated(), is(equalToObject(events.get(0).getUpdated())));
-        assertThat(argument.get(0).getStart(), is(equalToObject(events.get(0).getStart())));
-        assertThat(argument.get(0).getEnd(), is(equalToObject(events.get(0).getEnd())));
-        assertThat(argument.get(0).getEndTimeUnspecified(), is(equalToObject(events.get(0).getEndTimeUnspecified())));
+        assertThat(argument.get(0).getId(), not(equalTo(events.get(0).getId())));
+        assertThat(argument.get(0).getSummary(), is(equalTo(events.get(0).getSummary())));
+        assertThat(argument.get(0).getDescription(), is(equalTo(events.get(0).getDescription())));
+        assertThat(argument.get(0).getActivity(), is(equalTo(events.get(0).getActivity())));
+        assertThat(argument.get(0).getStatus(), is(equalTo(events.get(0).getStatus())));
+        assertThat(argument.get(0).getLocation(), is(equalTo(events.get(0).getLocation())));
+        assertThat(argument.get(0).getCreator().getId(), is(equalTo(events.get(0).getCreator().getId())));
+        assertThat(argument.get(0).getCreator().getEmail(), is(equalTo(events.get(0).getCreator().getEmail())));
+        assertThat(argument.get(0).getCreator().getDisplayName(), is(equalTo(events.get(0).getCreator().getDisplayName())));
+        assertThat(argument.get(0).getCreator().getSelf(), is(equalTo(events.get(0).getCreator().getSelf())));
+        assertThat(argument.get(0).getCreated(), is(equalTo(events.get(0).getCreated())));
+        assertThat(argument.get(0).getUpdated(), is(equalTo(events.get(0).getUpdated())));
+        assertThat(argument.get(0).getStart(), is(equalTo(events.get(0).getStart())));
+        assertThat(argument.get(0).getEnd(), is(equalTo(events.get(0).getEnd())));
+        assertThat(argument.get(0).getEndTimeUnspecified(), is(equalTo(events.get(0).getEndTimeUnspecified())));
         assertThat(argument.get(0).getRecurrence(), is(hasItems(events.get(0).getRecurrence().toArray(new String[events.get(0).getRecurrence().size()]))));
 
-        assertThat(argument.get(1).getId(), not(equalToObject(events.get(1).getId())));
-        assertThat(argument.get(1).getSummary(), is(equalToObject(events.get(1).getSummary())));
-        assertThat(argument.get(1).getDescription(), is(equalToObject(events.get(1).getDescription())));
-        assertThat(argument.get(1).getActivity(), is(equalToObject(events.get(1).getActivity())));
-        assertThat(argument.get(1).getStatus(), is(equalToObject(events.get(1).getStatus())));
-        assertThat(argument.get(1).getLocation(), is(equalToObject(events.get(1).getLocation())));
-        assertThat(argument.get(1).getCreator().getId(), is(equalToObject(events.get(1).getCreator().getId())));
-        assertThat(argument.get(1).getCreator().getEmail(), is(equalToObject(events.get(1).getCreator().getEmail())));
-        assertThat(argument.get(1).getCreator().getDisplayName(), is(equalToObject(events.get(1).getCreator().getDisplayName())));
-        assertThat(argument.get(1).getCreator().getSelf(), is(equalToObject(events.get(1).getCreator().getSelf())));
-        assertThat(argument.get(1).getCreated(), is(equalToObject(events.get(1).getCreated())));
-        assertThat(argument.get(1).getUpdated(), is(equalToObject(events.get(1).getUpdated())));
-        assertThat(argument.get(1).getStart(), is(equalToObject(events.get(1).getStart())));
-        assertThat(argument.get(1).getEnd(), is(equalToObject(events.get(1).getEnd())));
-        assertThat(argument.get(1).getEndTimeUnspecified(), is(equalToObject(events.get(1).getEndTimeUnspecified())));
+        assertThat(argument.get(1).getId(), not(equalTo(events.get(1).getId())));
+        assertThat(argument.get(1).getSummary(), is(equalTo(events.get(1).getSummary())));
+        assertThat(argument.get(1).getDescription(), is(equalTo(events.get(1).getDescription())));
+        assertThat(argument.get(1).getActivity(), is(equalTo(events.get(1).getActivity())));
+        assertThat(argument.get(1).getStatus(), is(equalTo(events.get(1).getStatus())));
+        assertThat(argument.get(1).getLocation(), is(equalTo(events.get(1).getLocation())));
+        assertThat(argument.get(1).getCreator().getId(), is(equalTo(events.get(1).getCreator().getId())));
+        assertThat(argument.get(1).getCreator().getEmail(), is(equalTo(events.get(1).getCreator().getEmail())));
+        assertThat(argument.get(1).getCreator().getDisplayName(), is(equalTo(events.get(1).getCreator().getDisplayName())));
+        assertThat(argument.get(1).getCreator().getSelf(), is(equalTo(events.get(1).getCreator().getSelf())));
+        assertThat(argument.get(1).getCreated(), is(equalTo(events.get(1).getCreated())));
+        assertThat(argument.get(1).getUpdated(), is(equalTo(events.get(1).getUpdated())));
+        assertThat(argument.get(1).getStart(), is(equalTo(events.get(1).getStart())));
+        assertThat(argument.get(1).getEnd(), is(equalTo(events.get(1).getEnd())));
+        assertThat(argument.get(1).getEndTimeUnspecified(), is(equalTo(events.get(1).getEndTimeUnspecified())));
         assertThat(argument.get(1).getRecurrence(), is(hasItems(events.get(1).getRecurrence().toArray(new String[events.get(1).getRecurrence().size()]))));
 
-        assertThat(argument.get(2).getId(), not(equalToObject(events.get(2).getId())));
-        assertThat(argument.get(2).getSummary(), is(equalToObject(events.get(2).getSummary())));
-        assertThat(argument.get(2).getDescription(), is(equalToObject(events.get(2).getDescription())));
-        assertThat(argument.get(2).getActivity(), is(equalToObject(events.get(2).getActivity())));
-        assertThat(argument.get(2).getStatus(), is(equalToObject(events.get(2).getStatus())));
-        assertThat(argument.get(2).getLocation(), is(equalToObject(events.get(2).getLocation())));
-        assertThat(argument.get(2).getCreator().getId(), is(equalToObject(events.get(2).getCreator().getId())));
-        assertThat(argument.get(2).getCreator().getEmail(), is(equalToObject(events.get(2).getCreator().getEmail())));
-        assertThat(argument.get(2).getCreator().getDisplayName(), is(equalToObject(events.get(2).getCreator().getDisplayName())));
-        assertThat(argument.get(2).getCreator().getSelf(), is(equalToObject(events.get(2).getCreator().getSelf())));
-        assertThat(argument.get(2).getCreated(), is(equalToObject(events.get(2).getCreated())));
-        assertThat(argument.get(2).getUpdated(), is(equalToObject(events.get(2).getUpdated())));
-        assertThat(argument.get(2).getStart(), is(equalToObject(events.get(2).getStart())));
-        assertThat(argument.get(2).getEnd(), is(equalToObject(events.get(2).getEnd())));
-        assertThat(argument.get(2).getEndTimeUnspecified(), is(equalToObject(events.get(2).getEndTimeUnspecified())));
+        assertThat(argument.get(2).getId(), not(equalTo(events.get(2).getId())));
+        assertThat(argument.get(2).getSummary(), is(equalTo(events.get(2).getSummary())));
+        assertThat(argument.get(2).getDescription(), is(equalTo(events.get(2).getDescription())));
+        assertThat(argument.get(2).getActivity(), is(equalTo(events.get(2).getActivity())));
+        assertThat(argument.get(2).getStatus(), is(equalTo(events.get(2).getStatus())));
+        assertThat(argument.get(2).getLocation(), is(equalTo(events.get(2).getLocation())));
+        assertThat(argument.get(2).getCreator().getId(), is(equalTo(events.get(2).getCreator().getId())));
+        assertThat(argument.get(2).getCreator().getEmail(), is(equalTo(events.get(2).getCreator().getEmail())));
+        assertThat(argument.get(2).getCreator().getDisplayName(), is(equalTo(events.get(2).getCreator().getDisplayName())));
+        assertThat(argument.get(2).getCreator().getSelf(), is(equalTo(events.get(2).getCreator().getSelf())));
+        assertThat(argument.get(2).getCreated(), is(equalTo(events.get(2).getCreated())));
+        assertThat(argument.get(2).getUpdated(), is(equalTo(events.get(2).getUpdated())));
+        assertThat(argument.get(2).getStart(), is(equalTo(events.get(2).getStart())));
+        assertThat(argument.get(2).getEnd(), is(equalTo(events.get(2).getEnd())));
+        assertThat(argument.get(2).getEndTimeUnspecified(), is(equalTo(events.get(2).getEndTimeUnspecified())));
         assertThat(argument.get(2).getRecurrence(), is(hasItems(events.get(2).getRecurrence().toArray(new String[events.get(2).getRecurrence().size()]))));
     }
 
