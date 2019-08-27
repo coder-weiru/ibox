@@ -105,3 +105,4 @@ venv.bak/
 .idea/
 iplanner-api-sam/sam-templates/packaged-template.yml
 iplanner-api-sam/iplanner-functions/iplanner-functions.zip
+*.iml
