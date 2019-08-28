@@ -35,7 +35,7 @@ Resources:
   AddEventFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: ibox.iplanner.api.lambda.StreamLambdaHandler::handleRequest
+      Handler: ibox.iplanner.api.lambda.AddEventHandler::handleRequest
       Runtime: java8
       Timeout: 50
       MemorySize: 512
@@ -57,7 +57,7 @@ Resources:
   GetEventFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: ibox.iplanner.api.lambda.StreamLambdaHandler::handleRequest
+      Handler: ibox.iplanner.api.lambda.GetEventHandler::handleRequest
       Runtime: java8
       Timeout: 50
       MemorySize: 512
@@ -76,13 +76,28 @@ Resources:
             Method: GET
             RestApiId:
                 Ref: ApiGatewayApi
+  ListEventFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: ibox.iplanner.api.lambda.ListEventHandler::handleRequest
+      Runtime: java8
+      Timeout: 50
+      MemorySize: 512
+      CodeUri: target/iplanner-api-1.0-SNAPSHOT.jar
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref EventTable
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref EventTable
+      Events:
         ListEventByCreatorApi:
           Type: Api
           Properties:
             Path: /events/createdBy/{creatorId}
             Method: GET
             RestApiId:
-                Ref: ApiGatewayApi
+              Ref: ApiGatewayApi
   ApiGatewayApi:
     Type: AWS::Serverless::Api
     Properties:
