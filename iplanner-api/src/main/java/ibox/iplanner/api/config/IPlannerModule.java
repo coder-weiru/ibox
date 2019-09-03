@@ -8,6 +8,9 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Module;
 import dagger.Provides;
+import ibox.iplanner.api.lambda.exception.GlobalExceptionHandler;
+import ibox.iplanner.api.lambda.validation.BeanValidator;
+import ibox.iplanner.api.lambda.validation.RequestEventValidator;
 import ibox.iplanner.api.service.EventDataService;
 
 import javax.inject.Singleton;
@@ -35,5 +38,21 @@ public class IPlannerModule {
     public EventDataService eventDataService() {
         return new EventDataService(dynamoDB());
     }
+
+    @Singleton
+    @Provides
+    public RequestEventValidator requestEventValidator() {
+        return new RequestEventValidator();
+    }
+
+    @Singleton
+    @Provides
+    public GlobalExceptionHandler globalExceptionHandler() {
+        return new GlobalExceptionHandler();
+    }
+
+    @Singleton
+    @Provides
+    public BeanValidator beanValidator() { return new BeanValidator(); }
 
 }
