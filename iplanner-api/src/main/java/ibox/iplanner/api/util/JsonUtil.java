@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.util.Collection;
+import java.util.Collections;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -13,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class JsonUtil {
@@ -67,6 +70,18 @@ public class JsonUtil {
             return null;
         try {
             return objectMapper.readValue(json, clazz);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Unable to parse Json String.", e);
+        }
+    }
+
+    public static Collection fromJsonString(String json, Class<? extends Collection> collectionTypeClazz, Class<?> objectTypeClazz) {
+        if (json == null)
+            return null;
+        try {
+            CollectionType collectionType = objectMapper.getTypeFactory()
+                    .constructCollectionType(collectionTypeClazz, objectTypeClazz);
+            return objectMapper.readValue(json, collectionType);
         } catch (Exception e) {
             throw new IllegalArgumentException("Unable to parse Json String.", e);
         }

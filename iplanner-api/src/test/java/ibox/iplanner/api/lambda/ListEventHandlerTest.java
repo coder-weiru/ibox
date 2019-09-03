@@ -1,54 +1,55 @@
-package ibox.iplanner.api.controller;
+package ibox.iplanner.api.lambda;
 
 import com.amazonaws.services.dynamodbv2.model.AmazonDynamoDBException;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.amazonaws.util.StringUtils;
+import ibox.iplanner.api.lambda.runtime.TestContext;
+import ibox.iplanner.api.model.ApiError;
 import ibox.iplanner.api.model.Event;
 import ibox.iplanner.api.service.EventDataService;
 import ibox.iplanner.api.service.EventUtil;
+import ibox.iplanner.api.util.JsonUtil;
 import org.hamcrest.CoreMatchers;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
+import static ibox.iplanner.api.util.ApiErrorConstants.*;
 import static java.time.temporal.ChronoUnit.MINUTES;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-@RunWith(SpringRunner.class)
-@WebMvcTest(EventController.class)
-@AutoConfigureMockMvc
-public class EventControllerListEventTest {
 
-    @MockBean
+@RunWith(MockitoJUnitRunner.class)
+public class ListEventHandlerTest {
+
+    @InjectMocks
+    private ListEventHandler handler = new ListEventHandler();
+
+    private List<Event> events;
+
+    @Mock
     private EventDataService eventDataServiceMock;
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Test
-    public void listEvents_shouldInvokeEventDateServiceGivenCorrectParams() throws Exception {
-        List<Event> events = Arrays.asList(new Event[]{
+    @Before
+    public void setUp() {
+        this.events = Arrays.asList(new Event[]{
                 EventUtil.anyEvent(),
                 EventUtil.anyEvent(),
                 EventUtil.anyEvent()
         });
+    }
 
+    @Test
+    public void listEvents_shouldInvokeEventDateServiceGivenCorrectParams() throws Exception {
         when(eventDataServiceMock.getMyEventsWithinTime(any(String.class), any(Instant.class), any(Instant.class), any(Integer.class))).thenReturn(events);
 
         Instant now = Instant.now();
@@ -57,19 +58,17 @@ public class EventControllerListEventTest {
         String windowEnd = now.plus(100, MINUTES).toString();
         String limit = "10";
 
-        mockMvc.perform(get("/events/createdBy/" + creatorId)
-                .accept(MediaType.APPLICATION_JSON_UTF8)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .param("start", windowStart)
-                .param("end", windowEnd)
-                .param("limit", limit))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andDo(print())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(3)))
-        ;
+        APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+        requestEvent.setPathParameters(Collections.singletonMap("creatorId", creatorId));
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put("start", windowStart);
+        requestParams.put("end", windowEnd);
+        requestParams.put("limit", limit);
+        requestEvent.setQueryStringParameters(requestParams);
+
+        APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
+
+        assertEquals(200, responseEvent.getStatusCode());
 
         ArgumentCaptor<String> eventIdCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Instant> windowStartCaptor = ArgumentCaptor.forClass(Instant.class);
@@ -88,17 +87,17 @@ public class EventControllerListEventTest {
 
     @Test
     public void listEvents_shouldReturnBadRequestMessageIfCreatorIdInvalid() throws Exception {
-        mockMvc.perform(get("/events/createdBy/abc")
-                .accept(MediaType.APPLICATION_JSON_UTF8)
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andDo(print())
-                .andExpect(jsonPath("$.status").value("400"))
-                .andExpect(jsonPath("$.error").value("Bad Request"))
-                .andExpect(jsonPath("$.message").exists())
-                .andExpect(jsonPath("$.errorDetails").isNotEmpty());
+        APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+        requestEvent.setPathParameters(Collections.singletonMap("creatorId", "abc"));
+        APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
+
+        assertEquals(400, responseEvent.getStatusCode());
+
+        ApiError error = JsonUtil.fromJsonString(responseEvent.getBody(), ApiError.class);
+        assertEquals(400, error.getStatus());
+        assertEquals(ERROR_BAD_REQUEST, error.getError());
+        assertFalse(StringUtils.isNullOrEmpty(error.getMessage()));
+        assertFalse(error.getErrorDetails().isEmpty());
     }
 
     @Test
@@ -116,18 +115,16 @@ public class EventControllerListEventTest {
         String windowEnd = now.plus(100, MINUTES).toString();
         String limit = "10";
 
-        mockMvc.perform(get("/events/createdBy/" + creatorId)
-                .accept(MediaType.APPLICATION_JSON_UTF8)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .param("end", windowEnd)
-                .param("limit", limit))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andDo(print())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(3)))
-        ;
+        APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+        requestEvent.setPathParameters(Collections.singletonMap("creatorId", creatorId));
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put("end", windowEnd);
+        requestParams.put("limit", limit);
+        requestEvent.setQueryStringParameters(requestParams);
+
+        APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
+
+        assertEquals(200, responseEvent.getStatusCode());
 
         ArgumentCaptor<String> eventIdCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Instant> windowStartCaptor = ArgumentCaptor.forClass(Instant.class);
@@ -159,18 +156,16 @@ public class EventControllerListEventTest {
         String windowStart = now.plus(1, MINUTES).toString();
         String limit = "10";
 
-        mockMvc.perform(get("/events/createdBy/" + creatorId)
-                .accept(MediaType.APPLICATION_JSON_UTF8)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .param("start", windowStart)
-                .param("limit", limit))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andDo(print())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(3)))
-        ;
+        APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+        requestEvent.setPathParameters(Collections.singletonMap("creatorId", creatorId));
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put("start", windowStart);
+        requestParams.put("limit", limit);
+        requestEvent.setQueryStringParameters(requestParams);
+
+        APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
+
+        assertEquals(200, responseEvent.getStatusCode());
 
         ArgumentCaptor<String> eventIdCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Instant> windowStartCaptor = ArgumentCaptor.forClass(Instant.class);
@@ -202,18 +197,16 @@ public class EventControllerListEventTest {
         String windowStart = now.plus(1, MINUTES).toString();
         String windowEnd = now.plus(100, MINUTES).toString();
 
-        mockMvc.perform(get("/events/createdBy/" + creatorId)
-                .accept(MediaType.APPLICATION_JSON_UTF8)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .param("start", windowStart)
-                .param("end", windowEnd))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andDo(print())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(3)))
-        ;
+        APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+        requestEvent.setPathParameters(Collections.singletonMap("creatorId", creatorId));
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put("start", windowStart);
+        requestParams.put("end", windowEnd);
+        requestEvent.setQueryStringParameters(requestParams);
+
+        APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
+
+        assertEquals(200, responseEvent.getStatusCode());
 
         ArgumentCaptor<String> eventIdCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Instant> windowStartCaptor = ArgumentCaptor.forClass(Instant.class);
@@ -228,6 +221,7 @@ public class EventControllerListEventTest {
         assertThat(windowStartCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(Instant.parse(windowStart))));
         assertThat(windowEndCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(Instant.parse(windowEnd))));
         assertThat(limitCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(Integer.valueOf(100))));
+
     }
 
     @Test
@@ -237,7 +231,7 @@ public class EventControllerListEventTest {
         event.getCreator().setId(UUID.randomUUID().toString());
 
         AmazonDynamoDBException amazonDynamoDBException = new AmazonDynamoDBException("dynamo db error");
-        amazonDynamoDBException.setStatusCode(HttpStatus.NOT_FOUND.value());
+        amazonDynamoDBException.setStatusCode(SC_NOT_FOUND);
         amazonDynamoDBException.setErrorCode("AWSERR");
         amazonDynamoDBException.setServiceName("QueryItem");
         amazonDynamoDBException.setRequestId("request1");
@@ -247,23 +241,23 @@ public class EventControllerListEventTest {
 
         String creatorId = UUID.randomUUID().toString();
 
-        mockMvc.perform(get("/events/createdBy/" + creatorId)
-                .accept(MediaType.APPLICATION_JSON_UTF8)
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andDo(print())
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andDo(print())
-                .andExpect(jsonPath("$.status").value("500"))
-                .andExpect(jsonPath("$.error").value("Internal Server Error"))
-                .andExpect(jsonPath("$.message").exists())
-                .andExpect(jsonPath("$.errorDetails").isNotEmpty())
-                .andExpect(jsonPath("$.errorDetails[0]").value(containsString(amazonDynamoDBException.getStatusCode()+"")))
-                .andExpect(jsonPath("$.errorDetails[1]").value(containsString(amazonDynamoDBException.getErrorCode())))
-                .andExpect(jsonPath("$.errorDetails[2]").value(containsString(amazonDynamoDBException.getErrorMessage())))
-                .andExpect(jsonPath("$.errorDetails[3]").value(containsString(amazonDynamoDBException.getServiceName())))
-                .andExpect(jsonPath("$.errorDetails[4]").value(containsString(amazonDynamoDBException.getRequestId())));
-    }
+        APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+        requestEvent.setPathParameters(Collections.singletonMap("creatorId", creatorId));
+        APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
 
+        assertEquals(500, responseEvent.getStatusCode());
+
+        ApiError error = JsonUtil.fromJsonString(responseEvent.getBody(), ApiError.class);
+        assertEquals(500, error.getStatus());
+        assertEquals(ERROR_INTERNAL_SERVER_ERROR, error.getError());
+        assertFalse(StringUtils.isNullOrEmpty(error.getMessage()));
+        assertFalse(error.getErrorDetails().isEmpty());
+
+        assertTrue(error.getErrorDetails().get(0).contains(amazonDynamoDBException.getStatusCode()+""));
+        assertTrue(error.getErrorDetails().get(1).contains(amazonDynamoDBException.getErrorCode()));
+        assertTrue(error.getErrorDetails().get(2).contains(amazonDynamoDBException.getErrorMessage()));
+        assertTrue(error.getErrorDetails().get(3).contains(amazonDynamoDBException.getServiceName()));
+        assertTrue(error.getErrorDetails().get(4).contains(amazonDynamoDBException.getRequestId()));
+    }
 
 }

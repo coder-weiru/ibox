@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
-Description: iBox - iPlanner Swagger API
+Description: iBox - iPlanner API
 
 Resources:
   EventTable:
@@ -9,43 +9,37 @@ Resources:
       AttributeDefinitions:
         - AttributeName: "Id"
           AttributeType: "S"
-        - AttributeName: "Creator"
+        - AttributeName: "CreatedBy"
           AttributeType: "S"
-        - AttributeName: "Start"
+        - AttributeName: "StartTime"
           AttributeType: "S"
       KeySchema:
         - AttributeName: "Id"
           KeyType: "HASH"
-        -
-          AttributeName: "Creator"
-          KeyType: "HASH"
-        -
-          AttributeName: "Start"
-          KeyType: "RANGE"
       ProvisionedThroughput:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"
-      TableName: "iplanner_events"
+      TableName: "iplanner-events"
       GlobalSecondaryIndexes:
         -
           IndexName: "CreatorEventsByStart-GSI"
           KeySchema:
             -
-              AttributeName: "Creator"
+              AttributeName: "CreatedBy"
               KeyType: "HASH"
             -
-              AttributeName: "Start"
+              AttributeName: "StartTime"
               KeyType: "RANGE"
           Projection:
             ProjectionType: "ALL"
   AddEventFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: iplanner_event_functions.add_event_handler
-      Runtime: python3.7
+      Handler: ibox.iplanner.api.lambda.AddEventHandler::handleRequest
+      Runtime: java8
       Timeout: 50
       MemorySize: 512
-      CodeUri: add_event_function.py
+      CodeUri: target/iplanner-api-1.0-SNAPSHOT.jar
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref EventTable
@@ -57,17 +51,17 @@ Resources:
           Type: Api
           Properties:
             Path: /events
-            Method: PUT
+            Method: POST
             RestApiId:
                 Ref: ApiGatewayApi
   GetEventFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: iplanner_event_functions.get_event_handler
-      Runtime: python3.7
+      Handler: ibox.iplanner.api.lambda.GetEventHandler::handleRequest
+      Runtime: java8
       Timeout: 50
       MemorySize: 512
-      CodeUri: ../iplanner-functions/iplanner-functions.zip
+      CodeUri: target/iplanner-api-1.0-SNAPSHOT.jar
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref EventTable
@@ -75,20 +69,35 @@ Resources:
         Variables:
           TABLE_NAME: !Ref EventTable
       Events:
-        GetEventByPathApi:
+        GetEventByIdApi:
           Type: Api
           Properties:
             Path: /events/{id}
             Method: GET
             RestApiId:
                 Ref: ApiGatewayApi
-        GetEventByQueryApi:
+  ListEventFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: ibox.iplanner.api.lambda.ListEventHandler::handleRequest
+      Runtime: java8
+      Timeout: 50
+      MemorySize: 512
+      CodeUri: target/iplanner-api-1.0-SNAPSHOT.jar
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref EventTable
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref EventTable
+      Events:
+        ListEventByCreatorApi:
           Type: Api
           Properties:
-            Path: /events
+            Path: /events/createdBy/{creatorId}
             Method: GET
             RestApiId:
-                Ref: ApiGatewayApi
+              Ref: ApiGatewayApi
   ApiGatewayApi:
     Type: AWS::Serverless::Api
     Properties:

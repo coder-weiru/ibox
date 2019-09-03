@@ -10,7 +10,6 @@ import ibox.iplanner.api.model.User;
 import ibox.iplanner.api.util.DateTimeUtil;
 import ibox.iplanner.api.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -22,9 +21,8 @@ import static ibox.iplanner.api.service.dbmodel.EventDefinition.*;
 @Slf4j
 public class EventDataService {
 
-    private DynamoDB dynamoDb;
+    private final DynamoDB dynamoDb;
 
-    @Autowired
     public EventDataService(final DynamoDB dynamoDB) {
         this.dynamoDb = dynamoDB;
     }

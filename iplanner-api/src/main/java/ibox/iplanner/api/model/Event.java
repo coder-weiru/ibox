@@ -2,12 +2,18 @@ package ibox.iplanner.api.model;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.Set;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Event {
 
     private String id;
@@ -35,126 +41,4 @@ public class Event {
     private Boolean endTimeUnspecified;
     private Set<String> recurrence;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public User getCreator() {
-        return creator;
-    }
-
-    public void setCreator(User creator) {
-        this.creator = creator;
-    }
-
-    public Instant getCreated() {
-        return created;
-    }
-
-    public void setCreated(Instant created) {
-        this.created = created;
-    }
-
-    public Instant getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(Instant updated) {
-        this.updated = updated;
-    }
-
-    public Instant getStart() {
-        return start;
-    }
-
-    public void setStart(Instant start) {
-        this.start = start;
-    }
-
-    public Instant getEnd() {
-        return end;
-    }
-
-    public void setEnd(Instant end) {
-        this.end = end;
-    }
-
-    public String getActivity() {
-        return activity;
-    }
-
-    public void setActivity(String activity) {
-        this.activity = activity;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public Boolean getEndTimeUnspecified() {
-        return endTimeUnspecified;
-    }
-
-    public void setEndTimeUnspecified(Boolean endTimeUnspecified) {
-        this.endTimeUnspecified = endTimeUnspecified;
-    }
-
-    public Set<String> getRecurrence() {
-        return recurrence;
-    }
-
-    public void setRecurrence(Set<String> recurrence) {
-        this.recurrence = recurrence;
-    }
-
-    @Override
-    public String toString() {
-        return "Event{" +
-                "id='" + id + '\'' +
-                ", summary='" + summary + '\'' +
-                ", description='" + description + '\'' +
-                ", creator=" + creator +
-                ", created=" + created +
-                ", updated=" + updated +
-                ", start=" + start +
-                ", end=" + end +
-                ", activity='" + activity + '\'' +
-                ", status='" + status + '\'' +
-                ", location='" + location + '\'' +
-                ", endTimeUnspecified=" + endTimeUnspecified +
-                ", recurrence=" + recurrence +
-                '}';
-    }
 }

@@ -20,7 +20,7 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.springframework.util.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 public abstract class LocalDynamoDBIntegrationTestSupport {
 
