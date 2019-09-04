@@ -1,4 +1,4 @@
-package ibox.iplanner.api.service;
+package ibox.iplanner.api.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -7,10 +7,10 @@ import com.amazonaws.regions.DefaultAwsRegionProviderChain;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import ibox.iplanner.api.setup.DynamoDBSetup;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
+import dagger.Module;
+import dagger.Provides;
 
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -21,20 +21,16 @@ import java.util.Properties;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
-public abstract class LocalDynamoDBIntegrationTestSupport {
-
-    @ClassRule
-    public static LocalDynamoDBCreationRule localDynamoDBCreationRule = new LocalDynamoDBCreationRule();
-
-    protected static AmazonDynamoDB amazonDynamoDB;
-    protected static DynamoDBSetup dynamoDBSetup;
+@Module
+public class TestDynamoDBModule {
 
     private static final String DYNAMODB_ENDPOINT = "amazon.dynamodb.endpoint";
     private static final String AWS_ACCESSKEY = "amazon.aws.accesskey";
     private static final String AWS_SECRETKEY = "amazon.aws.secretkey";
 
-    @BeforeClass
-    public static void setupClass() {
+    @Singleton
+    @Provides
+    public DynamoDB dynamoDB() {
         Properties testProperties = loadFromFileInClasspath("test.properties")
                 .filter(properties -> !isEmpty(properties.getProperty(AWS_ACCESSKEY)))
                 .filter(properties -> !isEmpty(properties.getProperty(AWS_SECRETKEY)))
@@ -49,13 +45,13 @@ public abstract class LocalDynamoDBIntegrationTestSupport {
         final String region = new DefaultAwsRegionProviderChain().getRegion();
         final AwsClientBuilder.EndpointConfiguration endpointConfig = new AwsClientBuilder.EndpointConfiguration(amazonDynamoDBEndpoint, region);
 
-        amazonDynamoDB = AmazonDynamoDBClientBuilder
+        AmazonDynamoDB client = AmazonDynamoDBClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .withEndpointConfiguration(endpointConfig)
                 .build();
-
-        dynamoDBSetup = DynamoDBSetup.of(new DynamoDB(amazonDynamoDB));
+        DynamoDB dynamoDB = new DynamoDB(client);
+        return dynamoDB;
     }
 
     private static Optional<Properties> loadFromFileInClasspath(String fileName) {

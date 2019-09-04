@@ -1,11 +1,9 @@
-package ibox.iplanner.api.lambda;
+package ibox.iplanner.api.lambda.handler;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import ibox.iplanner.api.config.DaggerIPlannerComponent;
-import ibox.iplanner.api.config.IPlannerComponent;
 import ibox.iplanner.api.lambda.exception.GlobalExceptionHandler;
 import ibox.iplanner.api.lambda.validation.RequestEventValidator;
 import ibox.iplanner.api.service.EventDataService;
@@ -21,7 +19,6 @@ import static ibox.iplanner.api.util.ApiErrorConstants.SC_OK;
 
 public class GetEventHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-
     @Inject
     EventDataService eventDataService;
     @Inject
@@ -29,11 +26,7 @@ public class GetEventHandler implements RequestHandler<APIGatewayProxyRequestEve
     @Inject
     GlobalExceptionHandler globalExceptionHandler;
 
-    private final IPlannerComponent iPlannerComponent;
-
     public GetEventHandler() {
-        iPlannerComponent = DaggerIPlannerComponent.builder().build();
-        iPlannerComponent.inject(this);
     }
 
     @Override

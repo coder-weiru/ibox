@@ -8,9 +8,8 @@ import ibox.iplanner.api.lambda.handler.ListEventHandler;
 import javax.inject.Singleton;
 
 @Singleton
-@Component(modules = {DynamoDBModule.class, DataServiceModule.class, HandlerModule.class})
-public interface IPlannerComponent {
-
+@Component(modules = {TestDynamoDBModule.class, TestDataServiceModule.class, HandlerModule.class})
+public interface TestIPlannerComponent {
     void inject(AddEventHandler requestHandler);
     void inject(GetEventHandler requestHandler);
     void inject(ListEventHandler requestHandler);

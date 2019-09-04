@@ -1,14 +1,16 @@
-package ibox.iplanner.api.lambda;
+package ibox.iplanner.api.lambda.handler;
 
 import com.amazonaws.services.dynamodbv2.model.AmazonDynamoDBException;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.util.StringUtils;
+import ibox.iplanner.api.config.DaggerIPlannerComponent;
+import ibox.iplanner.api.config.IPlannerComponent;
 import ibox.iplanner.api.lambda.runtime.TestContext;
 import ibox.iplanner.api.model.ApiError;
 import ibox.iplanner.api.model.Event;
 import ibox.iplanner.api.service.EventDataService;
-import ibox.iplanner.api.service.EventUtil;
+import ibox.iplanner.api.util.EventUtil;
 import ibox.iplanner.api.util.JsonUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,8 +39,9 @@ public class GetEventHandlerTest {
     @Mock
     private EventDataService eventDataServiceMock;
 
-    @Before
-    public void setUp() {
+    public GetEventHandlerTest() {
+        IPlannerComponent iPlannerComponent = DaggerIPlannerComponent.builder().build();
+        iPlannerComponent.inject(handler);
     }
 
     @Test

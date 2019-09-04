@@ -1,4 +1,4 @@
-package ibox.iplanner.api.service;
+package ibox.iplanner.api.util;
 
 import ibox.iplanner.api.model.Event;
 import ibox.iplanner.api.model.User;
@@ -64,6 +64,10 @@ public class EventUtil {
         return Instant.now().plusMillis(new Random().nextInt(1000000));
     }
 
+    public static String anyUUID() {
+        return UUID.randomUUID().toString();
+    }
+
     public static String anyShortId() {
         return RandomStringUtils.randomAlphanumeric(8);
     }
@@ -78,7 +82,7 @@ public class EventUtil {
 
     public static User anyEventCreator() {
         User creator = new User();
-        creator.setId(anyShortId());
+        creator.setId(anyUUID());
         creator.setDisplayName(anyDisplayName());
         creator.setEmail(anyEmail());
         creator.setSelf(randomBoolean());

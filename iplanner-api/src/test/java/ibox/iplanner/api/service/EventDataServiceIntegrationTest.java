@@ -3,6 +3,7 @@ package ibox.iplanner.api.service;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import ibox.iplanner.api.model.Event;
 import ibox.iplanner.api.model.User;
+import ibox.iplanner.api.util.EventUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

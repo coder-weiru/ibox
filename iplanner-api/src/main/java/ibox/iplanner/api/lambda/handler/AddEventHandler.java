@@ -1,11 +1,9 @@
-package ibox.iplanner.api.lambda;
+package ibox.iplanner.api.lambda.handler;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import ibox.iplanner.api.config.DaggerIPlannerComponent;
-import ibox.iplanner.api.config.IPlannerComponent;
 import ibox.iplanner.api.lambda.exception.GlobalExceptionHandler;
 import ibox.iplanner.api.lambda.validation.BeanValidator;
 import ibox.iplanner.api.lambda.validation.RequestEventValidator;
@@ -14,7 +12,6 @@ import ibox.iplanner.api.service.EventDataService;
 import ibox.iplanner.api.util.JsonUtil;
 
 import javax.inject.Inject;
-import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,7 +19,6 @@ import java.util.stream.Collectors;
 import static ibox.iplanner.api.util.ApiErrorConstants.SC_OK;
 
 public class AddEventHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-
     @Inject
     EventDataService eventDataService;
     @Inject
@@ -32,11 +28,7 @@ public class AddEventHandler implements RequestHandler<APIGatewayProxyRequestEve
     @Inject
     GlobalExceptionHandler globalExceptionHandler;
 
-    private final IPlannerComponent iPlannerComponent;
-
     public AddEventHandler() {
-        iPlannerComponent = DaggerIPlannerComponent.builder().build();
-        iPlannerComponent.inject(this);
     }
 
     @Override
@@ -52,7 +44,7 @@ public class AddEventHandler implements RequestHandler<APIGatewayProxyRequestEve
 
             List<Event> dbEvents = newEvents.stream().map(e -> {
                 Event dbEvent = e;
-                    dbEvent.setId(UUID.randomUUID().toString());
+                dbEvent.setId(UUID.randomUUID().toString());
                 return dbEvent;
             }).collect(Collectors.toList());
 
