@@ -35,11 +35,12 @@ Resources:
   AddEventFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: ibox.iplanner.api.lambda.AddEventHandler::handleRequest
+      Handler: ibox.iplanner.api.lambda.AddEventHandlerWrapper::handleRequest
       Runtime: java8
       Timeout: 50
       MemorySize: 512
-      CodeUri: target/iplanner-api-1.0-SNAPSHOT.jar
+      #CodeUri: target/iplanner-api-1.0-SNAPSHOT.jar
+      CodeUri: .
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref EventTable
@@ -57,11 +58,12 @@ Resources:
   GetEventFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: ibox.iplanner.api.lambda.GetEventHandler::handleRequest
+      Handler: ibox.iplanner.api.lambda.GetEventHandlerWrapper::handleRequest
       Runtime: java8
       Timeout: 50
       MemorySize: 512
-      CodeUri: target/iplanner-api-1.0-SNAPSHOT.jar
+      #CodeUri: target/iplanner-api-1.0-SNAPSHOT.jar
+      CodeUri: .
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref EventTable
@@ -79,11 +81,12 @@ Resources:
   ListEventFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: ibox.iplanner.api.lambda.ListEventHandler::handleRequest
+      Handler: ibox.iplanner.api.lambda.ListEventHandlerWrapper::handleRequest
       Runtime: java8
       Timeout: 50
       MemorySize: 512
-      CodeUri: target/iplanner-api-1.0-SNAPSHOT.jar
+      #CodeUri: target/iplanner-api-1.0-SNAPSHOT.jar
+      CodeUri: .
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref EventTable

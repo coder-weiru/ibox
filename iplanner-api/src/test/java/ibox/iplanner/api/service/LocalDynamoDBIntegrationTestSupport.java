@@ -4,6 +4,7 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.DefaultAwsRegionProviderChain;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
@@ -46,8 +47,7 @@ public abstract class LocalDynamoDBIntegrationTestSupport {
         String amazonDynamoDBEndpoint = testProperties.getProperty(DYNAMODB_ENDPOINT);
 
         final BasicAWSCredentials awsCredentials = new BasicAWSCredentials(amazonAWSAccessKey, amazonAWSSecretKey);
-        final String region = new DefaultAwsRegionProviderChain().getRegion();
-        final AwsClientBuilder.EndpointConfiguration endpointConfig = new AwsClientBuilder.EndpointConfiguration(amazonDynamoDBEndpoint, region);
+        final AwsClientBuilder.EndpointConfiguration endpointConfig = new AwsClientBuilder.EndpointConfiguration(amazonDynamoDBEndpoint, Regions.US_EAST_1.getName());
 
         amazonDynamoDB = AmazonDynamoDBClientBuilder
                 .standard()

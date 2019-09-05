@@ -1,0 +1,57 @@
+{
+  "body": "[\n  {\n    \"id\": \"gMHUGqqD\",\n    \"summary\": \"SUvzhOvkgnMoJNqTVVMAXDEuZWOccR\",\n    \"description\": \"StWGCellOqEA1SA84kT6OHuCrBi6Nk5nKSZzCyHqLVDWBDZTGii3B80TwTIaSuPMMmczT81PXNsoCGOQyfM410DuXmdCJ5sNiUoU\",\n    \"creator\": {\n      \"id\": \"WvWBf2yr\",\n      \"email\": \"X8WlTgLVorvvc5W1etUw@gmail.com\",\n      \"displayName\": \"WaEvohrWFsJOFzWRRGGa\",\n      \"self\": false\n    },\n    \"created\": \"2019-08-27T20:30:17.306Z\",\n    \"updated\": \"2019-08-27T20:27:08.090Z\",\n    \"start\": \"2019-08-27T20:32:25.735Z\",\n    \"end\": \"2019-08-27T20:41:00.155Z\",\n    \"activity\": \"ChHwHoxMco\",\n    \"status\": \"ddhPh\",\n    \"location\": \"GAoulIjXchkTuxHMXgus\",\n    \"endTimeUnspecified\": false,\n    \"recurrence\": [\n      \"gVkecEbFWk\"\n    ]\n  },\n  {\n    \"id\": \"otQVZG1a\",\n    \"summary\": \"zBpVRoSgIFTEUuanRCMFfTdCzSxDkG\",\n    \"description\": \"BK9TOl1hdcAMbNS3ZDRKhifKaPJpEA4ttCuI89VEVjkNVLH4gTPPkp0MRGg9oaCfhq0BUnyzHmzQyQ9uTCl9NyqlvXMe4fxBhsNg\",\n    \"creator\": {\n      \"id\": \"pdLdRSo5\",\n      \"email\": \"h7STl49RJz39rGwRCH5c@gmail.com\",\n      \"displayName\": \"sddgvXrGlBMLbUrdgcGw\",\n      \"self\": false\n    },\n    \"created\": \"2019-08-27T20:27:10.622Z\",\n    \"updated\": \"2019-08-27T20:28:51.164Z\",\n    \"start\": \"2019-08-27T20:32:25.760Z\",\n    \"end\": \"2019-08-27T20:47:46.378Z\",\n    \"activity\": \"sTqxlBysHG\",\n    \"status\": \"QQrfC\",\n    \"location\": \"vnhjSGrGNXctSOsbDKgr\",\n    \"endTimeUnspecified\": false,\n    \"recurrence\": [\n      \"wsGkfCOTsD\",\n      \"boIJHACdpU\",\n      \"mTwlIjJakM\",\n      \"EmQjwLjsqN\",\n      \"aUcFxJCWkB\",\n      \"XmcJRMFiOi\",\n      \"CoWaYAiRGd\"\n    ]\n  },\n  {\n    \"id\": \"xi7FBOr6\",\n    \"summary\": \"qAgBqSVwLikZKeaGMLYXTWVgtRFNZE\",\n    \"description\": \"OJWXjbvbTWdEkjyVULuY2s6VolWnMUVI734EGIJrTUGQUxU5V6zS4zeE35se1vxfmMeX1CSVCehwSJBX3RvgSXhqI2qA42WbG6Xz\",\n    \"creator\": {\n      \"id\": \"lRrFmFDX\",\n      \"email\": \"vvogbWnbVhF6W93o5ipK@gmail.com\",\n      \"displayName\": \"ofaBSIvBvfznsRwFnlrz\",\n      \"self\": false\n    },\n    \"created\": \"2019-08-27T20:23:20.087Z\",\n    \"updated\": \"2019-08-27T20:30:57.508Z\",\n    \"start\": \"2019-08-27T20:32:25.755Z\",\n    \"end\": \"2019-08-27T20:32:56.311Z\",\n    \"activity\": \"FLvcRPBPaM\",\n    \"status\": \"GLldT\",\n    \"location\": \"bItHJUpGTMnrsOnWfITI\",\n    \"endTimeUnspecified\": true,\n    \"recurrence\": [\n      \"MHpVlUTjtn\",\n      \"RZRgsUsKoL\",\n      \"pXfzJukAAc\"\n    ]\n  }\n]",
+  "resource": "/{proxy+}",
+  "path": "/path/to/resource",
+  "httpMethod": "POST",
+  "queryStringParameters": {
+    "foo": "bar"
+  },
+  "pathParameters": {
+    "proxy": "path/to/resource"
+  },
+  "stageVariables": {
+    "baz": "qux"
+  },
+  "headers": {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Encoding": "gzip, deflate, sdch",
+    "Accept-Language": "en-US,en;q=0.8",
+    "Cache-Control": "max-age=0",
+    "CloudFront-Forwarded-Proto": "https",
+    "CloudFront-Is-Desktop-Viewer": "true",
+    "CloudFront-Is-Mobile-Viewer": "false",
+    "CloudFront-Is-SmartTV-Viewer": "false",
+    "CloudFront-Is-Tablet-Viewer": "false",
+    "CloudFront-Viewer-Country": "US",
+    "Host": "1234567890.execute-api.{dns_suffix}",
+    "Upgrade-Insecure-Requests": "1",
+    "User-Agent": "Custom User Agent String",
+    "Via": "1.1 08f323deadbeefa7af34d5feb414ce27.cloudfront.net (CloudFront)",
+    "X-Amz-Cf-Id": "cDehVQoZnx43VYQb9j2-nvCh-9z396Uhbp027Y2JvkCPNLmGJHqlaA==",
+    "X-Forwarded-For": "127.0.0.1, 127.0.0.2",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https"
+  },
+  "requestContext": {
+    "accountId": "123456789012",
+    "resourceId": "123456",
+    "stage": "prod",
+    "requestId": "c6af9ac6-7b61-11e6-9a41-93e8deadbeef",
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "accountId": null,
+      "cognitoIdentityId": null,
+      "caller": null,
+      "apiKey": null,
+      "sourceIp": "127.0.0.1",
+      "cognitoAuthenticationType": null,
+      "cognitoAuthenticationProvider": null,
+      "userArn": null,
+      "userAgent": "Custom User Agent String",
+      "user": null
+    },
+    "resourcePath": "/{proxy+}",
+    "httpMethod": "POST",
+    "apiId": "1234567890"
+  }
+}
