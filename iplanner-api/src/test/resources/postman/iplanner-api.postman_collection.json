@@ -1,0 +1,177 @@
+{
+	"info": {
+		"name": "iplanner-api",
+		"_postman_id": "fbeece9e-91b4-4200-b4be-cd4eb8e4ba33",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Add Events",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{events}}"
+				},
+				"url": {
+					"raw": "{{service-url}}/events",
+					"host": [
+						"{{service-url}}"
+					],
+					"path": [
+						"events"
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "List My Events",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{service-url}}/events/createdBy/{{creatorId}}?start={{timeWindowStart}}&end={{timeWindowEnd}}&limit={{limit}}",
+					"host": [
+						"{{service-url}}"
+					],
+					"path": [
+						"events",
+						"createdBy",
+						"{{creatorId}}"
+					],
+					"query": [
+						{
+							"key": "start",
+							"value": "{{timeWindowStart}}",
+							"equals": true
+						},
+						{
+							"key": "end",
+							"value": "{{timeWindowEnd}}",
+							"equals": true
+						},
+						{
+							"key": "limit",
+							"value": "{{limit}}",
+							"equals": true
+						}
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "Get Event By Id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{service-url}}/events/{{eventId}}",
+					"host": [
+						"{{service-url}}"
+					],
+					"path": [
+						"events",
+						"{{eventId}}"
+					]
+				},
+				"description": null
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "737f4b35-7d87-43e5-a718-f58935f20b50",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "88f6d77d-abbf-40ee-ac0b-7b5f57a63a48",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "2b7f6023-bdb4-4ea2-af7a-b9a5de42dfbe",
+			"key": "events",
+			"value": "[\n  {\n    \"id\": \"gMHUGqqD\",\n    \"summary\": \"SUvzhOvkgnMoJNqTVVMAXDEuZWOccR\",\n    \"description\": \"StWGCellOqEA1SA84kT6OHuCrBi6Nk5nKSZzCyHqLVDWBDZTGii3B80TwTIaSuPMMmczT81PXNsoCGOQyfM410DuXmdCJ5sNiUoU\",\n    \"creator\": {\n      \"id\": \"WvWBf2yr\",\n      \"email\": \"X8WlTgLVorvvc5W1etUw@gmail.com\",\n      \"displayName\": \"WaEvohrWFsJOFzWRRGGa\",\n      \"self\": false\n    },\n    \"created\": \"2019-08-27T20:30:17.306Z\",\n    \"updated\": \"2019-08-27T20:27:08.090Z\",\n    \"start\": \"2019-08-27T20:32:25.735Z\",\n    \"end\": \"2019-08-27T20:41:00.155Z\",\n    \"activity\": \"ChHwHoxMco\",\n    \"status\": \"ddhPh\",\n    \"location\": \"GAoulIjXchkTuxHMXgus\",\n    \"endTimeUnspecified\": false,\n    \"recurrence\": [\n      \"gVkecEbFWk\"\n    ]\n  },\n  {\n    \"id\": \"otQVZG1a\",\n    \"summary\": \"zBpVRoSgIFTEUuanRCMFfTdCzSxDkG\",\n    \"description\": \"BK9TOl1hdcAMbNS3ZDRKhifKaPJpEA4ttCuI89VEVjkNVLH4gTPPkp0MRGg9oaCfhq0BUnyzHmzQyQ9uTCl9NyqlvXMe4fxBhsNg\",\n    \"creator\": {\n      \"id\": \"pdLdRSo5\",\n      \"email\": \"h7STl49RJz39rGwRCH5c@gmail.com\",\n      \"displayName\": \"sddgvXrGlBMLbUrdgcGw\",\n      \"self\": false\n    },\n    \"created\": \"2019-08-27T20:27:10.622Z\",\n    \"updated\": \"2019-08-27T20:28:51.164Z\",\n    \"start\": \"2019-08-27T20:32:25.760Z\",\n    \"end\": \"2019-08-27T20:47:46.378Z\",\n    \"activity\": \"sTqxlBysHG\",\n    \"status\": \"QQrfC\",\n    \"location\": \"vnhjSGrGNXctSOsbDKgr\",\n    \"endTimeUnspecified\": false,\n    \"recurrence\": [\n      \"wsGkfCOTsD\",\n      \"boIJHACdpU\",\n      \"mTwlIjJakM\",\n      \"EmQjwLjsqN\",\n      \"aUcFxJCWkB\",\n      \"XmcJRMFiOi\",\n      \"CoWaYAiRGd\"\n    ]\n  },\n  {\n    \"id\": \"xi7FBOr6\",\n    \"summary\": \"qAgBqSVwLikZKeaGMLYXTWVgtRFNZE\",\n    \"description\": \"OJWXjbvbTWdEkjyVULuY2s6VolWnMUVI734EGIJrTUGQUxU5V6zS4zeE35se1vxfmMeX1CSVCehwSJBX3RvgSXhqI2qA42WbG6Xz\",\n    \"creator\": {\n      \"id\": \"lRrFmFDX\",\n      \"email\": \"vvogbWnbVhF6W93o5ipK@gmail.com\",\n      \"displayName\": \"ofaBSIvBvfznsRwFnlrz\",\n      \"self\": false\n    },\n    \"created\": \"2019-08-27T20:23:20.087Z\",\n    \"updated\": \"2019-08-27T20:30:57.508Z\",\n    \"start\": \"2019-08-27T20:32:25.755Z\",\n    \"end\": \"2019-08-27T20:32:56.311Z\",\n    \"activity\": \"FLvcRPBPaM\",\n    \"status\": \"GLldT\",\n    \"location\": \"bItHJUpGTMnrsOnWfITI\",\n    \"endTimeUnspecified\": true,\n    \"recurrence\": [\n      \"MHpVlUTjtn\",\n      \"RZRgsUsKoL\",\n      \"pXfzJukAAc\"\n    ]\n  }\n]",
+			"type": "text",
+			"description": ""
+		},
+		{
+			"id": "6d39690b-e1ba-4924-9ce0-baa0d8d51ce8",
+			"key": "eventId",
+			"value": "c36b15c2-1817-477b-afb0-757c05d2b538",
+			"type": "text",
+			"description": ""
+		},
+		{
+			"id": "e2f61b3b-a630-425e-b1e3-1f839f41dafc",
+			"key": "timeWindowStart",
+			"value": "2019-08-27T20:32:25.735Z",
+			"type": "text",
+			"description": ""
+		},
+		{
+			"id": "d20d9edd-9dd0-4980-be85-6266e0b5f40d",
+			"key": "timeWindowEnd",
+			"value": "2019-08-27T20:47:25.735Z",
+			"type": "text",
+			"description": ""
+		},
+		{
+			"id": "06d5faad-2be1-4885-abb1-06fd034b13ae",
+			"key": "limit",
+			"value": "10",
+			"type": "text",
+			"description": ""
+		},
+		{
+			"id": "05f02243-9877-4a91-9dd9-3fe8b14db337",
+			"key": "creatorId",
+			"value": "WvWBf2yr",
+			"type": "text",
+			"description": ""
+		}
+	]
+}
