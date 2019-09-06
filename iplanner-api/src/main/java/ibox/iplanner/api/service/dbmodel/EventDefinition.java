@@ -6,7 +6,7 @@ public final class EventDefinition {
         // restrict instantiation
     }
 
-    public static final String TABLE_NAME_EVENTS = "iplanner_events";
+    public static final String TABLE_NAME_EVENTS = "iplanner-events";
     public static final String FIELD_NAME_ID = "Id";
     public static final String FIELD_NAME_SUMMARY = "Summary";
     public static final String FIELD_NAME_DESCRIPTION = "Description";

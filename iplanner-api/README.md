@@ -71,7 +71,7 @@ AWS CLI commands to package, deploy and describe outputs defined within the clou
 sam package \
     --template-file template.yaml \
     --output-template-file packaged.yaml \
-    --s3-bucket ibox-sam-bucket
+    --s3-bucket ibox-iplanner-bucket
 
 sam deploy \
     --template-file packaged.yaml \

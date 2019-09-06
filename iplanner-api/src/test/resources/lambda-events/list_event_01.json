@@ -5,11 +5,11 @@
   "httpMethod": "GET",
   "queryStringParameters": {
     "start": "2019-08-27T20:32:25.735Z",
-    "end": "2019-08-27T20:41:00.155Z",
+    "end": "2019-08-27T20:47:00.155Z",
     "limit": 100
   },
   "pathParameters": {
-    "creatorId": "gMHUGqqD"
+    "creatorId": "WvWBf2yr"
   },
   "stageVariables": {
     "baz": "qux"

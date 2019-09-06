@@ -6,8 +6,9 @@ import ibox.iplanner.api.model.ApiError;
 import ibox.iplanner.api.util.JsonUtil;
 
 import java.time.Instant;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ibox.iplanner.api.util.ApiErrorConstants.*;
 
@@ -50,14 +51,19 @@ public class GlobalExceptionHandler {
         error.setStatus(SC_INTERNAL_SERVER_ERROR);
         error.setError(ERROR_INTERNAL_SERVER_ERROR);
         error.setTimestamp(Instant.now());
-        error.setMessage(ex.getMessage());
 
-        List<String> details = error.getErrorDetails();
-        details.add(String.format("AWS Returned HTTP status code: %s", ex.getStatusCode()));
-        details.add(String.format("AWS Returned error code: %s", ex.getErrorCode()));
-        details.add(String.format("Detailed error message from the service: %s", ex.getErrorMessage()));
-        details.add(String.format("AWS service name: %s", ex.getServiceName()));
-        details.add(String.format("AWS request ID for the failed request: %s", ex.getRequestId()));
+        String message = String.format("AWS Error: %s \nReturned HTTP status code: %s \nAWS Returned error code: %s \nAWS service name: %s \nDetailed error message from the service: %s \nAWS request ID for the failed request: %s",
+                ex.getMessage(),
+                ex.getStatusCode(),
+                ex.getErrorCode(),
+                ex.getServiceName(),
+                ex.getErrorMessage(),
+                ex.getRequestId());
+
+        error.setMessage(message);
+
+        List<String> errorDetails = Arrays.stream(ex.getStackTrace()).map(e -> e.toString()).collect(Collectors.toList());
+        error.setErrorDetails(errorDetails);
 
         responseEvent.setBody(JsonUtil.toJsonString(error));
         responseEvent.setStatusCode(SC_INTERNAL_SERVER_ERROR);
@@ -66,10 +72,11 @@ public class GlobalExceptionHandler {
 
     private APIGatewayProxyResponseEvent handleAllException(Exception ex) {
         APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
+        List<String> errorDetails = Arrays.stream(ex.getStackTrace()).map(e -> e.toString()).collect(Collectors.toList());
         ApiError error = ApiError.builder()
                 .error(ERROR_INTERNAL_SERVER_ERROR)
                 .message(ex.getMessage())
-                .errorDetails(Collections.emptyList())
+                .errorDetails(errorDetails)
                 .status(SC_INTERNAL_SERVER_ERROR)
                 .build();
         responseEvent.setBody(JsonUtil.toJsonString(error));

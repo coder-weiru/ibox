@@ -1,0 +1,252 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: iBox - iPlanner API
+Resources:
+  AddEventFunction:
+    Properties:
+      CodeUri: s3://ibox-iplanner-bucket/a7cffe85d9f1637af18158f3e2b34c0d
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: EventTable
+      Events:
+        AddEventApi:
+          Properties:
+            Method: POST
+            Path: /events
+            RestApiId:
+              Ref: ApiGatewayApi
+          Type: Api
+      Handler: ibox.iplanner.api.lambda.AddEventHandlerWrapper::handleRequest
+      MemorySize: 512
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: EventTable
+      Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
+      Runtime: java8
+      Timeout: 50
+    Type: AWS::Serverless::Function
+  ApiGatewayApi:
+    Properties:
+      DefinitionBody:
+        components:
+          schemas:
+            Error:
+              properties:
+                code:
+                  format: int32
+                  type: integer
+                message:
+                  type: string
+              required:
+              - code
+              - message
+            Event:
+              properties:
+                activity:
+                  type: string
+                created:
+                  example: 1995-09-07 10:40:52
+                  format: date-time
+                  type: string
+                creator:
+                  $ref: '#/components/schemas/User'
+                description:
+                  type: string
+                end:
+                  example: 1995-09-07 10:40:52
+                  format: date-time
+                  type: string
+                endTimeUnspecified:
+                  type: boolean
+                id:
+                  format: int64
+                  type: integer
+                location:
+                  type: string
+                recurrence:
+                  items:
+                    type: string
+                  type: array
+                start:
+                  example: 1995-09-07 10:40:52
+                  format: date-time
+                  type: string
+                status:
+                  type: string
+                summary:
+                  type: string
+                updated:
+                  example: 1995-09-07 10:40:52
+                  format: date-time
+                  type: string
+              required:
+              - id
+              - summary
+              - creator
+              - start
+              - activity
+            Events:
+              items:
+                $ref: '#/components/schemas/Event'
+              type: array
+            User:
+              properties:
+                displayName:
+                  type: string
+                email:
+                  type: string
+                id:
+                  type: string
+                self:
+                  type: boolean
+              required:
+              - id
+              - email
+              - displayName
+              - self
+        info:
+          title: iPlanner API
+          version: 1.0.0
+        openapi: 3.0.0
+        paths:
+          /events:
+            post:
+              operationId: createEvents
+              responses:
+                '201':
+                  description: Null response
+                default:
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Error'
+                  description: unexpected error
+              summary: Create an event
+              tags:
+              - events
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                responses: {}
+                type: aws_proxy
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddEventFunction.Arn}/invocations
+          /events/{id}:
+            get:
+              operationId: getEventById
+              parameters:
+              - description: The id of the event to retrieve
+                in: path
+                name: id
+                required: true
+                schema:
+                  type: string
+              responses:
+                '200':
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Event'
+                  description: Expected response to a valid request
+                default:
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Error'
+                  description: unexpected error
+              summary: Info for a specific event
+              tags:
+              - events
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                responses: {}
+                type: aws_proxy
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetEventFunction.Arn}/invocations
+        x-amazon-apigateway-request-validators:
+          Validate query string parameters and headers:
+            validateRequestBody: false
+            validateRequestParameters: true
+      EndpointConfiguration: REGIONAL
+      StageName: test
+    Type: AWS::Serverless::Api
+  EventTable:
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: Id
+        AttributeType: S
+      - AttributeName: CreatedBy
+        AttributeType: S
+      - AttributeName: StartTime
+        AttributeType: S
+      GlobalSecondaryIndexes:
+      - IndexName: CreatorEventsByStart-GSI
+        KeySchema:
+        - AttributeName: CreatedBy
+          KeyType: HASH
+        - AttributeName: StartTime
+          KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: '5'
+          WriteCapacityUnits: '5'
+      KeySchema:
+      - AttributeName: Id
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: '5'
+        WriteCapacityUnits: '5'
+      TableName: iplanner-events
+    Type: AWS::DynamoDB::Table
+  GetEventFunction:
+    Properties:
+      CodeUri: s3://ibox-iplanner-bucket/a7cffe85d9f1637af18158f3e2b34c0d
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: EventTable
+      Events:
+        GetEventByIdApi:
+          Properties:
+            Method: GET
+            Path: /events/{id}
+            RestApiId:
+              Ref: ApiGatewayApi
+          Type: Api
+      Handler: ibox.iplanner.api.lambda.GetEventHandlerWrapper::handleRequest
+      MemorySize: 512
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName:
+            Ref: EventTable
+      Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
+      Runtime: java8
+      Timeout: 50
+    Type: AWS::Serverless::Function
+  ListEventFunction:
+    Properties:
+      CodeUri: s3://ibox-iplanner-bucket/a7cffe85d9f1637af18158f3e2b34c0d
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: EventTable
+      Events:
+        ListEventByCreatorApi:
+          Properties:
+            Method: GET
+            Path: /events/createdBy/{creatorId}
+            RestApiId:
+              Ref: ApiGatewayApi
+          Type: Api
+      Handler: ibox.iplanner.api.lambda.ListEventHandlerWrapper::handleRequest
+      MemorySize: 512
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName:
+            Ref: EventTable
+      Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
+      Runtime: java8
+      Timeout: 50
+    Type: AWS::Serverless::Function
+Transform: AWS::Serverless-2016-10-31

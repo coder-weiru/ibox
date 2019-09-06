@@ -226,10 +226,10 @@ public class AddEventHandlerTest {
         assertFalse(StringUtils.isNullOrEmpty(error.getMessage()));
         assertFalse(error.getErrorDetails().isEmpty());
 
-        assertTrue(error.getErrorDetails().get(0).contains(amazonDynamoDBException.getStatusCode()+""));
-        assertTrue(error.getErrorDetails().get(1).contains(amazonDynamoDBException.getErrorCode()));
-        assertTrue(error.getErrorDetails().get(2).contains(amazonDynamoDBException.getErrorMessage()));
-        assertTrue(error.getErrorDetails().get(3).contains(amazonDynamoDBException.getServiceName()));
-        assertTrue(error.getErrorDetails().get(4).contains(amazonDynamoDBException.getRequestId()));
+        assertTrue(error.getMessage().contains(amazonDynamoDBException.getStatusCode()+""));
+        assertTrue(error.getMessage().contains(amazonDynamoDBException.getErrorCode()));
+        assertTrue(error.getMessage().contains(amazonDynamoDBException.getErrorMessage()));
+        assertTrue(error.getMessage().contains(amazonDynamoDBException.getServiceName()));
+        assertTrue(error.getMessage().contains(amazonDynamoDBException.getRequestId()));
     }
 }

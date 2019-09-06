@@ -107,17 +107,6 @@
             <goals>
               <goal>shade</goal>
             </goals>
-            <configuration>
-              <minimizeJar>true</minimizeJar>
-              <filters>
-                <filter>
-                  <artifact>commons-logging:commons-logging</artifact>
-                  <includes>
-                    <include>**</include>
-                  </includes>
-                </filter>
-              </filters>
-            </configuration>
           </execution>
         </executions>
         <configuration />
@@ -182,46 +171,6 @@
             <ENDPOINT_OVERRIDE>http://localhost:8000</ENDPOINT_OVERRIDE>
           </environmentVariables>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>io.fabric8</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
-        <version>${docker.maven.plugin.version}</version>
-        <executions>
-          <execution>
-            <id>prepare-it-database</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>start</goal>
-            </goals>
-            <configuration>
-              <images>
-                <image>
-                  <name>amazon/dynamodb-local:${dynamodblocal.version}</name>
-                  <alias>it-database</alias>
-                  <run>
-                    <ports>
-                      <port>8000:8000</port>
-                    </ports>
-                    <wait>
-                      <http>
-                        <url>http://localhost:8000/shell/</url>
-                      </http>
-                      <time>5000</time>
-                    </wait>
-                  </run>
-                </image>
-              </images>
-            </configuration>
-          </execution>
-          <execution>
-            <id>remove-it-database</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>stop</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

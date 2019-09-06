@@ -32,6 +32,9 @@ Resources:
               KeyType: "RANGE"
           Projection:
             ProjectionType: "ALL"
+          ProvisionedThroughput:
+            ReadCapacityUnits: '5'
+            WriteCapacityUnits: '5'
   AddEventFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -40,7 +43,7 @@ Resources:
       Timeout: 50
       MemorySize: 512
       CodeUri: target/iplanner-api-1.0-SNAPSHOT.jar
-      #CodeUri: .
+      Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref EventTable
@@ -63,7 +66,7 @@ Resources:
       Timeout: 50
       MemorySize: 512
       CodeUri: target/iplanner-api-1.0-SNAPSHOT.jar
-      #CodeUri: .
+      Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref EventTable
@@ -86,7 +89,7 @@ Resources:
       Timeout: 50
       MemorySize: 512
       CodeUri: target/iplanner-api-1.0-SNAPSHOT.jar
-      #CodeUri: .
+      Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref EventTable
