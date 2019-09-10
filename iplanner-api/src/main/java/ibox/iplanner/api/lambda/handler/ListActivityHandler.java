@@ -7,31 +7,28 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.amazonaws.util.StringUtils;
 import ibox.iplanner.api.lambda.exception.GlobalExceptionHandler;
 import ibox.iplanner.api.lambda.validation.RequestEventValidator;
-import ibox.iplanner.api.model.EventStatus;
-import ibox.iplanner.api.service.EventDataService;
-import ibox.iplanner.api.util.DateTimeUtil;
+import ibox.iplanner.api.model.ActivityStatus;
+import ibox.iplanner.api.service.ActivityDataService;
 import ibox.iplanner.api.util.JsonUtil;
 
 import javax.inject.Inject;
-import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 
 import static ibox.iplanner.api.lambda.validation.RequestEventValidator.UUID_PATTERN;
 import static ibox.iplanner.api.util.ApiErrorConstants.SC_NOT_FOUND;
 import static ibox.iplanner.api.util.ApiErrorConstants.SC_OK;
-import static java.time.temporal.ChronoUnit.DAYS;
 
-public class ListEventHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class ListActivityHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     @Inject
-    EventDataService eventDataService;
+    ActivityDataService activityDataService;
     @Inject
     RequestEventValidator requestEventValidator;
     @Inject
     GlobalExceptionHandler globalExceptionHandler;
 
-    public ListEventHandler() {
+    public ListActivityHandler() {
     }
 
     @Override
@@ -46,26 +43,12 @@ public class ListEventHandler implements RequestHandler<APIGatewayProxyRequestEv
             final String creatorId  = pathParameterMap.get("creatorId");
 
             Map<String, String> requestParameterMap = requestEvent.getQueryStringParameters();
-            final String startTime = Optional.ofNullable(requestParameterMap)
-                    .map(mapNode -> mapNode.get("start"))
-                    .orElse(null);
-            Instant timeWindowStart = Instant.now();
-            if (!StringUtils.isNullOrEmpty(startTime)) {
-                timeWindowStart = DateTimeUtil.parseUTCDatetime(startTime);
-            }
-            final String endTime = Optional.ofNullable(requestParameterMap)
-                    .map(mapNode -> mapNode.get("end"))
-                    .orElse(null);
-            Instant timeWindowEnd = timeWindowStart.plus(365, DAYS);
-            if (!StringUtils.isNullOrEmpty(endTime)) {
-                timeWindowEnd = DateTimeUtil.parseUTCDatetime(endTime);
-            }
             final String status = Optional.ofNullable(requestParameterMap)
                     .map(mapNode -> mapNode.get("status"))
                     .orElse(null);
-            EventStatus queryStatus = EventStatus.OPEN;
+            ActivityStatus queryStatus = ActivityStatus.ACTIVE;
             if (!StringUtils.isNullOrEmpty(status)) {
-                queryStatus = Optional.ofNullable(EventStatus.of(status)).orElse(EventStatus.OPEN);
+                queryStatus = Optional.ofNullable(ActivityStatus.of(status)).orElse(ActivityStatus.ACTIVE);
             }
             final String limit = Optional.ofNullable(requestParameterMap)
                     .map(mapNode -> mapNode.get("limit"))
@@ -74,7 +57,7 @@ public class ListEventHandler implements RequestHandler<APIGatewayProxyRequestEv
             if (!StringUtils.isNullOrEmpty(limit)) {
                 queryLimit = Integer.valueOf(limit);
             }
-            Optional eventList = Optional.ofNullable(eventDataService.getMyEventsWithinTime(creatorId, timeWindowStart, timeWindowEnd, queryStatus.name(), queryLimit));
+            Optional eventList = Optional.ofNullable(activityDataService.getMyActivities(creatorId, queryStatus.name(), queryLimit));
             if (eventList.isPresent()) {
                 responseEvent.setBody(JsonUtil.toJsonString(eventList.get()));
                 responseEvent.setStatusCode(SC_OK);
@@ -83,7 +66,7 @@ public class ListEventHandler implements RequestHandler<APIGatewayProxyRequestEv
             }
             return responseEvent;
 
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             return globalExceptionHandler.handleException(ex);
         }
     }

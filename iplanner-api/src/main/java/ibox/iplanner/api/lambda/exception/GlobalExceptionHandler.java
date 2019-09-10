@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
         error.setError(ERROR_INTERNAL_SERVER_ERROR);
         error.setTimestamp(Instant.now());
 
-        String message = String.format("AWS Error: %s \nReturned HTTP status code: %s \nAWS Returned error code: %s \nAWS service name: %s \nDetailed error message from the service: %s \nAWS request ID for the failed request: %s",
+        String message = String.format("AWS Error: %s %nReturned HTTP status code: %d %nAWS Returned error code: %s %nAWS service name: %s %nDetailed error message from the service: %s %nAWS request ID for the failed request: %s",
                 ex.getMessage(),
                 ex.getStatusCode(),
                 ex.getErrorCode(),

@@ -1,9 +1,7 @@
 package ibox.iplanner.api.config;
 
 import dagger.Component;
-import ibox.iplanner.api.lambda.handler.AddEventHandler;
-import ibox.iplanner.api.lambda.handler.GetEventHandler;
-import ibox.iplanner.api.lambda.handler.ListEventHandler;
+import ibox.iplanner.api.lambda.handler.*;
 
 import javax.inject.Singleton;
 
@@ -13,4 +11,8 @@ public interface TestIPlannerComponent {
     void inject(AddEventHandler requestHandler);
     void inject(GetEventHandler requestHandler);
     void inject(ListEventHandler requestHandler);
+
+    void inject(AddActivityHandler requestHandler);
+    void inject(GetActivityHandler requestHandler);
+    void inject(ListActivityHandler requestHandler);
 }

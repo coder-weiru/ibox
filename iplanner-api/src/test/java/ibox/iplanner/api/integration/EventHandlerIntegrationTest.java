@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import ibox.iplanner.api.lambda.runtime.TestContext;
 import ibox.iplanner.api.model.Event;
+import ibox.iplanner.api.model.EventStatus;
 import ibox.iplanner.api.model.User;
 import ibox.iplanner.api.service.LocalDynamoDBIntegrationTestSupport;
 import ibox.iplanner.api.util.EventUtil;
@@ -98,26 +99,32 @@ public class EventHandlerIntegrationTest extends LocalDynamoDBIntegrationTestSup
         Event event1 = EventUtil.anyEvent();
         event1.setCreator(creator1);
         event1.setStart(now);
+        event1.setStatus(EventStatus.OPEN.name());
 
         Event event2 = EventUtil.anyEvent();
         event2.setCreator(creator1);
         event2.setStart(now.plus(10, MINUTES));
+        event2.setStatus(EventStatus.OPEN.name());
 
         Event event3 = EventUtil.anyEvent();
         event3.setCreator(creator1);
         event3.setStart(now.plus(15, MINUTES));
+        event3.setStatus(EventStatus.OPEN.name());
 
         Event event4 = EventUtil.anyEvent();
         event4.setCreator(creator2);
         event4.setStart(now.plus(20, MINUTES));
+        event4.setStatus(EventStatus.OPEN.name());
 
         Event event5 = EventUtil.anyEvent();
         event5.setCreator(creator1);
         event5.setStart(now.plus(30, MINUTES));
+        event5.setStatus(EventStatus.FINISHED.name());
 
         Event event6 = EventUtil.anyEvent();
         event6.setCreator(creator1);
         event6.setStart(now.plus(40, MINUTES));
+        event6.setStatus(EventStatus.OPEN.name());
 
         List<Event> events = Arrays.asList( new Event[] {event1, event2, event3, event4, event5, event6});
 
@@ -145,11 +152,10 @@ public class EventHandlerIntegrationTest extends LocalDynamoDBIntegrationTestSup
 
         List<Event> listEvents = (List<Event>)JsonUtil.fromJsonString(getResponseEvent.getBody(), List.class, Event.class);
 
-        assertThat(listEvents.size(), is(equalTo(3)));
+        assertThat(listEvents.size(), is(equalTo(2)));
 
         verifyEventsAreEqual(event2, listEvents.get(0));
         verifyEventsAreEqual(event3, listEvents.get(1));
-        verifyEventsAreEqual(event5, listEvents.get(2));
 
     }
 

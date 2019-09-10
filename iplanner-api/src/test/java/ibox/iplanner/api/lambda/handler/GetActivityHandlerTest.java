@@ -7,10 +7,10 @@ import com.amazonaws.util.StringUtils;
 import ibox.iplanner.api.config.DaggerIPlannerComponent;
 import ibox.iplanner.api.config.IPlannerComponent;
 import ibox.iplanner.api.lambda.runtime.TestContext;
+import ibox.iplanner.api.model.Activity;
 import ibox.iplanner.api.model.ApiError;
-import ibox.iplanner.api.model.Event;
-import ibox.iplanner.api.service.EventDataService;
-import ibox.iplanner.api.util.EventUtil;
+import ibox.iplanner.api.service.ActivityDataService;
+import ibox.iplanner.api.util.ActivityUtil;
 import ibox.iplanner.api.util.JsonUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,47 +30,47 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetEventHandlerTest {
+public class GetActivityHandlerTest {
 
     @InjectMocks
-    private GetEventHandler handler = new GetEventHandler();
+    private GetActivityHandler handler = new GetActivityHandler();
 
     @Mock
-    private EventDataService eventDataServiceMock;
+    private ActivityDataService activityDataServiceMock;
 
-    public GetEventHandlerTest() {
+    public GetActivityHandlerTest() {
         IPlannerComponent iPlannerComponent = DaggerIPlannerComponent.builder().build();
         iPlannerComponent.inject(handler);
     }
 
     @Test
-    public void getEvent_shouldInvokeEventDateServiceWithEventId() throws Exception {
-        Event event = EventUtil.anyEvent();
-        event.setId(UUID.randomUUID().toString());
+    public void getActivity_shouldInvokeActivityDateServiceWithActivityId() throws Exception {
+        Activity activity = ActivityUtil.anyActivity();
+        activity.setId(UUID.randomUUID().toString());
 
-        when(eventDataServiceMock.getEvent(any(String.class))).thenReturn(event);
+        when(activityDataServiceMock.getActivity(any(String.class))).thenReturn(activity);
 
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
-        requestEvent.setPathParameters(Collections.singletonMap("eventId", event.getId()));
+        requestEvent.setPathParameters(Collections.singletonMap("activityId", activity.getId()));
         APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
 
         assertEquals(200, responseEvent.getStatusCode());
 
-        ArgumentCaptor<String> eventIdCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> activityIdCaptor = ArgumentCaptor.forClass(String.class);
 
-        verify(eventDataServiceMock, times(1)).getEvent(eventIdCaptor.capture());
+        verify(activityDataServiceMock, times(1)).getActivity(activityIdCaptor.capture());
 
-        verifyNoMoreInteractions(eventDataServiceMock);
+        verifyNoMoreInteractions(activityDataServiceMock);
 
-        String argument = eventIdCaptor.getValue();
+        String argument = activityIdCaptor.getValue();
 
-        assertThat(argument, is(equalTo(event.getId())));
+        assertThat(argument, is(equalTo(activity.getId())));
     }
 
     @Test
-    public void getEvent_shouldReturnBadRequestMessageIfEventIdInvalid() throws Exception {
+    public void getActivity_shouldReturnBadRequestMessageIfActivityIdInvalid() throws Exception {
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
-        requestEvent.setPathParameters(Collections.singletonMap("eventId", "abc"));
+        requestEvent.setPathParameters(Collections.singletonMap("activityId", "abc"));
         APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
 
         assertEquals(400, responseEvent.getStatusCode());
@@ -83,9 +83,9 @@ public class GetEventHandlerTest {
     }
 
     @Test
-    public void getEvent_shouldReturnInternalServerErrorMessageIfAmazonServiceExceptionIsThrown() throws Exception {
-        Event event = EventUtil.anyEvent();
-        event.setId(UUID.randomUUID().toString());
+    public void getActivity_shouldReturnInternalServerErrorMessageIfAmazonServiceExceptionIsThrown() throws Exception {
+        Activity activity = ActivityUtil.anyActivity();
+        activity.setId(UUID.randomUUID().toString());
 
         AmazonDynamoDBException amazonDynamoDBException = new AmazonDynamoDBException("dynamo db error");
         amazonDynamoDBException.setStatusCode(SC_NOT_FOUND);
@@ -94,10 +94,10 @@ public class GetEventHandlerTest {
         amazonDynamoDBException.setRequestId("request1");
         amazonDynamoDBException.setErrorMessage("error message");
 
-        doThrow(amazonDynamoDBException).when(eventDataServiceMock).getEvent(any(String.class));
+        doThrow(amazonDynamoDBException).when(activityDataServiceMock).getActivity(any(String.class));
 
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
-        requestEvent.setPathParameters(Collections.singletonMap("eventId", event.getId()));
+        requestEvent.setPathParameters(Collections.singletonMap("activityId", activity.getId()));
         APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
 
         assertEquals(500, responseEvent.getStatusCode());

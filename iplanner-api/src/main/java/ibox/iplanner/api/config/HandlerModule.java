@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Module;
 import dagger.Provides;
 import ibox.iplanner.api.lambda.exception.GlobalExceptionHandler;
-import ibox.iplanner.api.lambda.handler.AddEventHandler;
-import ibox.iplanner.api.lambda.handler.GetEventHandler;
-import ibox.iplanner.api.lambda.handler.ListEventHandler;
+import ibox.iplanner.api.lambda.handler.*;
 import ibox.iplanner.api.lambda.validation.BeanValidator;
 import ibox.iplanner.api.lambda.validation.RequestEventValidator;
 
@@ -31,6 +29,24 @@ public class HandlerModule {
     @Provides
     public static ListEventHandler listEventHandler() {
         return new ListEventHandler();
+    }
+
+    @Singleton
+    @Provides
+    public static AddActivityHandler addActivityHandler() {
+        return new AddActivityHandler();
+    }
+
+    @Singleton
+    @Provides
+    public static GetActivityHandler getActivityHandler() {
+        return new GetActivityHandler();
+    }
+
+    @Singleton
+    @Provides
+    public static ListActivityHandler listActivityHandler() {
+        return new ListActivityHandler();
     }
 
     @Singleton

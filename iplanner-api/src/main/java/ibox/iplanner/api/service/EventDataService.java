@@ -5,6 +5,7 @@ import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.PutItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
+import com.amazonaws.util.StringUtils;
 import ibox.iplanner.api.model.Event;
 import ibox.iplanner.api.model.User;
 import ibox.iplanner.api.util.DateTimeUtil;
@@ -61,14 +62,14 @@ public class EventDataService {
         return convertToEvent(item);
     }
 
-    public List<Event> getMyEventsWithinTime(String creatorId, Instant timeWindowStart, Instant timeWindowEnd, Integer limit) {
+    public List<Event> getMyEventsWithinTime(String creatorId, Instant timeWindowStart, Instant timeWindowEnd, String status, Integer limit) {
         Table eventsTable = this.dynamoDb.getTable(TABLE_NAME_EVENTS);
         Index index = eventsTable.getIndex(GSI_CREATOR_EVENTS_SORT_BY_START_TIME);
 
         String timeWindowStartStr = DateTimeUtil.formatUTCDatetime(timeWindowStart);
         String timeWindowEndStr = DateTimeUtil.formatUTCDatetime(timeWindowEnd);
 
-        String keyConditionExpression = String.format("%s = :v_creator_id AND %s BETWEEN :v_time_window_start AND :v_time_window_end",
+        String keyConditionExpression = String.format("%s = :v_creator_id AND %s BETWEEN :v_time_window_start AND :v_time_window_end ",
                 FIELD_NAME_CREATED_BY,
                 FIELD_NAME_START_TIME);
 
@@ -83,7 +84,11 @@ public class EventDataService {
         ItemCollection<QueryOutcome> items = index.query(spec);
         List<Event> events = new ArrayList<>();
         items.forEach(e-> {
-            events.add(convertToEvent(e));
+            Event event = convertToEvent(e);
+            if ((StringUtils.isNullOrEmpty(status) && StringUtils.isNullOrEmpty(event.getStatus())) ||
+                (!StringUtils.isNullOrEmpty(status) && status.equals(event.getStatus()))) {
+                events.add(event);
+            }
         });
 
         return events;

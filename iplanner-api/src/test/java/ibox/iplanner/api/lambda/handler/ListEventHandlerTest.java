@@ -9,6 +9,7 @@ import ibox.iplanner.api.config.IPlannerComponent;
 import ibox.iplanner.api.lambda.runtime.TestContext;
 import ibox.iplanner.api.model.ApiError;
 import ibox.iplanner.api.model.Event;
+import ibox.iplanner.api.model.EventStatus;
 import ibox.iplanner.api.service.EventDataService;
 import ibox.iplanner.api.util.EventUtil;
 import ibox.iplanner.api.util.JsonUtil;
@@ -57,12 +58,13 @@ public class ListEventHandlerTest {
 
     @Test
     public void listEvents_shouldInvokeEventDateServiceGivenCorrectParams() throws Exception {
-        when(eventDataServiceMock.getMyEventsWithinTime(any(String.class), any(Instant.class), any(Instant.class), any(Integer.class))).thenReturn(events);
+        when(eventDataServiceMock.getMyEventsWithinTime(any(String.class), any(Instant.class), any(Instant.class), any(String.class), any(Integer.class))).thenReturn(events);
 
         Instant now = Instant.now();
         String creatorId = UUID.randomUUID().toString();
         String windowStart = now.plus(1, MINUTES).toString();
         String windowEnd = now.plus(100, MINUTES).toString();
+        String status = EventStatus.OPEN.name();
         String limit = "10";
 
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
@@ -70,6 +72,7 @@ public class ListEventHandlerTest {
         Map<String, String> requestParams = new HashMap<>();
         requestParams.put("start", windowStart);
         requestParams.put("end", windowEnd);
+        requestParams.put("status", status);
         requestParams.put("limit", limit);
         requestEvent.setQueryStringParameters(requestParams);
 
@@ -80,16 +83,64 @@ public class ListEventHandlerTest {
         ArgumentCaptor<String> eventIdCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Instant> windowStartCaptor = ArgumentCaptor.forClass(Instant.class);
         ArgumentCaptor<Instant> windowEndCaptor = ArgumentCaptor.forClass(Instant.class);
+        ArgumentCaptor<String> statusCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Integer> limitCaptor = ArgumentCaptor.forClass(Integer.class);
 
-        verify(eventDataServiceMock, times(1)).getMyEventsWithinTime(eventIdCaptor.capture(), windowStartCaptor.capture(), windowEndCaptor.capture(), limitCaptor.capture());
+        verify(eventDataServiceMock, times(1)).getMyEventsWithinTime(eventIdCaptor.capture(), windowStartCaptor.capture(), windowEndCaptor.capture(), statusCaptor.capture(), limitCaptor.capture());
 
         verifyNoMoreInteractions(eventDataServiceMock);
 
         assertThat(eventIdCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(creatorId)));
         assertThat(windowStartCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(Instant.parse(windowStart))));
         assertThat(windowEndCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(Instant.parse(windowEnd))));
+        assertThat(statusCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(status)));
         assertThat(limitCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(Integer.valueOf(limit))));
+    }
+
+    @Test
+    public void listEvents_shouldInvokeEventDateServiceWithSpecifiedEvenStatus() throws Exception {
+        List<Event> events = Arrays.asList(new Event[]{
+                EventUtil.anyEvent(),
+                EventUtil.anyEvent(),
+                EventUtil.anyEvent()
+        });
+
+        when(eventDataServiceMock.getMyEventsWithinTime(any(String.class), any(Instant.class), any(Instant.class), any(String.class), any(Integer.class))).thenReturn(events);
+
+        Instant now = Instant.now();
+        String creatorId = UUID.randomUUID().toString();
+        String windowStart = now.plus(1, MINUTES).toString();
+        String windowEnd = now.plus(100, MINUTES).toString();
+        String status = EventStatus.FINISHED.name();
+
+        APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+        requestEvent.setPathParameters(Collections.singletonMap("creatorId", creatorId));
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put("start", windowStart);
+        requestParams.put("end", windowEnd);
+        requestParams.put("status", status);
+        requestEvent.setQueryStringParameters(requestParams);
+
+        APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
+
+        assertEquals(200, responseEvent.getStatusCode());
+
+        ArgumentCaptor<String> eventIdCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Instant> windowStartCaptor = ArgumentCaptor.forClass(Instant.class);
+        ArgumentCaptor<Instant> windowEndCaptor = ArgumentCaptor.forClass(Instant.class);
+        ArgumentCaptor<String> statusCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Integer> limitCaptor = ArgumentCaptor.forClass(Integer.class);
+
+        verify(eventDataServiceMock, times(1)).getMyEventsWithinTime(eventIdCaptor.capture(), windowStartCaptor.capture(), windowEndCaptor.capture(), statusCaptor.capture(), limitCaptor.capture());
+
+        verifyNoMoreInteractions(eventDataServiceMock);
+
+        assertThat(eventIdCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(creatorId)));
+        assertThat(windowStartCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(Instant.parse(windowStart))));
+        assertThat(windowEndCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(Instant.parse(windowEnd))));
+        assertThat(statusCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(EventStatus.FINISHED.name())));
+        assertThat(limitCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(Integer.valueOf(100))));
+
     }
 
     @Test
@@ -115,7 +166,7 @@ public class ListEventHandlerTest {
                 EventUtil.anyEvent()
         });
 
-        when(eventDataServiceMock.getMyEventsWithinTime(any(String.class), any(Instant.class), any(Instant.class), any(Integer.class))).thenReturn(events);
+        when(eventDataServiceMock.getMyEventsWithinTime(any(String.class), any(Instant.class), any(Instant.class), any(String.class), any(Integer.class))).thenReturn(events);
 
         Instant now = Instant.now();
         String creatorId = UUID.randomUUID().toString();
@@ -136,15 +187,17 @@ public class ListEventHandlerTest {
         ArgumentCaptor<String> eventIdCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Instant> windowStartCaptor = ArgumentCaptor.forClass(Instant.class);
         ArgumentCaptor<Instant> windowEndCaptor = ArgumentCaptor.forClass(Instant.class);
+        ArgumentCaptor<String> statusCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Integer> limitCaptor = ArgumentCaptor.forClass(Integer.class);
 
-        verify(eventDataServiceMock, times(1)).getMyEventsWithinTime(eventIdCaptor.capture(), windowStartCaptor.capture(), windowEndCaptor.capture(), limitCaptor.capture());
+        verify(eventDataServiceMock, times(1)).getMyEventsWithinTime(eventIdCaptor.capture(), windowStartCaptor.capture(), windowEndCaptor.capture(), statusCaptor.capture(), limitCaptor.capture());
 
         verifyNoMoreInteractions(eventDataServiceMock);
 
         assertThat(eventIdCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(creatorId)));
         assertThat(windowStartCaptor.getValue(), CoreMatchers.notNullValue());
         assertThat(windowEndCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(Instant.parse(windowEnd))));
+        assertThat(statusCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(EventStatus.OPEN.name())));
         assertThat(limitCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(Integer.valueOf(limit))));
     }
 
@@ -156,7 +209,7 @@ public class ListEventHandlerTest {
                 EventUtil.anyEvent()
         });
 
-        when(eventDataServiceMock.getMyEventsWithinTime(any(String.class), any(Instant.class), any(Instant.class), any(Integer.class))).thenReturn(events);
+        when(eventDataServiceMock.getMyEventsWithinTime(any(String.class), any(Instant.class), any(Instant.class), any(String.class), any(Integer.class))).thenReturn(events);
 
         Instant now = Instant.now();
         String creatorId = UUID.randomUUID().toString();
@@ -177,15 +230,17 @@ public class ListEventHandlerTest {
         ArgumentCaptor<String> eventIdCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Instant> windowStartCaptor = ArgumentCaptor.forClass(Instant.class);
         ArgumentCaptor<Instant> windowEndCaptor = ArgumentCaptor.forClass(Instant.class);
+        ArgumentCaptor<String> statusCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Integer> limitCaptor = ArgumentCaptor.forClass(Integer.class);
 
-        verify(eventDataServiceMock, times(1)).getMyEventsWithinTime(eventIdCaptor.capture(), windowStartCaptor.capture(), windowEndCaptor.capture(), limitCaptor.capture());
+        verify(eventDataServiceMock, times(1)).getMyEventsWithinTime(eventIdCaptor.capture(), windowStartCaptor.capture(), windowEndCaptor.capture(), statusCaptor.capture(), limitCaptor.capture());
 
         verifyNoMoreInteractions(eventDataServiceMock);
 
         assertThat(eventIdCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(creatorId)));
         assertThat(windowStartCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(Instant.parse(windowStart))));
         assertThat(windowEndCaptor.getValue(), CoreMatchers.notNullValue());
+        assertThat(statusCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(EventStatus.OPEN.name())));
         assertThat(limitCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(Integer.valueOf(limit))));
     }
 
@@ -197,7 +252,7 @@ public class ListEventHandlerTest {
                 EventUtil.anyEvent()
         });
 
-        when(eventDataServiceMock.getMyEventsWithinTime(any(String.class), any(Instant.class), any(Instant.class), any(Integer.class))).thenReturn(events);
+        when(eventDataServiceMock.getMyEventsWithinTime(any(String.class), any(Instant.class), any(Instant.class), any(String.class), any(Integer.class))).thenReturn(events);
 
         Instant now = Instant.now();
         String creatorId = UUID.randomUUID().toString();
@@ -218,15 +273,17 @@ public class ListEventHandlerTest {
         ArgumentCaptor<String> eventIdCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Instant> windowStartCaptor = ArgumentCaptor.forClass(Instant.class);
         ArgumentCaptor<Instant> windowEndCaptor = ArgumentCaptor.forClass(Instant.class);
+        ArgumentCaptor<String> statusCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Integer> limitCaptor = ArgumentCaptor.forClass(Integer.class);
 
-        verify(eventDataServiceMock, times(1)).getMyEventsWithinTime(eventIdCaptor.capture(), windowStartCaptor.capture(), windowEndCaptor.capture(), limitCaptor.capture());
+        verify(eventDataServiceMock, times(1)).getMyEventsWithinTime(eventIdCaptor.capture(), windowStartCaptor.capture(), windowEndCaptor.capture(), statusCaptor.capture(), limitCaptor.capture());
 
         verifyNoMoreInteractions(eventDataServiceMock);
 
         assertThat(eventIdCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(creatorId)));
         assertThat(windowStartCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(Instant.parse(windowStart))));
         assertThat(windowEndCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(Instant.parse(windowEnd))));
+        assertThat(statusCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(EventStatus.OPEN.name())));
         assertThat(limitCaptor.getValue(), CoreMatchers.is(CoreMatchers.equalTo(Integer.valueOf(100))));
 
     }
@@ -244,7 +301,7 @@ public class ListEventHandlerTest {
         amazonDynamoDBException.setRequestId("request1");
         amazonDynamoDBException.setErrorMessage("error message");
 
-        doThrow(amazonDynamoDBException).when(eventDataServiceMock).getMyEventsWithinTime(any(String.class), any(Instant.class), any(Instant.class), any(Integer.class));
+        doThrow(amazonDynamoDBException).when(eventDataServiceMock).getMyEventsWithinTime(any(String.class), any(Instant.class), any(Instant.class), any(String.class), any(Integer.class));
 
         String creatorId = UUID.randomUUID().toString();
 

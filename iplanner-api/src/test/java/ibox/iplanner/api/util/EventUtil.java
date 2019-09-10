@@ -1,33 +1,14 @@
 package ibox.iplanner.api.util;
 
+import ibox.iplanner.api.model.ActivityStatus;
 import ibox.iplanner.api.model.Event;
+import ibox.iplanner.api.model.EventStatus;
 import ibox.iplanner.api.model.User;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import java.time.Instant;
 import java.util.*;
 
-public class EventUtil {
-
-    public static Boolean randomBoolean() {
-        return Math.random() < 0.5;
-    }
-
-    public static String anyEventSummary() {
-        return RandomStringUtils.random(30, true, false);
-    }
-
-    public static String anyEventDescription() {
-        return RandomStringUtils.random(100, true, true);
-    }
-
-    public static String anyEventStatus() {
-        return RandomStringUtils.random(5, true, false);
-    }
-
-    public static String anyEventActivity() {
-        return RandomStringUtils.random(10, true, false);
-    }
+public class EventUtil extends BaseEntityUtil {
 
     public static String anyEventLocation() {
         return RandomStringUtils.random(20, true, false);
@@ -48,45 +29,16 @@ public class EventUtil {
         return recurrence;
     }
 
-    public static Instant anyEventCreatedTime() {
-        return Instant.now().minusMillis(new Random().nextInt(1000000));
-    }
-
-    public static Instant anyEventUpdatedTime() {
-        return Instant.now().minusMillis(new Random().nextInt(500000));
-    }
-
-    public static Instant anyEventStartTime() {
-        return Instant.now().minusMillis(new Random().nextInt(100));
-    }
-
-    public static Instant anyEventEndTime() {
-        return Instant.now().plusMillis(new Random().nextInt(1000000));
-    }
-
-    public static String anyUUID() {
-        return UUID.randomUUID().toString();
-    }
-
-    public static String anyShortId() {
-        return RandomStringUtils.randomAlphanumeric(8);
-    }
-
-    public static String anyDisplayName() {
-        return RandomStringUtils.random(20, true, false);
-    }
-
-    public static String anyEmail() {
-        return RandomStringUtils.random(20, true, true) + "@gmail.com";
+    public static EventStatus anyEventStatus() {
+        return Arrays.asList(new EventStatus[] {
+                EventStatus.OPEN,
+                EventStatus.CLOSED,
+                EventStatus.FINISHED
+        }).get(new Random().nextInt(3));
     }
 
     public static User anyEventCreator() {
-        User creator = new User();
-        creator.setId(anyUUID());
-        creator.setDisplayName(anyDisplayName());
-        creator.setEmail(anyEmail());
-        creator.setSelf(randomBoolean());
-        return creator;
+        return anyUser();
     }
 
     public static Event anyEvent() {
@@ -97,18 +49,18 @@ public class EventUtil {
 
     public static Event anyEventWithoutId() {
         Event event = new Event();
-        event.setSummary(anyEventSummary());
-        event.setDescription(anyEventDescription());
-        event.setStatus(anyEventStatus());
-        event.setSummary(anyEventSummary());
-        event.setActivity(anyEventActivity());
+        event.setSummary(anySummary());
+        event.setDescription(anyDescription());
+        event.setStatus(anyEventStatus().name());
+        event.setSummary(anySummary());
+        event.setActivity(anyActivityId());
         event.setLocation(anyEventLocation());
         event.setRecurrence(anyEventRecurrence());
         event.setEndTimeUnspecified(anyEventEndTimeUnspecified());
-        event.setCreated(anyEventCreatedTime());
-        event.setUpdated(anyEventUpdatedTime());
-        event.setStart(anyEventStartTime());
-        event.setEnd(anyEventEndTime());
+        event.setCreated(anyCreatedTime());
+        event.setUpdated(anyUpdatedTime());
+        event.setStart(anyStartTime());
+        event.setEnd(anyEndTime());
         event.setCreator(anyEventCreator());
 
         return event;

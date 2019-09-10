@@ -2,6 +2,7 @@ package ibox.iplanner.api.service;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import ibox.iplanner.api.model.Event;
+import ibox.iplanner.api.model.EventStatus;
 import ibox.iplanner.api.model.User;
 import ibox.iplanner.api.util.EventUtil;
 import org.junit.BeforeClass;
@@ -66,26 +67,32 @@ public class EventDataServiceIntegrationTest extends LocalDynamoDBIntegrationTes
         Event event1 = EventUtil.anyEvent();
         event1.setCreator(creator1);
         event1.setStart(now);
+        event1.setStatus(EventStatus.OPEN.name());
 
         Event event2 = EventUtil.anyEvent();
         event2.setCreator(creator1);
         event2.setStart(now.plus(10, MINUTES));
+        event2.setStatus(EventStatus.OPEN.name());
 
         Event event3 = EventUtil.anyEvent();
         event3.setCreator(creator1);
         event3.setStart(now.plus(15, MINUTES));
+        event3.setStatus(EventStatus.OPEN.name());
 
         Event event4 = EventUtil.anyEvent();
         event4.setCreator(creator2);
         event4.setStart(now.plus(20, MINUTES));
+        event4.setStatus(EventStatus.OPEN.name());
 
         Event event5 = EventUtil.anyEvent();
         event5.setCreator(creator1);
         event5.setStart(now.plus(30, MINUTES));
+        event5.setStatus(EventStatus.OPEN.name());
 
         Event event6 = EventUtil.anyEvent();
         event6.setCreator(creator1);
         event6.setStart(now.plus(40, MINUTES));
+        event6.setStatus(EventStatus.OPEN.name());
 
         List<Event> events = Arrays.asList( new Event[] {event1, event2, event3, event4, event5, event6});
 
@@ -94,11 +101,9 @@ public class EventDataServiceIntegrationTest extends LocalDynamoDBIntegrationTes
         Instant timeWindowStart = now.plus(5, MINUTES);
         Instant timeWindowEnd = now.plus(35, MINUTES);
 
-        List<Event> myEvents = eventDataService.getMyEventsWithinTime(creator1.getId(), timeWindowStart, timeWindowEnd, null);
+        List<Event> myEvents = eventDataService.getMyEventsWithinTime(creator1.getId(), timeWindowStart, timeWindowEnd, EventStatus.OPEN.name(),null);
 
         assertThat(myEvents.size(), is(equalTo(3)));
-
-
     }
 
     private void verifyEventsAreEqual(Event expected, Event actual) {
