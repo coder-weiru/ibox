@@ -12,9 +12,12 @@ public interface IPlannerComponent {
     void inject(AddEventHandler requestHandler);
     void inject(GetEventHandler requestHandler);
     void inject(ListEventHandler requestHandler);
+    void inject(UpdateEventHandler requestHandler);
+    void inject(DeleteEventHandler requestHandler);
 
     void inject(AddActivityHandler requestHandler);
     void inject(GetActivityHandler requestHandler);
     void inject(ListActivityHandler requestHandler);
-
+    void inject(UpdateActivityHandler requestHandler);
+    void inject(DeleteActivityHandler requestHandler);
 }

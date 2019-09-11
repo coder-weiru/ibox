@@ -33,6 +33,18 @@ public class HandlerModule {
 
     @Singleton
     @Provides
+    public static UpdateEventHandler updateEventHandler() {
+        return new UpdateEventHandler();
+    }
+
+    @Singleton
+    @Provides
+    public static DeleteEventHandler deleteEventHandler() {
+        return new DeleteEventHandler();
+    }
+
+    @Singleton
+    @Provides
     public static AddActivityHandler addActivityHandler() {
         return new AddActivityHandler();
     }
@@ -47,6 +59,18 @@ public class HandlerModule {
     @Provides
     public static ListActivityHandler listActivityHandler() {
         return new ListActivityHandler();
+    }
+
+    @Singleton
+    @Provides
+    public static UpdateActivityHandler updateActivityHandler() {
+        return new UpdateActivityHandler();
+    }
+
+    @Singleton
+    @Provides
+    public static DeleteActivityHandler deleteActivityHandler() {
+        return new DeleteActivityHandler();
     }
 
     @Singleton

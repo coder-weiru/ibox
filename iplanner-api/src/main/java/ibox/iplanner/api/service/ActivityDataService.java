@@ -4,9 +4,14 @@ import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.PutItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
+import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
+import com.amazonaws.services.dynamodbv2.model.ReturnValue;
 import ibox.iplanner.api.model.Activity;
+import ibox.iplanner.api.model.ActivityStatus;
 import ibox.iplanner.api.model.User;
+import ibox.iplanner.api.model.updatable.Updatable;
+import ibox.iplanner.api.service.util.DynamoDBUtil;
 import ibox.iplanner.api.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -78,6 +83,28 @@ public class ActivityDataService {
         });
 
         return activities;
+    }
+
+    public Activity updateActivity(final Updatable updatable) {
+        Table activitiesTable = this.dynamoDb.getTable(TABLE_NAME_ACTIVITIES);
+
+        UpdateItemOutcome outcome = activitiesTable.updateItem(new UpdateItemSpec()
+                .withPrimaryKey(DynamoDBUtil.buildPrimaryKey(updatable.getPrimaryKey()))
+                .withAttributeUpdate(DynamoDBUtil.buildAttributeUpdateList(updatable.getUpdatableAttributes()))
+                .withReturnValues(ReturnValue.UPDATED_NEW));
+
+        return convertToActivity(outcome.getItem());
+    }
+
+    public Activity deleteActivity(String activityId) {
+        Table activitiesTable = this.dynamoDb.getTable(TABLE_NAME_ACTIVITIES);
+
+        UpdateItemOutcome outcome = activitiesTable.updateItem(new UpdateItemSpec()
+                .withPrimaryKey(FIELD_NAME_ID, activityId)
+                .withAttributeUpdate(new AttributeUpdate(FIELD_NAME_ACTIVITY_STATUS).put(ActivityStatus.INACTIVE.name()))
+                .withReturnValues(ReturnValue.UPDATED_NEW));
+
+        return convertToActivity(outcome.getItem());
     }
 
     private Item convertToItem(Activity activity) {

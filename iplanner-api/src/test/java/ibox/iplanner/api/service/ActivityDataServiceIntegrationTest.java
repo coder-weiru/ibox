@@ -1,16 +1,24 @@
 package ibox.iplanner.api.service;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.model.AmazonDynamoDBException;
 import ibox.iplanner.api.model.Activity;
 import ibox.iplanner.api.model.ActivityStatus;
 import ibox.iplanner.api.model.User;
+import ibox.iplanner.api.model.updatable.Updatable;
+import ibox.iplanner.api.model.updatable.UpdatableAttribute;
+import ibox.iplanner.api.model.updatable.UpdatableKey;
+import ibox.iplanner.api.model.updatable.UpdateAction;
+import ibox.iplanner.api.service.dbmodel.ActivityDefinition;
 import ibox.iplanner.api.util.ActivityUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -54,6 +62,95 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
             verifyActivitiesAreEqual(e, dbActivity);
 
         });
+    }
+
+    @Test
+    public void givenValidUpdatable_updateActivity_shouldUpdateRecord() {
+
+        Activity activity = ActivityUtil.anyActivity();
+
+        activityDataService.addActivity(activity);
+
+        Activity dbActivity = activityDataService.getActivity(activity.getId());
+
+        String newTitle = "new title";
+        String newDescription = "new description";
+        String newTemplate = "new template";
+        Set<UpdatableAttribute> updatableAttributeSet = new HashSet<>();
+        updatableAttributeSet.add( UpdatableAttribute.builder()
+            .attributeName(ActivityDefinition.FIELD_NAME_TITLE)
+            .action(UpdateAction.UPDATE)
+            .value(newTitle)
+            .build());
+        updatableAttributeSet.add( UpdatableAttribute.builder()
+                .attributeName(ActivityDefinition.FIELD_NAME_DESCRIPTION)
+                .action(UpdateAction.UPDATE)
+                .value(newDescription)
+                .build());
+        updatableAttributeSet.add( UpdatableAttribute.builder()
+                .attributeName(ActivityDefinition.FIELD_NAME_TEMPLATE)
+                .action(UpdateAction.UPDATE)
+                .value(newTemplate)
+                .build());
+
+        Updatable updatable = Updatable.builder()
+                .objectType("activity")
+                .primaryKey(new UpdatableKey()
+                        .addComponent(ActivityDefinition.FIELD_NAME_ID, dbActivity.getId()))
+                .updatableAttributes(updatableAttributeSet)
+                .build();
+
+        Activity updated = activityDataService.updateActivity(updatable);
+
+        assertThat(updated.getTitle(), is(equalTo(newTitle)));
+        assertThat(updated.getDescription(), is(equalTo(newDescription)));
+        assertThat(updated.getTemplate(), is(equalTo(newTemplate)));
+
+    }
+
+    @Test
+    public void givenValidId_deleteActivity_shouldUpdateActivityStatus() {
+
+        Activity activity = ActivityUtil.anyActivity();
+        activity.setStatus(ActivityStatus.ACTIVE.name());
+
+        activityDataService.addActivity(activity);
+
+        Activity dbActivity = activityDataService.getActivity(activity.getId());
+
+        Activity deleted = activityDataService.deleteActivity(dbActivity.getId());
+
+        assertThat(deleted.getStatus(), is(equalTo(ActivityStatus.INACTIVE.name())));
+
+        Activity theActivity = activityDataService.getActivity(dbActivity.getId());
+
+        assertThat(theActivity.getStatus(), is(equalTo(ActivityStatus.INACTIVE.name())));
+
+    }
+
+    @Test(expected = AmazonDynamoDBException.class)
+    public void givenValidUpdatable_updateActivity_shouldNotUpdateKeyField() {
+
+        Activity activity = ActivityUtil.anyActivity();
+
+        activityDataService.addActivity(activity);
+
+        Activity dbActivity = activityDataService.getActivity(activity.getId());
+
+        Set<UpdatableAttribute> updatableAttributeSet = new HashSet<>();
+        updatableAttributeSet.add( UpdatableAttribute.builder()
+                .attributeName(ActivityDefinition.FIELD_NAME_ID)
+                .action(UpdateAction.UPDATE)
+                .value("1234567890")
+                .build());
+        Updatable updatable = Updatable.builder()
+                .objectType("activity")
+                .primaryKey(new UpdatableKey()
+                        .addComponent(ActivityDefinition.FIELD_NAME_ID, dbActivity.getId()))
+                .updatableAttributes(updatableAttributeSet)
+                .build();
+
+        Activity updated = activityDataService.updateActivity(updatable);
     }
 
     @Test

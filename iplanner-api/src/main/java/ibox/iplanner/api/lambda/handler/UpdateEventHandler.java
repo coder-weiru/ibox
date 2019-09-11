@@ -8,13 +8,11 @@ import ibox.iplanner.api.lambda.exception.GlobalExceptionHandler;
 import ibox.iplanner.api.lambda.validation.BeanValidator;
 import ibox.iplanner.api.lambda.validation.RequestEventValidator;
 import ibox.iplanner.api.model.Event;
+import ibox.iplanner.api.model.updatable.Updatable;
 import ibox.iplanner.api.service.EventDataService;
 import ibox.iplanner.api.util.JsonUtil;
 
 import javax.inject.Inject;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static ibox.iplanner.api.util.ApiErrorConstants.SC_OK;
 
@@ -38,20 +36,14 @@ public class UpdateEventHandler implements RequestHandler<APIGatewayProxyRequest
         try {
             requestEventValidator.validateBody(requestEvent);
 
-            List<Event> newEvents = (List<Event>) JsonUtil.fromJsonString(requestEvent.getBody(), List.class, Event.class);
+            Updatable updatable = (Updatable) JsonUtil.fromJsonString(requestEvent.getBody(), Updatable.class);
 
-            newEvents.stream().forEach(e -> beanValidator.validate(e));
+            beanValidator.validate(updatable);
 
-            List<Event> dbEvents = newEvents.stream().map(e -> {
-                Event dbEvent = e;
-                dbEvent.setId(UUID.randomUUID().toString());
-                return dbEvent;
-            }).collect(Collectors.toList());
-
-            eventDataService.addEvents(dbEvents);
+            Event updated = eventDataService.updateEvent(updatable);
 
             //setting up the response message
-            responseEvent.setBody(JsonUtil.toJsonString(dbEvents));
+            responseEvent.setBody(JsonUtil.toJsonString(updated));
             responseEvent.setStatusCode(SC_OK);
 
             return responseEvent;

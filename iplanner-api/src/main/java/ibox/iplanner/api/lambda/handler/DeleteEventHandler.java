@@ -12,10 +12,9 @@ import ibox.iplanner.api.service.EventDataService;
 import ibox.iplanner.api.util.JsonUtil;
 
 import javax.inject.Inject;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.Map;
 
+import static ibox.iplanner.api.lambda.validation.RequestEventValidator.UUID_PATTERN;
 import static ibox.iplanner.api.util.ApiErrorConstants.SC_OK;
 
 public class DeleteEventHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -36,22 +35,16 @@ public class DeleteEventHandler implements RequestHandler<APIGatewayProxyRequest
 
         APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
         try {
-            requestEventValidator.validateBody(requestEvent);
+            requestEventValidator.validatePathParameterNotBlank(requestEvent, "eventId");
+            requestEventValidator.validatePathParameterPattern(requestEvent, UUID_PATTERN, "eventId");
 
-            List<Event> newEvents = (List<Event>) JsonUtil.fromJsonString(requestEvent.getBody(), List.class, Event.class);
+            Map<String, String> pathParameterMap = requestEvent.getPathParameters();
+            final String eventId  = pathParameterMap.get("eventId");
 
-            newEvents.stream().forEach(e -> beanValidator.validate(e));
-
-            List<Event> dbEvents = newEvents.stream().map(e -> {
-                Event dbEvent = e;
-                dbEvent.setId(UUID.randomUUID().toString());
-                return dbEvent;
-            }).collect(Collectors.toList());
-
-            eventDataService.addEvents(dbEvents);
+            Event deleted = eventDataService.deleteEvent(eventId);
 
             //setting up the response message
-            responseEvent.setBody(JsonUtil.toJsonString(dbEvents));
+            responseEvent.setBody(JsonUtil.toJsonString(deleted));
             responseEvent.setStatusCode(SC_OK);
 
             return responseEvent;

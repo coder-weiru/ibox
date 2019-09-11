@@ -1,18 +1,27 @@
 package ibox.iplanner.api.service;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.model.AmazonDynamoDBException;
 import ibox.iplanner.api.model.Event;
 import ibox.iplanner.api.model.EventStatus;
 import ibox.iplanner.api.model.User;
+import ibox.iplanner.api.model.updatable.Updatable;
+import ibox.iplanner.api.model.updatable.UpdatableAttribute;
+import ibox.iplanner.api.model.updatable.UpdatableKey;
+import ibox.iplanner.api.model.updatable.UpdateAction;
 import ibox.iplanner.api.util.EventUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import static ibox.iplanner.api.service.dbmodel.EventDefinition.*;
 import static java.time.temporal.ChronoUnit.MINUTES;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -55,6 +64,109 @@ public class EventDataServiceIntegrationTest extends LocalDynamoDBIntegrationTes
             verifyEventsAreEqual(e, dbEvent);
 
         });
+    }
+
+    @Test
+    public void givenValidUpdatable_updateEvent_shouldUpdateRecord() {
+
+        Event activity = EventUtil.anyEvent();
+
+        eventDataService.addEvent(activity);
+
+        Event dbEvent = eventDataService.getEvent(activity.getId());
+
+        String newSummary = "new summary";
+        String newDescription = "new description";
+        String newLocation = "new location";
+        String newActivity = "new activity";
+        Set<String> newRecurrence = new HashSet<>();
+        newRecurrence.add("abc");
+        Set<UpdatableAttribute> updatableAttributeSet = new HashSet<>();
+        updatableAttributeSet.add( UpdatableAttribute.builder()
+                .attributeName(FIELD_NAME_SUMMARY)
+                .action(UpdateAction.UPDATE)
+                .value(newSummary)
+                .build());
+        updatableAttributeSet.add( UpdatableAttribute.builder()
+                .attributeName(FIELD_NAME_DESCRIPTION)
+                .action(UpdateAction.UPDATE)
+                .value(newDescription)
+                .build());
+        updatableAttributeSet.add( UpdatableAttribute.builder()
+                .attributeName(FIELD_NAME_ACTIVITY)
+                .action(UpdateAction.UPDATE)
+                .value(newActivity)
+                .build());
+        updatableAttributeSet.add( UpdatableAttribute.builder()
+                .attributeName(FIELD_NAME_EVENT_LOCATION)
+                .action(UpdateAction.UPDATE)
+                .value(newLocation)
+                .build());
+        updatableAttributeSet.add( UpdatableAttribute.builder()
+                .attributeName(FIELD_NAME_EVENT_RECURRENCE)
+                .action(UpdateAction.UPDATE)
+                .value(newRecurrence)
+                .build());
+
+        Updatable updatable = Updatable.builder()
+                .objectType("event")
+                .primaryKey(new UpdatableKey()
+                        .addComponent(FIELD_NAME_ID, dbEvent.getId()))
+                .updatableAttributes(updatableAttributeSet)
+                .build();
+
+        Event updated = eventDataService.updateEvent(updatable);
+
+        assertThat(updated.getSummary(), is(equalTo(newSummary)));
+        assertThat(updated.getDescription(), is(equalTo(newDescription)));
+        assertThat(updated.getActivity(), is(equalTo(newActivity)));
+        assertThat(updated.getLocation(), is(equalTo(newLocation)));
+        assertThat(updated.getRecurrence(), hasItem("abc"));
+    }
+
+    @Test
+    public void givenValidId_deleteEvent_shouldUpdateEventStatus() {
+
+        Event event = EventUtil.anyEvent();
+        event.setStatus(EventStatus.OPEN.name());
+
+        eventDataService.addEvent(event);
+
+        Event dbEvent = eventDataService.getEvent(event.getId());
+
+        Event deleted = eventDataService.deleteEvent(dbEvent.getId());
+
+        assertThat(deleted.getStatus(), is(equalTo(EventStatus.CLOSED.name())));
+
+        Event theEvent = eventDataService.getEvent(dbEvent.getId());
+
+        assertThat(theEvent.getStatus(), is(equalTo(EventStatus.CLOSED.name())));
+
+    }
+
+    @Test(expected = AmazonDynamoDBException.class)
+    public void givenValidUpdatable_updateEvent_shouldNotUpdateKeyField() {
+
+        Event event = EventUtil.anyEvent();
+
+        eventDataService.addEvent(event);
+
+        Event dbEvent = eventDataService.getEvent(event.getId());
+
+        Set<UpdatableAttribute> updatableAttributeSet = new HashSet<>();
+        updatableAttributeSet.add( UpdatableAttribute.builder()
+                .attributeName(FIELD_NAME_ID)
+                .action(UpdateAction.UPDATE)
+                .value("1234567890")
+                .build());
+        Updatable updatable = Updatable.builder()
+                .objectType("event")
+                .primaryKey(new UpdatableKey()
+                        .addComponent(FIELD_NAME_ID, dbEvent.getId()))
+                .updatableAttributes(updatableAttributeSet)
+                .build();
+
+        Event updated = eventDataService.updateEvent(updatable);
     }
 
     @Test

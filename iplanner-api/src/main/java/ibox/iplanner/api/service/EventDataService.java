@@ -4,10 +4,15 @@ import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.PutItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
+import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
+import com.amazonaws.services.dynamodbv2.model.ReturnValue;
 import com.amazonaws.util.StringUtils;
 import ibox.iplanner.api.model.Event;
+import ibox.iplanner.api.model.EventStatus;
 import ibox.iplanner.api.model.User;
+import ibox.iplanner.api.model.updatable.Updatable;
+import ibox.iplanner.api.service.util.DynamoDBUtil;
 import ibox.iplanner.api.util.DateTimeUtil;
 import ibox.iplanner.api.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -94,6 +99,28 @@ public class EventDataService {
         return events;
     }
 
+    public Event updateEvent(final Updatable updatable) {
+        Table eventsTable = this.dynamoDb.getTable(TABLE_NAME_EVENTS);
+
+        UpdateItemOutcome outcome = eventsTable.updateItem(new UpdateItemSpec()
+                .withPrimaryKey(DynamoDBUtil.buildPrimaryKey(updatable.getPrimaryKey()))
+                .withAttributeUpdate(DynamoDBUtil.buildAttributeUpdateList(updatable.getUpdatableAttributes()))
+                .withReturnValues(ReturnValue.UPDATED_NEW));
+
+        return convertToEvent(outcome.getItem());
+    }
+
+    public Event deleteEvent(String activityId) {
+        Table eventsTable = this.dynamoDb.getTable(TABLE_NAME_EVENTS);
+
+        UpdateItemOutcome outcome = eventsTable.updateItem(new UpdateItemSpec()
+                .withPrimaryKey(FIELD_NAME_ID, activityId)
+                .withAttributeUpdate(new AttributeUpdate(FIELD_NAME_EVENT_STATUS).put(EventStatus.CLOSED.name()))
+                .withReturnValues(ReturnValue.UPDATED_NEW));
+
+        return convertToEvent(outcome.getItem());
+    }
+
     private Item convertToItem(Event event) {
 
         Optional<Instant> created = Optional.of(event.getCreated());
@@ -151,7 +178,7 @@ public class EventDataService {
         event.setActivity(item.getString(FIELD_NAME_ACTIVITY));
         event.setStatus(item.getString(FIELD_NAME_EVENT_STATUS));
         event.setLocation(item.getString(FIELD_NAME_EVENT_LOCATION));
-        event.setEndTimeUnspecified(item.getBoolean(FIELD_NAME_EVENT_END_TIME_UNSPECIFIED));
+        event.setEndTimeUnspecified((Boolean) Optional.ofNullable(item.get(FIELD_NAME_EVENT_END_TIME_UNSPECIFIED)).orElse(Boolean.valueOf(event.getEnd()==null)));
         event.setRecurrence(item.getStringSet(FIELD_NAME_EVENT_RECURRENCE));
 
         return event;
