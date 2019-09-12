@@ -5,7 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import ibox.iplanner.api.lambda.exception.GlobalExceptionHandler;
-import ibox.iplanner.api.lambda.validation.BeanValidator;
+import ibox.iplanner.api.lambda.validation.JsonSchemaValidator;
 import ibox.iplanner.api.lambda.validation.RequestEventValidator;
 import ibox.iplanner.api.model.Event;
 import ibox.iplanner.api.model.updatable.Updatable;
@@ -22,7 +22,7 @@ public class UpdateEventHandler implements RequestHandler<APIGatewayProxyRequest
     @Inject
     RequestEventValidator requestEventValidator;
     @Inject
-    BeanValidator beanValidator;
+    JsonSchemaValidator jsonSchemaValidator;
     @Inject
     GlobalExceptionHandler globalExceptionHandler;
 
@@ -35,10 +35,9 @@ public class UpdateEventHandler implements RequestHandler<APIGatewayProxyRequest
         APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
         try {
             requestEventValidator.validateBody(requestEvent);
+            jsonSchemaValidator.validate(requestEvent.getBody(), Updatable.class);
 
             Updatable updatable = (Updatable) JsonUtil.fromJsonString(requestEvent.getBody(), Updatable.class);
-
-            beanValidator.validate(updatable);
 
             Event updated = eventDataService.updateEvent(updatable);
 

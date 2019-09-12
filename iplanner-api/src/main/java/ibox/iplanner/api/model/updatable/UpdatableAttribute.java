@@ -2,9 +2,7 @@ package ibox.iplanner.api.model.updatable;
 
 import lombok.*;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -14,11 +12,10 @@ import java.util.Set;
 @EqualsAndHashCode
 public class UpdatableAttribute {
 
-    @NotBlank
+    @NotNull
     private String attributeName;
     @NotNull
     private UpdateAction action;
-    private Set<Object> attributeValues;
     private Object value;
 
 }

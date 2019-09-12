@@ -2,7 +2,7 @@ package ibox.iplanner.api.model.updatable;
 
 import lombok.*;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -12,8 +12,9 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode
 public class KeyAttribute {
 
-    @NotBlank
+    @NotNull
     private String attributeName;
+    @NotNull
     private Object value;
 
 }

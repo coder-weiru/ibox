@@ -1,12 +1,8 @@
 package ibox.iplanner.api.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Module;
 import dagger.Provides;
-import ibox.iplanner.api.lambda.exception.GlobalExceptionHandler;
 import ibox.iplanner.api.lambda.handler.*;
-import ibox.iplanner.api.lambda.validation.BeanValidator;
-import ibox.iplanner.api.lambda.validation.RequestEventValidator;
 
 import javax.inject.Singleton;
 
@@ -72,27 +68,5 @@ public class HandlerModule {
     public static DeleteActivityHandler deleteActivityHandler() {
         return new DeleteActivityHandler();
     }
-
-    @Singleton
-    @Provides
-    public static ObjectMapper objectMapper() {
-        return new ObjectMapper();
-    }
-
-    @Singleton
-    @Provides
-    public static RequestEventValidator requestEventValidator() {
-        return new RequestEventValidator();
-    }
-
-    @Singleton
-    @Provides
-    public static GlobalExceptionHandler globalExceptionHandler() {
-        return new GlobalExceptionHandler();
-    }
-
-    @Singleton
-    @Provides
-    public static BeanValidator beanValidator() { return new BeanValidator(); }
 
 }

@@ -6,7 +6,7 @@ import ibox.iplanner.api.lambda.handler.*;
 import javax.inject.Singleton;
 
 @Singleton
-@Component(modules = {DynamoDBModule.class, DataServiceModule.class, HandlerModule.class})
+@Component(modules = {DynamoDBModule.class, DataServiceModule.class, HandlerModule.class, ValidatorModule.class})
 public interface IPlannerComponent {
 
     void inject(AddEventHandler requestHandler);

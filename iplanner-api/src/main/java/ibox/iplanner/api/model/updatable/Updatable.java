@@ -4,8 +4,6 @@ package ibox.iplanner.api.model.updatable;
 import lombok.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
 
@@ -16,7 +14,7 @@ import java.util.Set;
 @Builder
 public class Updatable {
 
-    @NotBlank
+    @NotNull
     private String objectType;
 
     @NotNull
@@ -24,7 +22,6 @@ public class Updatable {
     private UpdatableKey primaryKey;
 
     @NotNull
-    @NotEmpty
     @Valid
     private Set<UpdatableAttribute> updatableAttributes;
 

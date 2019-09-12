@@ -5,7 +5,6 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import ibox.iplanner.api.lambda.exception.GlobalExceptionHandler;
-import ibox.iplanner.api.lambda.validation.BeanValidator;
 import ibox.iplanner.api.lambda.validation.RequestEventValidator;
 import ibox.iplanner.api.model.Event;
 import ibox.iplanner.api.service.EventDataService;
@@ -24,8 +23,6 @@ public class GetActivityDefinitionHandler implements RequestHandler<APIGatewayPr
     @Inject
     RequestEventValidator requestEventValidator;
     @Inject
-    BeanValidator beanValidator;
-    @Inject
     GlobalExceptionHandler globalExceptionHandler;
 
     public GetActivityDefinitionHandler() {
@@ -39,8 +36,6 @@ public class GetActivityDefinitionHandler implements RequestHandler<APIGatewayPr
             requestEventValidator.validateBody(requestEvent);
 
             List<Event> newEvents = (List<Event>) JsonUtil.fromJsonString(requestEvent.getBody(), List.class, Event.class);
-
-            newEvents.stream().forEach(e -> beanValidator.validate(e));
 
             List<Event> dbEvents = newEvents.stream().map(e -> {
                 Event dbEvent = e;

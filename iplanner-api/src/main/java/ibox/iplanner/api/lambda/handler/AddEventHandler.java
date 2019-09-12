@@ -5,7 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import ibox.iplanner.api.lambda.exception.GlobalExceptionHandler;
-import ibox.iplanner.api.lambda.validation.BeanValidator;
+import ibox.iplanner.api.lambda.validation.JsonSchemaValidator;
 import ibox.iplanner.api.lambda.validation.RequestEventValidator;
 import ibox.iplanner.api.model.Event;
 import ibox.iplanner.api.service.EventDataService;
@@ -24,7 +24,7 @@ public class AddEventHandler implements RequestHandler<APIGatewayProxyRequestEve
     @Inject
     RequestEventValidator requestEventValidator;
     @Inject
-    BeanValidator beanValidator;
+    JsonSchemaValidator jsonSchemaValidator;
     @Inject
     GlobalExceptionHandler globalExceptionHandler;
 
@@ -37,10 +37,9 @@ public class AddEventHandler implements RequestHandler<APIGatewayProxyRequestEve
         APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
         try {
             requestEventValidator.validateBody(requestEvent);
+            jsonSchemaValidator.validate(requestEvent.getBody(), Event.class, "/event-array");
 
             List<Event> newEvents = (List<Event>) JsonUtil.fromJsonString(requestEvent.getBody(), List.class, Event.class);
-
-            newEvents.stream().forEach(e -> beanValidator.validate(e));
 
             List<Event> dbEvents = newEvents.stream().map(e -> {
                 Event dbEvent = e;

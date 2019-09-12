@@ -5,7 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import ibox.iplanner.api.lambda.exception.GlobalExceptionHandler;
-import ibox.iplanner.api.lambda.validation.BeanValidator;
+import ibox.iplanner.api.lambda.validation.JsonSchemaValidator;
 import ibox.iplanner.api.lambda.validation.RequestEventValidator;
 import ibox.iplanner.api.model.Activity;
 import ibox.iplanner.api.service.ActivityDataService;
@@ -24,7 +24,7 @@ public class AddActivityHandler implements RequestHandler<APIGatewayProxyRequest
     @Inject
     RequestEventValidator requestEventValidator;
     @Inject
-    BeanValidator beanValidator;
+    JsonSchemaValidator jsonSchemaValidator;
     @Inject
     GlobalExceptionHandler globalExceptionHandler;
 
@@ -37,10 +37,9 @@ public class AddActivityHandler implements RequestHandler<APIGatewayProxyRequest
         APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
         try {
             requestEventValidator.validateBody(requestEvent);
+            jsonSchemaValidator.validate(requestEvent.getBody(), Activity.class, "/activity-array");
 
             List<Activity> newActivities = (List<Activity>) JsonUtil.fromJsonString(requestEvent.getBody(), List.class, Activity.class);
-
-            newActivities.stream().forEach(e -> beanValidator.validate(e));
 
             List<Activity> dbActivities = newActivities.stream().map(e -> {
                 Activity dbActivity = e;

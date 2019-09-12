@@ -1,9 +1,12 @@
 package ibox.iplanner.api.model.updatable;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.validation.constraints.NotEmpty;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
@@ -11,7 +14,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class UpdatableKey {
 
-    @NotEmpty
     private final List<KeyAttribute> components = new ArrayList<>();
 
     public UpdatableKey(KeyAttribute... components) {

@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Updatable",
+  "description": "This object denotes the update instruction for any object to be updated",
+  "type": "object",
+  "properties": {
+    "objectType": {
+      "description": "The type of the object to be updated",
+      "type": "string",
+      "minLength": 1
+    },
+    "primaryKey": {
+      "description": "The primary key of the object to be updated",
+      "$ref": "#/definitions/primaryKey"
+    },
+    "updatableAttributes": {
+      "description": "The attributes to be updated for the object",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/attribute"
+      }
+    }
+  },
+  "required": [
+    "objectType",
+    "primaryKey",
+    "updatableAttributes"
+  ],
+  "definitions": {
+    "primaryKey": {
+      "type": "object",
+      "properties": {
+        "components": {
+          "description": "The key components",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/key-attribute"
+          }
+        }
+      }
+    },
+    "key-attribute": {
+      "type": "object",
+      "properties": {
+        "attributeName": {
+          "description": "The key attribute name",
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "description": "The key attribute value",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ]
+        }
+      },
+      "required": [
+        "attributeName",
+        "value"
+      ]
+    },
+    "attribute": {
+      "type": "object",
+      "properties": {
+        "attributeName": {
+          "description": "The attribute name",
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "description": "The action for the update [UPDATE, ADD, DELETE]",
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "description": "The attribute value",
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "attributeName",
+        "action"
+      ]
+    }
+  }
+}

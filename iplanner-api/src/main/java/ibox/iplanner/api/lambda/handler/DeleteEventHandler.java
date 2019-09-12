@@ -5,7 +5,6 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import ibox.iplanner.api.lambda.exception.GlobalExceptionHandler;
-import ibox.iplanner.api.lambda.validation.BeanValidator;
 import ibox.iplanner.api.lambda.validation.RequestEventValidator;
 import ibox.iplanner.api.model.Event;
 import ibox.iplanner.api.service.EventDataService;
@@ -22,8 +21,6 @@ public class DeleteEventHandler implements RequestHandler<APIGatewayProxyRequest
     EventDataService eventDataService;
     @Inject
     RequestEventValidator requestEventValidator;
-    @Inject
-    BeanValidator beanValidator;
     @Inject
     GlobalExceptionHandler globalExceptionHandler;
 
