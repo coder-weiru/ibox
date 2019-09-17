@@ -16,7 +16,7 @@ public class ActivityUtil extends BaseEntityUtil {
     }
 
     public static String anyActivityType() {
-        return anyType();
+        return "activity";
     }
 
     public static User anyActivityCreator() {

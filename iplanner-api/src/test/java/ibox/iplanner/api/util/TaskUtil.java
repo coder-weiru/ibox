@@ -14,7 +14,7 @@ public class TaskUtil extends ActivityUtil {
         task.setTitle(anyActivityTitle());
         task.setDescription(anyDescription());
         task.setStatus(anyActivityStatus().name());
-        task.setType(anyActivityType());
+        task.setType("task");
         task.setCreated(anyCreatedTime());
         task.setUpdated(anyUpdatedTime());
         task.setCreator(anyActivityCreator());

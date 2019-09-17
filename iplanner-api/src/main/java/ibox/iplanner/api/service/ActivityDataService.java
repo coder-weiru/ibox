@@ -51,7 +51,7 @@ public class ActivityDataService {
                 FIELD_NAME_CREATED_BY,
                 FIELD_NAME_CREATED_TIME,
                 FIELD_NAME_UPDATED_TIME,
-                FIELD_NAME_TYPE,
+                FIELD_NAME_ACTIVITY_TYPE,
                 FIELD_NAME_ACTIVITY_STATUS);
         Item item = activitiesTable.getItem(new GetItemSpec()
                 .withPrimaryKey(FIELD_NAME_ID, activityId)
@@ -118,7 +118,7 @@ public class ActivityDataService {
                 .withString(FIELD_NAME_DESCRIPTION, activity.getDescription())
                 .withString(FIELD_NAME_CREATED_BY, activity.getCreator().getId())
                 .withJSON(FIELD_NAME_CREATOR, JsonUtil.toJsonString(activity.getCreator()))
-                .withString(FIELD_NAME_TYPE, activity.getType())
+                .withString(FIELD_NAME_ACTIVITY_TYPE, activity.getType())
                 .withString(FIELD_NAME_ACTIVITY_STATUS, activity.getStatus());
 
         if (created.isPresent()) {
@@ -142,7 +142,7 @@ public class ActivityDataService {
         if (Optional.ofNullable(item.getString(FIELD_NAME_UPDATED_TIME)).isPresent()) {
             activity.setUpdated(Instant.parse(item.getString(FIELD_NAME_UPDATED_TIME)));
         }
-        activity.setType(item.getString(FIELD_NAME_TYPE));
+        activity.setType(item.getString(FIELD_NAME_ACTIVITY_TYPE));
         activity.setStatus(item.getString(FIELD_NAME_ACTIVITY_STATUS));
 
         return activity;

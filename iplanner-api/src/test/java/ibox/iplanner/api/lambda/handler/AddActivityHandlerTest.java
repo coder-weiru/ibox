@@ -13,6 +13,8 @@ import ibox.iplanner.api.model.User;
 import ibox.iplanner.api.service.ActivityDataService;
 import ibox.iplanner.api.util.ActivityUtil;
 import ibox.iplanner.api.util.JsonUtil;
+import ibox.iplanner.api.util.MeetingUtil;
+import ibox.iplanner.api.util.TaskUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -112,6 +114,69 @@ public class AddActivityHandlerTest {
         assertThat(argument.get(2).getCreator().getSelf(), is(equalTo(activities.get(2).getCreator().getSelf())));
         assertThat(argument.get(2).getCreated(), is(equalTo(activities.get(2).getCreated())));
         assertThat(argument.get(2).getUpdated(), is(equalTo(activities.get(2).getUpdated())));
+    }
+
+    @Test
+    public void createActivity_shouldAddActivitiesOfVariousTypes() throws Exception {
+
+        doNothing().when(activityDataServiceMock).addActivities(any(List.class));
+
+        List<Activity> multiActivities = Arrays.asList(new Activity[]{
+                ActivityUtil.anyActivity(),
+                MeetingUtil.anyMeeting(),
+                TaskUtil.anyTask()
+        });
+
+        APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+        requestEvent.setBody(JsonUtil.toJsonString(multiActivities));
+        APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
+
+        assertEquals(200, responseEvent.getStatusCode());
+
+        ArgumentCaptor<List> requestCaptor = ArgumentCaptor.forClass(List.class);
+
+        verify(activityDataServiceMock, times(1)).addActivities(requestCaptor.capture());
+
+        verifyNoMoreInteractions(activityDataServiceMock);
+
+        List<Activity> argument = requestCaptor.getValue();
+
+        assertThat(argument.size(), is(equalTo(multiActivities.size())));
+        assertThat(argument.get(0).getId(), not(equalTo(multiActivities.get(0).getId())));
+        assertThat(argument.get(0).getTitle(), is(equalTo(multiActivities.get(0).getTitle())));
+        assertThat(argument.get(0).getDescription(), is(equalTo(multiActivities.get(0).getDescription())));
+        assertThat(argument.get(0).getType(), is(equalTo(multiActivities.get(0).getType())));
+        assertThat(argument.get(0).getStatus(), is(equalTo(multiActivities.get(0).getStatus())));
+        assertThat(argument.get(0).getCreator().getId(), is(equalTo(multiActivities.get(0).getCreator().getId())));
+        assertThat(argument.get(0).getCreator().getEmail(), is(equalTo(multiActivities.get(0).getCreator().getEmail())));
+        assertThat(argument.get(0).getCreator().getDisplayName(), is(equalTo(multiActivities.get(0).getCreator().getDisplayName())));
+        assertThat(argument.get(0).getCreator().getSelf(), is(equalTo(multiActivities.get(0).getCreator().getSelf())));
+        assertThat(argument.get(0).getCreated(), is(equalTo(multiActivities.get(0).getCreated())));
+        assertThat(argument.get(0).getUpdated(), is(equalTo(multiActivities.get(0).getUpdated())));
+
+        assertThat(argument.get(1).getId(), not(equalTo(multiActivities.get(1).getId())));
+        assertThat(argument.get(1).getTitle(), is(equalTo(multiActivities.get(1).getTitle())));
+        assertThat(argument.get(1).getDescription(), is(equalTo(multiActivities.get(1).getDescription())));
+        assertThat(argument.get(1).getType(), is(equalTo(multiActivities.get(1).getType())));
+        assertThat(argument.get(1).getStatus(), is(equalTo(multiActivities.get(1).getStatus())));
+        assertThat(argument.get(1).getCreator().getId(), is(equalTo(multiActivities.get(1).getCreator().getId())));
+        assertThat(argument.get(1).getCreator().getEmail(), is(equalTo(multiActivities.get(1).getCreator().getEmail())));
+        assertThat(argument.get(1).getCreator().getDisplayName(), is(equalTo(multiActivities.get(1).getCreator().getDisplayName())));
+        assertThat(argument.get(1).getCreator().getSelf(), is(equalTo(multiActivities.get(1).getCreator().getSelf())));
+        assertThat(argument.get(1).getCreated(), is(equalTo(multiActivities.get(1).getCreated())));
+        assertThat(argument.get(1).getUpdated(), is(equalTo(multiActivities.get(1).getUpdated())));
+
+        assertThat(argument.get(2).getId(), not(equalTo(multiActivities.get(2).getId())));
+        assertThat(argument.get(2).getTitle(), is(equalTo(multiActivities.get(2).getTitle())));
+        assertThat(argument.get(2).getDescription(), is(equalTo(multiActivities.get(2).getDescription())));
+        assertThat(argument.get(2).getType(), is(equalTo(multiActivities.get(2).getType())));
+        assertThat(argument.get(2).getStatus(), is(equalTo(multiActivities.get(2).getStatus())));
+        assertThat(argument.get(2).getCreator().getId(), is(equalTo(multiActivities.get(2).getCreator().getId())));
+        assertThat(argument.get(2).getCreator().getEmail(), is(equalTo(multiActivities.get(2).getCreator().getEmail())));
+        assertThat(argument.get(2).getCreator().getDisplayName(), is(equalTo(multiActivities.get(2).getCreator().getDisplayName())));
+        assertThat(argument.get(2).getCreator().getSelf(), is(equalTo(multiActivities.get(2).getCreator().getSelf())));
+        assertThat(argument.get(2).getCreated(), is(equalTo(multiActivities.get(2).getCreated())));
+        assertThat(argument.get(2).getUpdated(), is(equalTo(multiActivities.get(2).getUpdated())));
     }
 
     @Test

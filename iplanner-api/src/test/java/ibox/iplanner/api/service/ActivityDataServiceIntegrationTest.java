@@ -11,6 +11,8 @@ import ibox.iplanner.api.model.updatable.UpdatableKey;
 import ibox.iplanner.api.model.updatable.UpdateAction;
 import ibox.iplanner.api.service.dbmodel.ActivityDefinition;
 import ibox.iplanner.api.util.ActivityUtil;
+import ibox.iplanner.api.util.MeetingUtil;
+import ibox.iplanner.api.util.TaskUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -65,6 +67,27 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
     }
 
     @Test
+    public void givenValidMultiTypeActivities_addActivities_shouldCreateRecordsForAllTypes() {
+
+        List<Activity> multiActivities = Arrays.asList(new Activity[]{
+                ActivityUtil.anyActivity(),
+                MeetingUtil.anyMeeting(),
+                TaskUtil.anyTask()
+        });
+
+        activityDataService.addActivities(multiActivities);
+
+        multiActivities.stream().forEach(e -> {
+            String id = e.getId();
+
+            Activity dbActivity = activityDataService.getActivity(e.getId());
+
+            verifyActivitiesAreEqual(e, dbActivity);
+
+        });
+    }
+
+    @Test
     public void givenValidUpdatable_updateActivity_shouldUpdateRecord() {
 
         Activity activity = ActivityUtil.anyActivity();
@@ -88,7 +111,7 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
                 .value(newDescription)
                 .build());
         updatableAttributeSet.add( UpdatableAttribute.builder()
-                .attributeName(ActivityDefinition.FIELD_NAME_TYPE)
+                .attributeName(ActivityDefinition.FIELD_NAME_ACTIVITY_TYPE)
                 .action(UpdateAction.UPDATE)
                 .value(newTemplate)
                 .build());
