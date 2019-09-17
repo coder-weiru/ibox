@@ -11,14 +11,15 @@ import java.time.Instant;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Activity {
 
     private String id;
     @NotNull(message = "Title {javax.validation.constraints.NotNull.message}")
     private String title;
     private String description;
-    @NotNull(message = "Template {javax.validation.constraints.NotNull.message}")
-    private String template;
+    @NotNull(message = "Type {javax.validation.constraints.NotNull.message}")
+    private String type;
     @Valid
     @NotNull(message = "Creator {javax.validation.constraints.NotNull.message}")
     private User creator;

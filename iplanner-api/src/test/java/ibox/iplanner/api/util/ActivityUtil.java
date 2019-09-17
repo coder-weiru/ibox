@@ -15,8 +15,8 @@ public class ActivityUtil extends BaseEntityUtil {
         return anyTitle();
     }
 
-    public static String anyActivityTemplate() {
-        return anyTemplate();
+    public static String anyActivityType() {
+        return anyType();
     }
 
     public static User anyActivityCreator() {
@@ -41,7 +41,7 @@ public class ActivityUtil extends BaseEntityUtil {
         activity.setTitle(anyActivityTitle());
         activity.setDescription(anyDescription());
         activity.setStatus(anyActivityStatus().name());
-        activity.setTemplate(anyActivityTemplate());
+        activity.setType(anyActivityType());
         activity.setCreated(anyCreatedTime());
         activity.setUpdated(anyUpdatedTime());
         activity.setCreator(anyActivityCreator());

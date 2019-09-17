@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://iplanner-api.ibox.com/task.schema.json",
+  "task-array": {
+    "type": "array",
+    "items": {
+      "$ref": "#/task"
+    }
+  },
+  "task": {
+    "title": "Task",
+    "description": "A task activity type in iplanner api",
+    "type": "object",
+    "allOf": [
+      {
+        "$ref": "http://iplanner-api.ibox.com/activity.schema.json#/activity"
+      },
+      {
+        "properties": {
+          "deadline": {
+            "type": "string",
+            "minLength": 1,
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "deadline"
+        ]
+      }
+    ]
+  }
+}

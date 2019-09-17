@@ -6,12 +6,12 @@ import java.util.Map;
 
 public enum Frequency {
 
-    ONE_TIME("one-time"),
-    HOURLY("hourly"),
-    DAILY("daily"),
-    WEEKLY("weekly"),
-    MONTHLY("monthly"),
-    ANNUALLY("annually");
+    ONE_TIME("ONE_TIME"),
+    HOURLY("HOURLY"),
+    DAILY("DAILY"),
+    WEEKLY("WEEKLY"),
+    MONTHLY("MONTHLY"),
+    ANNUALLY("ANNUALLY");
 
     private String frequencyType;
 

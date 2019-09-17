@@ -27,8 +27,8 @@
         "description": "The description of the activity",
         "type": "string"
       },
-      "template": {
-        "description": "The template of the activity",
+      "type": {
+        "description": "The activity type",
         "type": "string",
         "minLength": 1
       },
@@ -54,7 +54,7 @@
     },
     "required": [
       "title",
-      "template",
+      "type",
       "created",
       "creator"
     ]

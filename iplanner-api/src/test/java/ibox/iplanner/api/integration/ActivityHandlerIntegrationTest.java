@@ -95,7 +95,7 @@ public class ActivityHandlerIntegrationTest extends LocalDynamoDBIntegrationTest
                 .value(newDescription)
                 .build());
         updatableAttributeSet.add( UpdatableAttribute.builder()
-                .attributeName(ActivityDefinition.FIELD_NAME_TEMPLATE)
+                .attributeName(ActivityDefinition.FIELD_NAME_TYPE)
                 .action(UpdateAction.UPDATE)
                 .value(newTemplate)
                 .build());
@@ -113,7 +113,7 @@ public class ActivityHandlerIntegrationTest extends LocalDynamoDBIntegrationTest
 
         assertThat(updated.getTitle(), is(equalTo(newTitle)));
         assertThat(updated.getDescription(), is(equalTo(newDescription)));
-        assertThat(updated.getTemplate(), is(equalTo(newTemplate)));
+        assertThat(updated.getType(), is(equalTo(newTemplate)));
 
         assertThat(updated.getCreator().getId(), is(equalTo(activity.getCreator().getId())));
         assertThat(updated.getCreator().getDisplayName(), is(equalTo(activity.getCreator().getDisplayName())));
@@ -300,7 +300,7 @@ public class ActivityHandlerIntegrationTest extends LocalDynamoDBIntegrationTest
         assertThat(expected.getCreator().getSelf(), is(equalTo(actual.getCreator().getSelf())));
         assertThat(expected.getCreated(), is(equalTo(actual.getCreated())));
         assertThat(expected.getUpdated(), is(equalTo(actual.getUpdated())));
-        assertThat(expected.getTemplate(), is(equalTo(actual.getTemplate())));
+        assertThat(expected.getType(), is(equalTo(actual.getType())));
         assertThat(expected.getStatus(), is(equalTo(actual.getStatus())));
 
     }

@@ -17,7 +17,7 @@ public class BaseEntityUtil {
         return RandomStringUtils.random(10, true, false);
     }
 
-    public static String anyTemplate() {
+    public static String anyType() {
         return RandomStringUtils.random(10, true, false);
     }
 

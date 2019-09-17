@@ -80,7 +80,7 @@ public class AddActivityHandlerTest {
         assertThat(argument.get(0).getId(), not(equalTo(activities.get(0).getId())));
         assertThat(argument.get(0).getTitle(), is(equalTo(activities.get(0).getTitle())));
         assertThat(argument.get(0).getDescription(), is(equalTo(activities.get(0).getDescription())));
-        assertThat(argument.get(0).getTemplate(), is(equalTo(activities.get(0).getTemplate())));
+        assertThat(argument.get(0).getType(), is(equalTo(activities.get(0).getType())));
         assertThat(argument.get(0).getStatus(), is(equalTo(activities.get(0).getStatus())));
         assertThat(argument.get(0).getCreator().getId(), is(equalTo(activities.get(0).getCreator().getId())));
         assertThat(argument.get(0).getCreator().getEmail(), is(equalTo(activities.get(0).getCreator().getEmail())));
@@ -92,7 +92,7 @@ public class AddActivityHandlerTest {
         assertThat(argument.get(1).getId(), not(equalTo(activities.get(1).getId())));
         assertThat(argument.get(1).getTitle(), is(equalTo(activities.get(1).getTitle())));
         assertThat(argument.get(1).getDescription(), is(equalTo(activities.get(1).getDescription())));
-        assertThat(argument.get(1).getTemplate(), is(equalTo(activities.get(1).getTemplate())));
+        assertThat(argument.get(1).getType(), is(equalTo(activities.get(1).getType())));
         assertThat(argument.get(1).getStatus(), is(equalTo(activities.get(1).getStatus())));
         assertThat(argument.get(1).getCreator().getId(), is(equalTo(activities.get(1).getCreator().getId())));
         assertThat(argument.get(1).getCreator().getEmail(), is(equalTo(activities.get(1).getCreator().getEmail())));
@@ -104,7 +104,7 @@ public class AddActivityHandlerTest {
         assertThat(argument.get(2).getId(), not(equalTo(activities.get(2).getId())));
         assertThat(argument.get(2).getTitle(), is(equalTo(activities.get(2).getTitle())));
         assertThat(argument.get(2).getDescription(), is(equalTo(activities.get(2).getDescription())));
-        assertThat(argument.get(2).getTemplate(), is(equalTo(activities.get(2).getTemplate())));
+        assertThat(argument.get(2).getType(), is(equalTo(activities.get(2).getType())));
         assertThat(argument.get(2).getStatus(), is(equalTo(activities.get(2).getStatus())));
         assertThat(argument.get(2).getCreator().getId(), is(equalTo(activities.get(2).getCreator().getId())));
         assertThat(argument.get(2).getCreator().getEmail(), is(equalTo(activities.get(2).getCreator().getEmail())));
@@ -137,7 +137,7 @@ public class AddActivityHandlerTest {
     @Test
     public void createActivity_shouldReturnBadRequestMessageIfMissingTemplate() throws Exception {
         Activity activity = ActivityUtil.anyActivity();
-        activity.setTemplate(null);
+        activity.setType(null);
 
         verifyBadRequestMessage(Arrays.asList(new Activity[] {
                 activity

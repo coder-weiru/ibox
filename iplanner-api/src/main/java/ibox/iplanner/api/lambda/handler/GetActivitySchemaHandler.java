@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 import static ibox.iplanner.api.util.ApiErrorConstants.SC_OK;
 
-public class GetActivityDefinitionHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class GetActivitySchemaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     @Inject
     EventDataService eventDataService;
     @Inject
@@ -25,7 +25,7 @@ public class GetActivityDefinitionHandler implements RequestHandler<APIGatewayPr
     @Inject
     GlobalExceptionHandler globalExceptionHandler;
 
-    public GetActivityDefinitionHandler() {
+    public GetActivitySchemaHandler() {
     }
 
     @Override

@@ -4,10 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.util.ClassUtil;
 import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.github.fge.jsonschema.core.load.configuration.LoadingConfiguration;
+import com.github.fge.jsonschema.core.load.uri.URITranslatorConfiguration;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import ibox.iplanner.api.model.Activity;
 import ibox.iplanner.api.model.Event;
+import ibox.iplanner.api.model.Meeting;
+import ibox.iplanner.api.model.Task;
 import ibox.iplanner.api.model.updatable.Updatable;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +25,7 @@ import java.util.Optional;
 public class EntitySchemaMap {
 
     private static final String URI_BASE = "http://iplanner-api.ibox.com";
+    private static final String RESOURCE_BASE = "resource:/schema/ibox/iplanner/api/model";
 
     @NonNull
     private final Map<Class<?>, String> entitySchemaLookup;
@@ -31,7 +36,23 @@ public class EntitySchemaMap {
 
         entitySchemaLookup.put(Activity.class, getResourcePath(Activity.class) + "activity.schema.json");
         entitySchemaLookup.put(Event.class, getResourcePath(Event.class) + "event.schema.json");
+        entitySchemaLookup.put(Meeting.class, getResourcePath(Meeting.class) + "meeting.schema.json");
+        entitySchemaLookup.put(Task.class, getResourcePath(Task.class) + "task.schema.json");
         entitySchemaLookup.put(Updatable.class, getResourcePath(Updatable.class) + "updatable.schema.json");
+
+        initializeJsonSchemaFactory();
+    }
+
+    private void initializeJsonSchemaFactory() {
+        final URITranslatorConfiguration translatorCfg
+                = URITranslatorConfiguration.newBuilder()
+                .addSchemaRedirect(String.format("%s/activity.schema.json#", URI_BASE), String.format("%s/activity.schema.json#", RESOURCE_BASE))
+                .freeze();
+        final LoadingConfiguration cfg = LoadingConfiguration.newBuilder()
+                .setURITranslatorConfiguration(translatorCfg).freeze();
+
+        factory = JsonSchemaFactory.newBuilder()
+                .setLoadingConfiguration(cfg).freeze();
     }
 
     private String getResourcePath(Class<?> entityClass) {

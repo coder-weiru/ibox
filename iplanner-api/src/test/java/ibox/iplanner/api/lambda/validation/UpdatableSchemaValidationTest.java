@@ -122,7 +122,7 @@ public class UpdatableSchemaValidationTest {
                 .value(newDescription)
                 .build());
         updatableAttributeSet.add( UpdatableAttribute.builder()
-                .attributeName(ActivityDefinition.FIELD_NAME_TEMPLATE)
+                .attributeName(ActivityDefinition.FIELD_NAME_TYPE)
                 .action(UpdateAction.UPDATE)
                 .value(newTemplate)
                 .build());
