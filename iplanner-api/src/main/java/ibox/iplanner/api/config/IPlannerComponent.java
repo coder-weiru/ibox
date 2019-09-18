@@ -20,4 +20,7 @@ public interface IPlannerComponent {
     void inject(ListActivityHandler requestHandler);
     void inject(UpdateActivityHandler requestHandler);
     void inject(DeleteActivityHandler requestHandler);
+
+    void inject(GetActivitySchemaHandler requestHandler);
+
 }

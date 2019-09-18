@@ -18,6 +18,9 @@ public class JsonSchemaValidator {
 
     private final EntitySchemaMap entitySchemaMap;
 
+    private static final String INVALID_INPUT_ERROR_MESSAGE = "Input %s invalid";
+    private static final String REQUEST_BODY_INVALID_ERROR_MESSAGE = "Request body json invalid %s: ";
+
     public JsonSchemaValidator(EntitySchemaMap entitySchemaMap) {
         this.entitySchemaMap = entitySchemaMap;
     }
@@ -55,11 +58,11 @@ public class JsonSchemaValidator {
             report.forEach(e -> errorDetails.add(e.getMessage()));
             ApiError error = ApiError.builder()
                     .error(ERROR_BAD_REQUEST)
-                    .message("Request body json invalid %s: " + report.toString())
+                    .message(String.format(REQUEST_BODY_INVALID_ERROR_MESSAGE, report.toString()))
                     .status(SC_BAD_REQUEST)
                     .errorDetails(errorDetails)
                     .build();
-            throw new InvalidInputException(String.format("Input %s invalid", entityClass.getSimpleName()), error);
+            throw new InvalidInputException(String.format(INVALID_INPUT_ERROR_MESSAGE, entityClass.getSimpleName()), error);
         }
 
     }

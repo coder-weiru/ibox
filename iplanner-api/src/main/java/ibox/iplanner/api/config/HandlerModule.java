@@ -6,7 +6,7 @@ import ibox.iplanner.api.lambda.handler.*;
 
 import javax.inject.Singleton;
 
-@Module
+@Module(includes = ValidatorModule.class)
 public class HandlerModule {
 
     @Singleton
@@ -67,6 +67,12 @@ public class HandlerModule {
     @Provides
     public static DeleteActivityHandler deleteActivityHandler() {
         return new DeleteActivityHandler();
+    }
+
+    @Singleton
+    @Provides
+    public static GetActivitySchemaHandler getActivitySchemaHandler() {
+        return new GetActivitySchemaHandler();
     }
 
 }

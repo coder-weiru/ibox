@@ -86,4 +86,8 @@ public class EntitySchemaMap {
         }
         return Optional.ofNullable(schema).isPresent();
     }
+
+    public Boolean containsSchemaResource(final String resourcePath) {
+        return entitySchemaLookup.containsValue(resourcePath);
+    }
 }
