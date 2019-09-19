@@ -19,7 +19,7 @@ import java.util.Map;
 
 import static ibox.iplanner.api.util.ApiErrorConstants.*;
 
-public class GetActivitySchemaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class GetEntityDefinitionHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     @Inject
     RequestEventValidator requestEventValidator;
@@ -31,7 +31,7 @@ public class GetActivitySchemaHandler implements RequestHandler<APIGatewayProxyR
     private static final String RESOURCE_BASE = "/schema/ibox/iplanner/api/model";
     private static final String ACTIVITY_TYPE_NOT_FOUND_ERROR_MESSAGE = "The specified activity type is not found";
 
-    public GetActivitySchemaHandler() {
+    public GetEntityDefinitionHandler() {
     }
 
     @Override

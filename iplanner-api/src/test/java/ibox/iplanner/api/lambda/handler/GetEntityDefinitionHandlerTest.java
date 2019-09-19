@@ -23,17 +23,17 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class GetActivitySchemaHandlerTest {
+public class GetEntityDefinitionHandlerTest {
 
-    private GetActivitySchemaHandler handler = new GetActivitySchemaHandler();
+    private GetEntityDefinitionHandler handler = new GetEntityDefinitionHandler();
 
-    public GetActivitySchemaHandlerTest() {
+    public GetEntityDefinitionHandlerTest() {
         IPlannerComponent iPlannerComponent = DaggerIPlannerComponent.builder().build();
         iPlannerComponent.inject(handler);
     }
 
     @Test
-    public void getActivitySchema_shouldReturnValidJsonSchemaByParameterType() throws Exception {
+    public void getMeetingSchema_shouldReturnValidJsonSchema() throws Exception {
 
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         requestEvent.setQueryStringParameters(Collections.singletonMap("type", "meeting"));
@@ -43,6 +43,45 @@ public class GetActivitySchemaHandlerTest {
 
         String jsonSchema = responseEvent.getBody();
         assertThat(jsonSchema, is(equalTo(loadSchema("meeting"))));
+    }
+
+    @Test
+    public void getTaskSchema_shouldReturnValidJsonSchema() throws Exception {
+
+        APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+        requestEvent.setQueryStringParameters(Collections.singletonMap("type", "task"));
+        APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
+
+        assertEquals(200, responseEvent.getStatusCode());
+
+        String jsonSchema = responseEvent.getBody();
+        assertThat(jsonSchema, is(equalTo(loadSchema("task"))));
+    }
+
+    @Test
+    public void getActivitySchema_shouldReturnValidJsonSchema() throws Exception {
+
+        APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+        requestEvent.setQueryStringParameters(Collections.singletonMap("type", "activity"));
+        APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
+
+        assertEquals(200, responseEvent.getStatusCode());
+
+        String jsonSchema = responseEvent.getBody();
+        assertThat(jsonSchema, is(equalTo(loadSchema("activity"))));
+    }
+
+    @Test
+    public void getEventSchema_shouldReturnValidJsonSchema() throws Exception {
+
+        APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
+        requestEvent.setQueryStringParameters(Collections.singletonMap("type", "event"));
+        APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
+
+        assertEquals(200, responseEvent.getStatusCode());
+
+        String jsonSchema = responseEvent.getBody();
+        assertThat(jsonSchema, is(equalTo(loadSchema("event"))));
     }
 
     @Test

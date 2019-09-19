@@ -71,8 +71,8 @@ public class HandlerModule {
 
     @Singleton
     @Provides
-    public static GetActivitySchemaHandler getActivitySchemaHandler() {
-        return new GetActivitySchemaHandler();
+    public static GetEntityDefinitionHandler getActivitySchemaHandler() {
+        return new GetEntityDefinitionHandler();
     }
 
 }
