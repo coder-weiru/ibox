@@ -22,5 +22,5 @@ public interface IPlannerComponent {
     void inject(DeleteActivityHandler requestHandler);
 
     void inject(GetEntityDefinitionHandler requestHandler);
-
+    void inject(GetActivityTemplateHandler requestHandler);
 }

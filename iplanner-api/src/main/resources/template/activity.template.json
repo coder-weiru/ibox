@@ -1,0 +1,43 @@
+{
+  "myActivity": {
+    "title": "My Activity",
+    "description": "Description for an activity",
+    "type": "activity",
+    "creator": {
+      "id": "317c7b98-9f9e-4cce-9781-f6e144c21df5",
+      "email": "john.doe@gmail.com",
+      "displayName": "John Doe",
+      "self": false
+    },
+    "created": "2000-01-01T00:00:00.000Z",
+    "status": "ACTIVE"
+  },
+  "myMeeting": {
+    "title": "My Meeting",
+    "description": "Description for a meeting",
+    "type": "meeting",
+    "creator": {
+      "id": "317c7b98-9f9e-4cce-9781-f6e144c21df5",
+      "email": "john.doe@gmail.com",
+      "displayName": "John Doe",
+      "self": false
+    },
+    "created": "2000-01-01T00:00:00.000Z",
+    "status": "ACTIVE",
+    "frequency": "DAILY"
+  },
+  "myTask": {
+    "title": "My Task",
+    "description": "Description for a task",
+    "type": "task",
+    "creator": {
+      "id": "317c7b98-9f9e-4cce-9781-f6e144c21df5",
+      "email": "john.doe@gmail.com",
+      "displayName": "John Doe",
+      "self": false
+    },
+    "created": "2000-01-01T00:00:00.000Z",
+    "status": "ACTIVE",
+    "deadline": "2099-12-31T00:00:00.000Z"
+  }
+}

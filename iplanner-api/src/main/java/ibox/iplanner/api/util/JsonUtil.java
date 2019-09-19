@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.File;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.Collection;
+import java.util.Map;
 
 public class JsonUtil {
 
@@ -76,6 +78,18 @@ public class JsonUtil {
             CollectionType collectionType = objectMapper.getTypeFactory()
                     .constructCollectionType(collectionTypeClazz, objectTypeClazz);
             return objectMapper.readValue(json, collectionType);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Unable to parse Json String.", e);
+        }
+    }
+
+    public static Map fromJsonString(String json, Class<? extends Map> mapTypeClazz, Class<?> keyTypeClazz, Class<?> valueTypeClazz) {
+        if (json == null)
+            return null;
+        try {
+            MapType mapType = objectMapper.getTypeFactory()
+                    .constructMapType(mapTypeClazz, keyTypeClazz, valueTypeClazz);
+            return objectMapper.readValue(json, mapType);
         } catch (Exception e) {
             throw new IllegalArgumentException("Unable to parse Json String.", e);
         }

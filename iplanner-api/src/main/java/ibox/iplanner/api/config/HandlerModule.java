@@ -71,8 +71,12 @@ public class HandlerModule {
 
     @Singleton
     @Provides
-    public static GetEntityDefinitionHandler getActivitySchemaHandler() {
+    public static GetEntityDefinitionHandler getEntityDefinitionHandler() {
         return new GetEntityDefinitionHandler();
     }
+
+    @Singleton
+    @Provides
+    public static GetActivityTemplateHandler getActivityTemplateHandler() { return new GetActivityTemplateHandler();  }
 
 }
