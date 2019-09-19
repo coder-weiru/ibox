@@ -1,9 +1,66 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: iBox - iPlanner API
+Globals:
+  Api:
+    OpenApiVersion: '2.0'
 Resources:
+  ActivityTable:
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: Id
+        AttributeType: S
+      - AttributeName: CreatedBy
+        AttributeType: S
+      - AttributeName: ActivityStatus
+        AttributeType: S
+      GlobalSecondaryIndexes:
+      - IndexName: CreatorActivities-GSI
+        KeySchema:
+        - AttributeName: CreatedBy
+          KeyType: HASH
+        - AttributeName: ActivityStatus
+          KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: '5'
+          WriteCapacityUnits: '5'
+      KeySchema:
+      - AttributeName: Id
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: '5'
+        WriteCapacityUnits: '5'
+      TableName: iplanner-activities
+    Type: AWS::DynamoDB::Table
+  AddActivityFunction:
+    Properties:
+      CodeUri: s3://ibox-iplanner-bucket/8049a87c1d0314b6fb52ba19996597de
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: ActivityTable
+      Events:
+        AddEventApi:
+          Properties:
+            Method: POST
+            Path: /activities
+            RestApiId:
+              Ref: ApiGatewayApi
+          Type: Api
+      Handler: ibox.iplanner.api.lambda.AddActivityHandlerWrapper::handleRequest
+      MemorySize: 512
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: ActivityTable
+      Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
+      Runtime: java8
+      Timeout: 50
+    Type: AWS::Serverless::Function
   AddEventFunction:
     Properties:
-      CodeUri: s3://ibox-iplanner-bucket/a7cffe85d9f1637af18158f3e2b34c0d
+      CodeUri: s3://ibox-iplanner-bucket/8049a87c1d0314b6fb52ba19996597de
       Environment:
         Variables:
           TABLE_NAME:
@@ -31,6 +88,38 @@ Resources:
       DefinitionBody:
         components:
           schemas:
+            Activities:
+              items:
+                $ref: '#/components/schemas/Activity'
+              type: array
+            Activity:
+              properties:
+                created:
+                  example: 1995-09-07 10:40:52
+                  format: date-time
+                  type: string
+                creator:
+                  $ref: '#/components/schemas/User'
+                description:
+                  type: string
+                id:
+                  format: int64
+                  type: integer
+                status:
+                  type: string
+                title:
+                  type: string
+                type:
+                  type: string
+                updated:
+                  example: 1995-09-07 10:40:52
+                  format: date-time
+                  type: string
+              required:
+              - title
+              - creator
+              - status
+              - type
             Error:
               properties:
                 code:
@@ -81,7 +170,6 @@ Resources:
                   format: date-time
                   type: string
               required:
-              - id
               - summary
               - creator
               - start
@@ -110,6 +198,211 @@ Resources:
           version: 1.0.0
         openapi: 3.0.0
         paths:
+          /activities:
+            post:
+              operationId: createActivities
+              responses:
+                '201':
+                  description: Null response
+                default:
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Error'
+                  description: unexpected error
+              summary: Create one or multiple activities
+              tags:
+              - activities
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                responses: {}
+                type: aws_proxy
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddActivityFunction.Arn}/invocations
+            put:
+              operationId: updateActivity
+              responses:
+                '200':
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Activity'
+                  description: Expected response to a valid request
+                default:
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Error'
+                  description: unexpected error
+              summary: To update a specific activity
+              tags:
+              - activities
+              x-amazon-apigateway-integration:
+                httpMethod: PUT
+                responses: {}
+                type: aws_proxy
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateActivityFunction.Arn}/invocations
+          /activities/createdBy/{creatorId}:
+            get:
+              operationId: listActivities
+              parameters:
+              - description: The user id of the activity creator
+                in: path
+                name: creatorId
+                required: true
+                schema:
+                  type: string
+              - description: Limiting by the status of the activity
+                in: query
+                name: status
+                required: false
+                schema:
+                  type: string
+              - description: Limiting the number of results to be returned
+                in: query
+                name: limit
+                required: false
+                schema:
+                  type: string
+              responses:
+                '200':
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Activities'
+                  description: Expected response to a valid request
+                default:
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Error'
+                  description: unexpected error
+              summary: A list of activities that satisfy the search criteria
+              tags:
+              - activities
+              x-amazon-apigateway-integration:
+                httpMethod: GET
+                responses: {}
+                type: aws_proxy
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ListActivityFunction.Arn}/invocations
+          /activities/template:
+            post:
+              operationId: templateActivities
+              responses:
+                '200':
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Activities'
+                  description: Expected response to a valid request
+                default:
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Error'
+                  description: unexpected error
+              summary: A list of template activities by specified names
+              tags:
+              - activities
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                responses: {}
+                type: aws_proxy
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetActivityTemplateFunction.Arn}/invocations
+          /activities/{id}:
+            delete:
+              operationId: deleteActivityById
+              parameters:
+              - description: The id of the activity to remove
+                in: path
+                name: id
+                required: true
+                schema:
+                  type: string
+              responses:
+                '200':
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Activity'
+                  description: Expected response to a valid request
+                default:
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Error'
+                  description: unexpected error
+              summary: To remove a specific activity
+              tags:
+              - activities
+              x-amazon-apigateway-integration:
+                httpMethod: DELETE
+                responses: {}
+                type: aws_proxy
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DeleteActivityFunction.Arn}/invocations
+            get:
+              operationId: getActivityById
+              parameters:
+              - description: The id of the activity to retrieve
+                in: path
+                name: id
+                required: true
+                schema:
+                  type: string
+              responses:
+                '200':
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Activity'
+                  description: Expected response to a valid request
+                default:
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Error'
+                  description: unexpected error
+              summary: Info for a specific activity
+              tags:
+              - activities
+              x-amazon-apigateway-integration:
+                httpMethod: GET
+                responses: {}
+                type: aws_proxy
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetActivityFunction.Arn}/invocations
+          /entityDef:
+            get:
+              operationId: getEntityDefinition
+              parameters:
+              - description: The entity name
+                in: query
+                name: type
+                required: true
+                schema:
+                  type: string
+              responses:
+                '200':
+                  description: Expected response to a valid request
+                default:
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Error'
+                  description: unexpected error
+              summary: A the json schema definition of the specified entity
+              tags:
+              - entityDef
+              x-amazon-apigateway-integration:
+                httpMethod: GET
+                responses: {}
+                type: aws_proxy
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetEntityDefinitionFunction.Arn}/invocations
           /events:
             post:
               operationId: createEvents
@@ -122,7 +415,7 @@ Resources:
                       schema:
                         $ref: '#/components/schemas/Error'
                   description: unexpected error
-              summary: Create an event
+              summary: Create one or multiple events
               tags:
               - events
               x-amazon-apigateway-integration:
@@ -131,7 +424,154 @@ Resources:
                 type: aws_proxy
                 uri:
                   Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddEventFunction.Arn}/invocations
+            put:
+              operationId: updateEvent
+              responses:
+                '200':
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Event'
+                  description: Expected response to a valid request
+                default:
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Error'
+                  description: unexpected error
+              summary: To update a specific event
+              tags:
+              - events
+              x-amazon-apigateway-integration:
+                httpMethod: PUT
+                responses: {}
+                type: aws_proxy
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateEventFunction.Arn}/invocations
+          /events/activity/{activityId}:
+            post:
+              operationId: createEventFromActivity
+              parameters:
+              - description: The id of the activity to model the event after
+                in: path
+                name: activityId
+                required: true
+                schema:
+                  type: string
+              responses:
+                '200':
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Event'
+                  description: Expected response to a valid request
+                '201':
+                  description: Null response
+                default:
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Error'
+                  description: unexpected error
+              summary: Create an Event based on the specified Activity
+              tags:
+              - events
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                responses: {}
+                type: aws_proxy
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddEventFunction.Arn}/invocations
+          /events/createdBy/{creatorId}:
+            get:
+              operationId: listEvents
+              parameters:
+              - description: The user id of the event creator
+                in: path
+                name: creatorId
+                required: true
+                schema:
+                  type: string
+              - description: The start time of the time period within which these
+                  events should reside
+                in: query
+                name: start
+                required: false
+                schema:
+                  type: string
+              - description: The end time of the time period within which these events
+                  should reside
+                in: query
+                name: end
+                required: false
+                schema:
+                  type: string
+              - description: Limiting by the status of the event
+                in: query
+                name: status
+                required: false
+                schema:
+                  type: string
+              - description: Limiting the number of results to be returned
+                in: query
+                name: limit
+                required: false
+                schema:
+                  type: string
+              responses:
+                '200':
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Events'
+                  description: Expected response to a valid request
+                default:
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Error'
+                  description: unexpected error
+              summary: A list of events that satisfy the search criteria
+              tags:
+              - events
+              x-amazon-apigateway-integration:
+                httpMethod: GET
+                responses: {}
+                type: aws_proxy
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ListEventFunction.Arn}/invocations
           /events/{id}:
+            delete:
+              operationId: deleteEventById
+              parameters:
+              - description: The id of the event to remove
+                in: path
+                name: id
+                required: true
+                schema:
+                  type: string
+              responses:
+                '200':
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Event'
+                  description: Expected response to a valid request
+                default:
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/Error'
+                  description: unexpected error
+              summary: To remove a specific event
+              tags:
+              - events
+              x-amazon-apigateway-integration:
+                httpMethod: DELETE
+                responses: {}
+                type: aws_proxy
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DeleteEventFunction.Arn}/invocations
             get:
               operationId: getEventById
               parameters:
@@ -158,7 +598,7 @@ Resources:
               tags:
               - events
               x-amazon-apigateway-integration:
-                httpMethod: POST
+                httpMethod: GET
                 responses: {}
                 type: aws_proxy
                 uri:
@@ -168,8 +608,75 @@ Resources:
             validateRequestBody: false
             validateRequestParameters: true
       EndpointConfiguration: REGIONAL
-      StageName: test
+      StageName: dev
     Type: AWS::Serverless::Api
+  CreateEventFromActivityFunction:
+    Properties:
+      CodeUri: s3://ibox-iplanner-bucket/8049a87c1d0314b6fb52ba19996597de
+      Events:
+        CreateEventFromActivityApi:
+          Properties:
+            Method: GET
+            Path: /events/activity/{activityId}
+            RestApiId:
+              Ref: ApiGatewayApi
+          Type: Api
+      Handler: ibox.iplanner.api.lambda.CreateEventFromActivityHandlerWrapper::handleRequest
+      MemorySize: 512
+      Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
+      Runtime: java8
+      Timeout: 50
+    Type: AWS::Serverless::Function
+  DeleteActivityFunction:
+    Properties:
+      CodeUri: s3://ibox-iplanner-bucket/8049a87c1d0314b6fb52ba19996597de
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: ActivityTable
+      Events:
+        DeleteEventApi:
+          Properties:
+            Method: DELETE
+            Path: /activities/{creatorId}
+            RestApiId:
+              Ref: ApiGatewayApi
+          Type: Api
+      Handler: ibox.iplanner.api.lambda.DeleteActivityHandlerWrapper::handleRequest
+      MemorySize: 512
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName:
+            Ref: ActivityTable
+      Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
+      Runtime: java8
+      Timeout: 50
+    Type: AWS::Serverless::Function
+  DeleteEventFunction:
+    Properties:
+      CodeUri: s3://ibox-iplanner-bucket/8049a87c1d0314b6fb52ba19996597de
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: EventTable
+      Events:
+        DeleteEventApi:
+          Properties:
+            Method: DELETE
+            Path: /events/{creatorId}
+            RestApiId:
+              Ref: ApiGatewayApi
+          Type: Api
+      Handler: ibox.iplanner.api.lambda.DeleteEventHandlerWrapper::handleRequest
+      MemorySize: 512
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName:
+            Ref: EventTable
+      Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
+      Runtime: java8
+      Timeout: 50
+    Type: AWS::Serverless::Function
   EventTable:
     Properties:
       AttributeDefinitions:
@@ -199,9 +706,68 @@ Resources:
         WriteCapacityUnits: '5'
       TableName: iplanner-events
     Type: AWS::DynamoDB::Table
+  GetActivityFunction:
+    Properties:
+      CodeUri: s3://ibox-iplanner-bucket/8049a87c1d0314b6fb52ba19996597de
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: ActivityTable
+      Events:
+        GetEventByIdApi:
+          Properties:
+            Method: GET
+            Path: /activities/{id}
+            RestApiId:
+              Ref: ApiGatewayApi
+          Type: Api
+      Handler: ibox.iplanner.api.lambda.GetActivityHandlerWrapper::handleRequest
+      MemorySize: 512
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName:
+            Ref: ActivityTable
+      Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
+      Runtime: java8
+      Timeout: 50
+    Type: AWS::Serverless::Function
+  GetActivityTemplateFunction:
+    Properties:
+      CodeUri: s3://ibox-iplanner-bucket/8049a87c1d0314b6fb52ba19996597de
+      Events:
+        GetActivityTemplateApi:
+          Properties:
+            Method: POST
+            Path: /activities/template
+            RestApiId:
+              Ref: ApiGatewayApi
+          Type: Api
+      Handler: ibox.iplanner.api.lambda.GetActivityTemplateHandlerWrapper::handleRequest
+      MemorySize: 512
+      Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
+      Runtime: java8
+      Timeout: 50
+    Type: AWS::Serverless::Function
+  GetEntityDefinitionFunction:
+    Properties:
+      CodeUri: s3://ibox-iplanner-bucket/8049a87c1d0314b6fb52ba19996597de
+      Events:
+        GetEntityDefinitionApi:
+          Properties:
+            Method: GET
+            Path: /entityDef
+            RestApiId:
+              Ref: ApiGatewayApi
+          Type: Api
+      Handler: ibox.iplanner.api.lambda.GetEntityDefinitionHandlerWrapper::handleRequest
+      MemorySize: 512
+      Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
+      Runtime: java8
+      Timeout: 50
+    Type: AWS::Serverless::Function
   GetEventFunction:
     Properties:
-      CodeUri: s3://ibox-iplanner-bucket/a7cffe85d9f1637af18158f3e2b34c0d
+      CodeUri: s3://ibox-iplanner-bucket/8049a87c1d0314b6fb52ba19996597de
       Environment:
         Variables:
           TABLE_NAME:
@@ -224,15 +790,40 @@ Resources:
       Runtime: java8
       Timeout: 50
     Type: AWS::Serverless::Function
+  ListActivityFunction:
+    Properties:
+      CodeUri: s3://ibox-iplanner-bucket/8049a87c1d0314b6fb52ba19996597de
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: ActivityTable
+      Events:
+        ListActivityApi:
+          Properties:
+            Method: GET
+            Path: /activities/createdBy/{creatorId}
+            RestApiId:
+              Ref: ApiGatewayApi
+          Type: Api
+      Handler: ibox.iplanner.api.lambda.ListActivityHandlerWrapper::handleRequest
+      MemorySize: 512
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName:
+            Ref: ActivityTable
+      Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
+      Runtime: java8
+      Timeout: 50
+    Type: AWS::Serverless::Function
   ListEventFunction:
     Properties:
-      CodeUri: s3://ibox-iplanner-bucket/a7cffe85d9f1637af18158f3e2b34c0d
+      CodeUri: s3://ibox-iplanner-bucket/8049a87c1d0314b6fb52ba19996597de
       Environment:
         Variables:
           TABLE_NAME:
             Ref: EventTable
       Events:
-        ListEventByCreatorApi:
+        ListEventApi:
           Properties:
             Method: GET
             Path: /events/createdBy/{creatorId}
@@ -240,6 +831,56 @@ Resources:
               Ref: ApiGatewayApi
           Type: Api
       Handler: ibox.iplanner.api.lambda.ListEventHandlerWrapper::handleRequest
+      MemorySize: 512
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName:
+            Ref: EventTable
+      Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
+      Runtime: java8
+      Timeout: 50
+    Type: AWS::Serverless::Function
+  UpdateActivityFunction:
+    Properties:
+      CodeUri: s3://ibox-iplanner-bucket/8049a87c1d0314b6fb52ba19996597de
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: ActivityTable
+      Events:
+        UpdateEventApi:
+          Properties:
+            Method: PUT
+            Path: /activities/{creatorId}
+            RestApiId:
+              Ref: ApiGatewayApi
+          Type: Api
+      Handler: ibox.iplanner.api.lambda.UpdateActivityHandlerWrapper::handleRequest
+      MemorySize: 512
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName:
+            Ref: ActivityTable
+      Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
+      Runtime: java8
+      Timeout: 50
+    Type: AWS::Serverless::Function
+  UpdateEventFunction:
+    Properties:
+      CodeUri: s3://ibox-iplanner-bucket/8049a87c1d0314b6fb52ba19996597de
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: EventTable
+      Events:
+        UpdateEventApi:
+          Properties:
+            Method: PUT
+            Path: /events/{creatorId}
+            RestApiId:
+              Ref: ApiGatewayApi
+          Type: Api
+      Handler: ibox.iplanner.api.lambda.UpdateEventHandlerWrapper::handleRequest
       MemorySize: 512
       Policies:
       - DynamoDBReadPolicy:
