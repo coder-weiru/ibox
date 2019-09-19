@@ -23,4 +23,5 @@ public interface IPlannerComponent {
 
     void inject(GetEntityDefinitionHandler requestHandler);
     void inject(GetActivityTemplateHandler requestHandler);
+    void inject(CreateEventFromActivityHandler requestHandler);
 }

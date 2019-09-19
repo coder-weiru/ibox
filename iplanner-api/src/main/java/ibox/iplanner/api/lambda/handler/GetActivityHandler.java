@@ -6,6 +6,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import ibox.iplanner.api.lambda.exception.GlobalExceptionHandler;
 import ibox.iplanner.api.lambda.validation.RequestEventValidator;
+import ibox.iplanner.api.model.Activity;
 import ibox.iplanner.api.service.ActivityDataService;
 import ibox.iplanner.api.util.JsonUtil;
 
@@ -40,10 +41,10 @@ public class GetActivityHandler implements RequestHandler<APIGatewayProxyRequest
             Map<String, String> pathParameterMap = requestEvent.getPathParameters();
             final String activityId  = pathParameterMap.get("activityId");
 
-            Optional event = Optional.ofNullable(activityDataService.getActivity(activityId));
+            Optional<Activity> activity = Optional.ofNullable(activityDataService.getActivity(activityId));
 
-            if (event.isPresent()) {
-                responseEvent.setBody(JsonUtil.toJsonString(event.get()));
+            if (activity.isPresent()) {
+                responseEvent.setBody(JsonUtil.toJsonString(activity.get()));
                 responseEvent.setStatusCode(SC_OK);
             } else {
                 responseEvent.setStatusCode(SC_NOT_FOUND);

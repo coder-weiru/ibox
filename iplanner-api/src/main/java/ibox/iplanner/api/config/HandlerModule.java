@@ -79,4 +79,7 @@ public class HandlerModule {
     @Provides
     public static GetActivityTemplateHandler getActivityTemplateHandler() { return new GetActivityTemplateHandler();  }
 
+    @Singleton
+    @Provides
+    public static CreateEventFromActivityHandler createEventFromActivityHandler() { return new CreateEventFromActivityHandler();  }
 }

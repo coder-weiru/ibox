@@ -21,5 +21,6 @@ public interface TestIPlannerComponent {
     void inject(DeleteActivityHandler requestHandler);
 
     void inject(GetEntityDefinitionHandler requestHandler);
-
+    void inject(GetActivityTemplateHandler requestHandler);
+    void inject(CreateEventFromActivityHandler requestHandler);
 }

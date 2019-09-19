@@ -10,6 +10,7 @@ public final class ApiErrorConstants {
     public static final int SC_INTERNAL_SERVER_ERROR = 500;
 
     public static final String ERROR_BAD_REQUEST = "Bad Request";
+    public static final String ERROR_NOT_FOUND = "Not Found";
     public static final String ERROR_INTERNAL_SERVER_ERROR = "Internal Server Error";
 
     private ApiErrorConstants() {}
