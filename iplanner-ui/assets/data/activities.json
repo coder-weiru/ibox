@@ -1,0 +1,156 @@
+[
+  {
+    "id": "a2bf6775-d649-4c1b-b1d8-ab246b928304",
+    "title": "AP Calculus BC Quiz",
+    "description": "Small Quiz for AP Calculus BC course",
+    "type": "meeting",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email":  "john.doe@gmail.com",
+      "displayName":  "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "77bd2229-a3b5-4add-9e61-4bdd29522a71",
+    "title": "AP Physics II Exam",
+    "description": "AP Physics II Exam for a specific chapter",
+    "type": "meeting",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email": "john.doe@gmail.com",
+      "displayName": "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "0d17889e-535c-4be6-ab28-2a7550f18d27",
+    "title": "AP Statistics Exam",
+    "description": "AP Statistics Exam for a specific chapter",
+    "type": "meeting",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email": "john.doe@gmail.com",
+      "displayName": "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "4f581d07-ab52-4800-99df-be5aec71a33a",
+    "title": "AP US History Exam",
+    "description": "AP US History Exam for a specific chapter",
+    "type": "meeting",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email": "john.doe@gmail.com",
+      "displayName": "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "2dcd4025-ac95-4c22-8819-15ff7f31df5c",
+    "title": "AP Language Art Writing Due",
+    "description": "AP Language Art Writing Due",
+    "type": "meeting",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email": "john.doe@gmail.com",
+      "displayName": "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "05201b57-79e8-4dad-8a73-586978f18995",
+    "title": "Spanish 4 Quiz",
+    "description": "Spanish 4 Quiz",
+    "type": "meeting",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email": "john.doe@gmail.com",
+      "displayName": "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "732e710a-d4af-46f4-ab8d-34399a480283",
+    "title": "AP Physics Lesson",
+    "description": "A tutoring lesson with AP Physics II",
+    "type": "task",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email": "john.doe@gmail.com",
+      "displayName": "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "d1666e20-a99a-409c-a80c-bb87b650db82",
+    "title": "Tennis Lesson",
+    "description": "NTC Tennis Lesson",
+    "type": "task",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email": "john.doe@gmail.com",
+      "displayName": "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "79f5cb92-916b-4aeb-8e35-032df2677ebd",
+    "title": "Review AP Calculus BC",
+    "description": "Review AP Calculus BC",
+    "type": "task",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email": "john.doe@gmail.com",
+      "displayName": "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "837c4e82-9385-4c8d-8c60-4ea305d1cfdc",
+    "title": "Review AP Physics II",
+    "description": "Review AP Physics II",
+    "type": "task",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email": "john.doe@gmail.com",
+      "displayName": "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "83986cfc-a821-4d1c-8d8d-98bfe6183031",
+    "title": "Magazine Club Report",
+    "description": "Task for Magazine Club",
+    "type": "task",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email": "john.doe@gmail.com",
+      "displayName": "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "status": "ACTIVE"
+  }
+]

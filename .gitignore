@@ -14,7 +14,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -103,6 +102,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 .idea/
-iplanner-api-sam/sam-templates/packaged-template.yml
-iplanner-api-sam/iplanner-functions/iplanner-functions.zip
 *.iml

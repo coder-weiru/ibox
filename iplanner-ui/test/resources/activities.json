@@ -1,0 +1,16 @@
+[
+  {
+    "id": "123",
+    "title": "title",
+    "description": "description",
+    "type": "type",
+    "creator": {
+      "id": "456",
+      "email":  "john.doe@gmail.com",
+      "displayName":  "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "status": "ACTIVE"
+  }
+]
