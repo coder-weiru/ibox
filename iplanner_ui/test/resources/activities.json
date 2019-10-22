@@ -1,11 +1,11 @@
 [
   {
-    "id": "123",
-    "title": "title",
-    "description": "description",
-    "type": "type",
+    "id": "a2bf6775-d649-4c1b-b1d8-ab246b928304",
+    "title": "AP Calculus BC Quiz",
+    "description": "Small Quiz for AP Calculus BC course",
+    "type": "meeting",
     "creator": {
-      "id": "456",
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
       "email":  "john.doe@gmail.com",
       "displayName":  "John Doe"
     },

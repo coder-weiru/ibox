@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:iplanner_ui/model/activity_list.dart';
+import 'package:iplanner_ui/model/event_list.dart';
 import 'package:optional/optional.dart';
 import 'package:provider/provider.dart';
 
-class ActivityPageState extends State<ActivityPage> {
+class EventPageState extends State<EventPage> {
   final TextStyle _biggerFont = const TextStyle(fontSize: 18.0);
 
-  Widget _buildRow(Activity activity) {
+  Widget _buildRow(Event event) {
     return ListTile(
       title: Text(
-        activity.title,
+        event.summary,
         style: _biggerFont,
       ),
     );
@@ -17,7 +17,7 @@ class ActivityPageState extends State<ActivityPage> {
 
   @override
   Widget build(BuildContext context) {
-    final activityList = Provider.of<ActivityList>(context);
+    final eventList = Provider.of<EventList>(context);
 
     return ListView.builder(
         padding: const EdgeInsets.all(16.0),
@@ -25,9 +25,9 @@ class ActivityPageState extends State<ActivityPage> {
           if (i.isOdd) return Divider();
 
           final index = i ~/ 2;
-          final activity = activityList.getActivityByPosition(index);
-          if (Optional.ofNullable(activity).isPresent) {
-            return _buildRow(activity);
+          final event = eventList.getEventByPosition(index);
+          if (Optional.ofNullable(event).isPresent) {
+            return _buildRow(event);
           }
         });
   }
@@ -36,13 +36,13 @@ class ActivityPageState extends State<ActivityPage> {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (BuildContext context) {
-          final activityList = Provider.of<ActivityList>(context);
-          final _saved = activityList.getSavedActivity();
+          final eventList = Provider.of<EventList>(context);
+          final _saved = eventList.getSavedEvent();
           final Iterable<ListTile> tiles = _saved.map(
-            (Activity activity) {
+            (Event event) {
               return ListTile(
                 title: Text(
-                  activity.title,
+                  event.summary,
                   style: _biggerFont,
                 ),
               );
@@ -55,7 +55,7 @@ class ActivityPageState extends State<ActivityPage> {
 
           return Scaffold(
             appBar: AppBar(
-              title: Text('Saved Activities'),
+              title: Text('Saved Events'),
             ),
             body: ListView(children: divided),
           );
@@ -65,9 +65,9 @@ class ActivityPageState extends State<ActivityPage> {
   }
 }
 
-class ActivityPage extends StatefulWidget {
+class EventPage extends StatefulWidget {
   @override
-  ActivityPageState createState() => ActivityPageState();
+  EventPageState createState() => EventPageState();
 
-  const ActivityPage();
+  const EventPage();
 }

@@ -1,0 +1,211 @@
+[
+  {
+    "id": "2a8156bc-2bf7-4e5a-8e56-2736d471e614",
+    "summary": "AP Calculus BC Quiz",
+    "description": "Small Quiz for AP Calculus BC course",
+    "activity": "a2bf6775-d649-4c1b-b1d8-ab246b928304",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email":  "john.doe@gmail.com",
+      "displayName":  "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "start": "2019-10-21T00:00:00Z",
+    "end": "2019-10-21T00:00:00Z",
+    "status": "OPEN",
+    "location": "NNHS",
+    "endTimeUnspecified": true,
+    "recurrence": []
+  },
+  {
+    "id": "b7efc6e0-7914-4ac3-86b5-754da7b71db1",
+    "summary": "AP Physics II Exam",
+    "description": "AP Physics II Exam for a specific chapter",
+    "activity": "77bd2229-a3b5-4add-9e61-4bdd29522a71",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email":  "john.doe@gmail.com",
+      "displayName":  "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "start": "2019-10-23T00:00:00Z",
+    "end": "2019-10-23T00:00:00Z",
+    "status": "OPEN",
+    "location": "NNHS",
+    "endTimeUnspecified": true,
+    "recurrence": []
+  },
+  {
+    "id": "ef94b24d-1c6f-4ffe-b817-efa7de79c613",
+    "summary": "AP Statistics Exam",
+    "description": "AP Statistics Exam for a specific chapter",
+    "activity": "0d17889e-535c-4be6-ab28-2a7550f18d27",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email":  "john.doe@gmail.com",
+      "displayName":  "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "start": "2019-10-25T00:00:00Z",
+    "end": "2019-10-25T00:00:00Z",
+    "status": "OPEN",
+    "location": "NNHS",
+    "endTimeUnspecified": true,
+    "recurrence": []
+  },
+  {
+    "id": "33ddc671-064b-4e0a-83b2-86b6f2caa960",
+    "summary": "AP US History Exam",
+    "description": "AP US History Exam for a specific chapter",
+    "activity": "4f581d07-ab52-4800-99df-be5aec71a33a",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email":  "john.doe@gmail.com",
+      "displayName":  "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "start": "2019-10-25T00:00:00Z",
+    "end": "2019-10-25T00:00:00Z",
+    "status": "OPEN",
+    "location": "NNHS",
+    "endTimeUnspecified": true,
+    "recurrence": []
+  },
+  {
+    "id": "4de71055-c083-4358-9296-4ed6673f96e0",
+    "summary": "AP Language Art Writing Due",
+    "description": "AP Language Art Writing Due",
+    "activity": "2dcd4025-ac95-4c22-8819-15ff7f31df5c",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email":  "john.doe@gmail.com",
+      "displayName":  "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "start": "2019-10-29T00:00:00Z",
+    "end": "2019-10-29T00:00:00Z",
+    "status": "OPEN",
+    "location": "NNHS",
+    "endTimeUnspecified": true,
+    "recurrence": []
+  },
+  {
+    "id": "4171f934-504c-4f92-9f52-84f4250630f9",
+    "summary": "Spanish 4 Quiz",
+    "description": "Spanish 4 Quiz",
+    "activity": "05201b57-79e8-4dad-8a73-586978f18995",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email":  "john.doe@gmail.com",
+      "displayName":  "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "start": "2019-10-30T00:00:00Z",
+    "end": "2019-10-30T00:00:00Z",
+    "status": "OPEN",
+    "location": "NNHS",
+    "endTimeUnspecified": true,
+    "recurrence": []
+  },
+  {
+    "id": "3869ef61-9179-449f-aff5-e8c4bb01f83c",
+    "summary": "AP Physics Lesson",
+    "description": "A tutoring lesson with AP Physics II",
+    "activity": "732e710a-d4af-46f4-ab8d-34399a480283",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email":  "john.doe@gmail.com",
+      "displayName":  "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "start": "2019-10-31T00:00:00Z",
+    "end": "2019-10-31T00:00:00Z",
+    "status": "OPEN",
+    "location": "NNHS",
+    "endTimeUnspecified": true,
+    "recurrence": []
+  },
+  {
+    "id": "d27e1f94-ab56-401d-b697-80ce65e3a41c",
+    "summary": "Tennis Lesson",
+    "description": "NTC Tennis Lesson",
+    "activity": "d1666e20-a99a-409c-a80c-bb87b650db82",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email":  "john.doe@gmail.com",
+      "displayName":  "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "start": "2019-10-19T00:00:00Z",
+    "end": "2019-10-19T00:00:00Z",
+    "status": "OPEN",
+    "location": "NNHS",
+    "endTimeUnspecified": true,
+    "recurrence": []
+  },
+  {
+    "id": "e21bab5f-e99a-4c5f-bf92-e99a8b022b89",
+    "summary": "Review AP Calculus BC",
+    "description": "Review AP Calculus BC",
+    "activity": "79f5cb92-916b-4aeb-8e35-032df2677ebd",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email":  "john.doe@gmail.com",
+      "displayName":  "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "start": "2019-10-20T00:00:00Z",
+    "end": "2019-10-20T00:00:00Z",
+    "status": "OPEN",
+    "location": "NNHS",
+    "endTimeUnspecified": true,
+    "recurrence": []
+  },
+  {
+    "id": "dae6fd84-fad9-4cfd-b57d-0102be57d84a",
+    "summary": "Review AP Physics II",
+    "description": "Review AP Physics II",
+    "activity": "837c4e82-9385-4c8d-8c60-4ea305d1cfdc",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email":  "john.doe@gmail.com",
+      "displayName":  "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "start": "2019-10-21T00:00:00Z",
+    "end": "2019-10-21T00:00:00Z",
+    "status": "OPEN",
+    "location": "NNHS",
+    "endTimeUnspecified": true,
+    "recurrence": []
+  },
+  {
+    "id": "c93f25dc-b18d-42ee-a830-0aa569a179f6",
+    "summary": "Magazine Club Report",
+    "description": "Task for Magazine Club",
+    "activity": "837c4e82-9385-4c8d-8c60-4ea305d1cfdc",
+    "creator": {
+      "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
+      "email":  "john.doe@gmail.com",
+      "displayName":  "John Doe"
+    },
+    "created": "2019-10-17T13:45:30Z",
+    "updated": "2019-10-17T13:45:30Z",
+    "start": "2019-10-19T00:00:00Z",
+    "end": "2019-10-19T00:00:00Z",
+    "status": "OPEN",
+    "location": "NNHS",
+    "endTimeUnspecified": true,
+    "recurrence": []
+  }
+]

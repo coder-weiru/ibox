@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iplanner_ui/model/activity_list.dart';
+import 'package:iplanner_ui/model/event_list.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,7 +38,7 @@ class _MySplashScreen extends StatelessWidget {
     return Container(
       constraints: BoxConstraints.expand(),
       color: Colors.white,
-      child: Center(child: splashSvg),
+      child: Center(child: SPLASH_IMAGE),
     );
   }
 }
@@ -51,6 +52,7 @@ class _MyMainApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider(builder: (context) => ActivityList()),
+        Provider(builder: (context) => EventList()),
       ],
       child: MaterialApp(
         title: 'iPlanner',

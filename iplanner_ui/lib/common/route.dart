@@ -1,11 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:backdrop/backdrop.dart';
-import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart' as url_launcher;
+import 'package:flutter/material.dart';
 
-import 'constants.dart' show APP_DESCRIPTION, APP_NAME, APP_VERSION, HEADER_HEIGHT;
-import 'settings.dart';
-import 'constants.dart';
+import '../widget/background_panel.dart';
+import 'constants.dart' show HEADER_HEIGHT;
 
 class MyRoute extends StatelessWidget {
   // Actual content of the example.
@@ -27,8 +24,7 @@ class MyRoute extends StatelessWidget {
         _routeName = routeName,
         super(key: key);
 
-  String get routeName =>
-      this._routeName;
+  String get routeName => this._routeName;
 
   String get title => _title ?? this.routeName;
 
@@ -52,7 +48,7 @@ class MyRoute extends StatelessWidget {
       // implementation of BackdropScaffold ('backdrop' package, v0.1.8).
       backLayer: Column(
         children: <Widget>[
-          SizedBox(height: backLayerHeight, child: _getBackdropListTiles())
+          SizedBox(height: backLayerHeight, child: BackgroundPanel())
         ],
       ),
     );
@@ -60,32 +56,7 @@ class MyRoute extends StatelessWidget {
 
   List<Widget> _getAppbarActions(BuildContext context) {
     return <Widget>[
-      //RandomWords()
+      //
     ];
-  }
-
-  ListView _getBackdropListTiles() {
-    return ListView(
-      padding: EdgeInsets.only(bottom: 32.0),
-      children: <Widget>[
-        ListTile(
-          leading: splashSvg,
-          title: Text(APP_NAME),
-          subtitle: Text(APP_VERSION),
-        ),
-        Consumer<MyAppSettings>(builder: (context, MyAppSettings settings, _) {
-          return ListTile(
-            onTap: () {},
-            leading: Icon(
-                settings.isDarkMode ? Icons.brightness_4 : Icons.brightness_7),
-            title: Text('Dark mode'),
-            trailing: Switch(
-              onChanged: (bool value) => settings.setDarkMode(value),
-              value: settings.isDarkMode,
-            ),
-          );
-        }),
-      ],
-    );
   }
 }
