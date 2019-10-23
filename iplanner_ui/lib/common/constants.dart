@@ -8,7 +8,7 @@ const APP_DESCRIPTION = 'An app helps manage schedule and tasks.'
 
 const HEADER_HEIGHT = 128.0;
 
-final Widget SPLASH_IMAGE = Image.asset(
+final Widget splash = Image.asset(
   'assets/images/home-office.jpg',
   fit: BoxFit.cover,
 );

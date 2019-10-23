@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:iplanner_ui/model/event_list.dart';
-import 'package:optional/optional.dart';
 import 'package:provider/provider.dart';
 
-class EventPageState extends State<EventPage> {
+class UpcomingEventTabState extends State<UpcomingEventTab> {
   final TextStyle _biggerFont = const TextStyle(fontSize: 18.0);
 
   Widget _buildRow(Event event) {
     return ListTile(
       title: Text(
-        event.summary,
+        event != null ? event.summary : "",
         style: _biggerFont,
       ),
     );
@@ -21,14 +20,12 @@ class EventPageState extends State<EventPage> {
 
     return ListView.builder(
         padding: const EdgeInsets.all(16.0),
-        itemBuilder: (context, i) {
-          if (i.isOdd) return Divider();
+        itemBuilder: (context, idx) {
+          if (idx.isOdd) return Divider();
 
-          final index = i ~/ 2;
+          final index = idx ~/ 2;
           final event = eventList.getEventByPosition(index);
-          if (Optional.ofNullable(event).isPresent) {
-            return _buildRow(event);
-          }
+          return _buildRow(event);
         });
   }
 
@@ -65,9 +62,27 @@ class EventPageState extends State<EventPage> {
   }
 }
 
-class EventPage extends StatefulWidget {
+class UpcomingEventTab extends StatefulWidget {
   @override
-  EventPageState createState() => EventPageState();
+  UpcomingEventTabState createState() => UpcomingEventTabState();
 
-  const EventPage();
+  const UpcomingEventTab();
+}
+
+class EventCalendarTab extends StatelessWidget {
+  const EventCalendarTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return Icon(Icons.cloud, size: 64.0, color: Colors.teal);
+  }
+}
+
+class EventSliderTab extends StatelessWidget {
+  const EventSliderTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return Icon(Icons.forum, size: 64.0, color: Colors.teal);
+  }
 }

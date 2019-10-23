@@ -38,7 +38,7 @@ class _MySplashScreen extends StatelessWidget {
     return Container(
       constraints: BoxConstraints.expand(),
       color: Colors.white,
-      child: Center(child: SPLASH_IMAGE),
+      child: Center(child: splash),
     );
   }
 }

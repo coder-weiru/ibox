@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:iplanner_ui/model/activity_list.dart';
-import 'package:optional/optional.dart';
 import 'package:provider/provider.dart';
 
-class ActivityPageState extends State<ActivityPage> {
+class ActivityListTabState extends State<ActivityListTab> {
   final TextStyle _biggerFont = const TextStyle(fontSize: 18.0);
 
   Widget _buildRow(Activity activity) {
     return ListTile(
       title: Text(
-        activity.title,
+        activity != null ? activity.title : "",
         style: _biggerFont,
       ),
     );
@@ -21,14 +20,13 @@ class ActivityPageState extends State<ActivityPage> {
 
     return ListView.builder(
         padding: const EdgeInsets.all(16.0),
-        itemBuilder: (context, i) {
-          if (i.isOdd) return Divider();
-
-          final index = i ~/ 2;
-          final activity = activityList.getActivityByPosition(index);
-          if (Optional.ofNullable(activity).isPresent) {
-            return _buildRow(activity);
+        itemBuilder: (context, idx) {
+          if (idx.isOdd) {
+            return Divider();
           }
+          final index = idx ~/ 2;
+          final activity = activityList.getActivityByPosition(index);
+          return _buildRow(activity);
         });
   }
 
@@ -65,9 +63,18 @@ class ActivityPageState extends State<ActivityPage> {
   }
 }
 
-class ActivityPage extends StatefulWidget {
+class ActivityListTab extends StatefulWidget {
   @override
-  ActivityPageState createState() => ActivityPageState();
+  ActivityListTabState createState() => ActivityListTabState();
 
-  const ActivityPage();
+  const ActivityListTab();
+}
+
+class ActivitySliderTab extends StatelessWidget {
+  const ActivitySliderTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return Icon(Icons.forum, size: 64.0, color: Colors.teal);
+  }
 }

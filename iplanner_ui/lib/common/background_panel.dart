@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../common/constants.dart'
-    show MENU_EVENTS, MENU_ACTIVITIES, SPLASH_IMAGE;
-import '../common/settings.dart';
+import 'constants.dart' show MENU_EVENTS, MENU_ACTIVITIES, splash;
+import 'settings.dart';
 
 class BackgroundPanel extends StatelessWidget {
   @override
@@ -19,7 +18,7 @@ ListView _getBackdropListTiles(BuildContext context) {
       Card(
         semanticContainer: true,
         clipBehavior: Clip.antiAliasWithSaveLayer,
-        child: SPLASH_IMAGE,
+        child: splash,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),

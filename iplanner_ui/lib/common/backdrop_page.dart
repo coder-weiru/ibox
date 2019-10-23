@@ -1,20 +1,23 @@
 import 'package:backdrop/backdrop.dart';
 import 'package:flutter/material.dart';
 
-import '../widget/background_panel.dart';
+import 'background_panel.dart';
 import 'constants.dart' show HEADER_HEIGHT;
 
-class MyRoute extends StatelessWidget {
+class BackdropPage extends StatelessWidget {
   // Actual content of the example.
   final Widget child;
+
   // Title shown in the route's appbar. By default just returns routeName.
   final String _title;
+
   // A short description of the route. If not null, will be shown as subtitle in
   final String description;
+
   // The name of the route.
   final String _routeName;
 
-  const MyRoute({
+  const BackdropPage({
     Key key,
     @required this.child,
     String title,
@@ -37,7 +40,7 @@ class MyRoute extends StatelessWidget {
     return BackdropScaffold(
       title: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Text(this.title),
+        child: Text(this._title),
       ),
       actions: _getAppbarActions(context),
       iconPosition: BackdropIconPosition.action,
