@@ -24,6 +24,10 @@ class EventList {
     _savedEvents.add(event);
   }
 
+  List<Event> getAllEvents() {
+    return _events;
+  }
+
   Event getEventByPosition(int index) {
     if (index < _events.length) {
       return _events.elementAt(index);
