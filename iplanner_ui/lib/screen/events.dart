@@ -1,17 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:iplanner_ui/model/event_list.dart';
 import 'package:provider/provider.dart';
 
+import '../common/colors.dart';
+
 class UpcomingEventTabState extends State<UpcomingEventTab> {
-  final TextStyle _biggerFont = const TextStyle(fontSize: 18.0);
+  final TextStyle _biggerFont = const TextStyle(fontSize: 20.0);
+  final TextStyle _smallerFont = const TextStyle(fontSize: 16.0);
 
   Widget _buildRow(Event event) {
-    return ListTile(
-      title: Text(
-        event != null ? event.summary : "",
-        style: _biggerFont,
-      ),
-    );
+    if (event != null) {
+      final activity = event.activity;
+      final summary = event.summary;
+      final start =
+          new DateFormat("EEEE, MMMM d, 'at' HH:mm").format(event.start);
+      return Card(
+          //                           <-- Card widget
+          color: getEventColor(activity),
+          elevation: 5,
+          //margin: EdgeInsets.all(2),
+          child: ListTile(
+            leading: Icon(Icons.access_alarm),
+            title: Text(
+              summary,
+              style: _biggerFont,
+            ),
+            subtitle: Text(
+              start,
+              style: _smallerFont,
+            ),
+            trailing: Icon(Icons.expand_more),
+            onTap: () {},
+          ));
+    } else {
+      return null;
+    }
   }
 
   @override
@@ -19,10 +43,8 @@ class UpcomingEventTabState extends State<UpcomingEventTab> {
     final eventList = Provider.of<EventList>(context);
 
     return ListView.builder(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(5.0),
         itemBuilder: (context, idx) {
-          if (idx.isOdd) return Divider();
-
           final index = idx ~/ 2;
           final event = eventList.getEventByPosition(index);
           return _buildRow(event);
