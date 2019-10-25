@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'constants.dart' show MENU_EVENTS, MENU_ACTIVITIES, splash;
-import 'settings.dart';
+import '../common/constants.dart' show MENU_EVENTS, MENU_ACTIVITIES, splash;
+import '../common/settings.dart';
 
 class BackgroundPanel extends StatelessWidget {
   @override

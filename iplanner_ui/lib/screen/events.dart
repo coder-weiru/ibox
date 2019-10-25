@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../common/colors.dart';
 import '../common/constants.dart';
+import '../widget/event_card.dart';
 
 class UpcomingEventTabState extends State<UpcomingEventTab> {
   Widget _buildRow(Event event) {
@@ -110,13 +111,23 @@ class EventSliderTabState extends State<EventSliderTab> {
               return Builder(
                 builder: (BuildContext context) {
                   return Container(
-                    width: MediaQuery.of(context).size.width,
-                    margin: EdgeInsets.symmetric(horizontal: 5.0),
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                    ),
-                    child: image,
-                  );
+                      width: MediaQuery.of(context).size.width,
+                      margin: EdgeInsets.symmetric(horizontal: 5.0),
+                      decoration: new BoxDecoration(
+                        image: new DecorationImage(
+                          image: image,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: new Stack(
+                        children: <Widget>[
+                          new Positioned(
+                              left: 10.0,
+                              right: 10.0,
+                              bottom: 25.0,
+                              child: EventCard(event: event)),
+                        ],
+                      ));
                 },
               );
             }).toList(),

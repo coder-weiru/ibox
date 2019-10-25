@@ -3,8 +3,8 @@ import 'package:iplanner_ui/screen/activities.dart';
 
 import '../screen/activities.dart';
 import '../screen/events.dart';
-import 'backdrop_page.dart';
-import 'tabbed_page.dart';
+import '../widget/backdrop_page.dart';
+import '../widget/tabbed_page.dart';
 
 const eventCalendarTab = MyTab(
     child: BackdropPage(

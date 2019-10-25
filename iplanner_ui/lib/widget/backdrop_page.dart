@@ -2,7 +2,7 @@ import 'package:backdrop/backdrop.dart';
 import 'package:flutter/material.dart';
 
 import 'background_panel.dart';
-import 'constants.dart' show HEADER_HEIGHT;
+import '../common/constants.dart' show HEADER_HEIGHT;
 
 class BackdropPage extends StatelessWidget {
   // Actual content of the example.

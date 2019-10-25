@@ -18,85 +18,42 @@ final Widget splash = Image.asset(
   fit: BoxFit.cover,
 );
 
-final Widget imageAtom = Image.asset(
-  'assets/images/atom.jpg',
-  fit: BoxFit.fill,
-);
+final AssetImage imageAtom = AssetImage('assets/images/atom.jpg');
 
-final Widget imageBackToSchool = Image.asset(
-  'assets/images/back-to-school.jpg',
-  fit: BoxFit.fill,
-);
+final AssetImage imageBackToSchool =
+    AssetImage('assets/images/back-to-school.jpg');
 
-final Widget imageBrain = Image.asset(
-  'assets/images/brain.jpg',
-  fit: BoxFit.fill,
-);
+final AssetImage imageBrain = AssetImage('assets/images/brain.jpg');
 
-final Widget imageBrainstorm = Image.asset(
-  'assets/images/brainstorm.jpg',
-  fit: BoxFit.fill,
-);
+final AssetImage imageBrainstorm = AssetImage('assets/images/brainstorm.jpg');
 
-final Widget imageBulbs = Image.asset(
-  'assets/images/bulbs.jpg',
-  fit: BoxFit.fill,
-);
+final AssetImage imageBulbs = AssetImage('assets/images/bulbs.jpg');
 
-final Widget imageExhausted = Image.asset(
-  'assets/images/exhausted.jpg',
-  fit: BoxFit.fill,
-);
+final AssetImage imageExhausted = AssetImage('assets/images/exhausted.jpg');
 
-final Widget imageLearn = Image.asset(
-  'assets/images/learn.jpg',
-  fit: BoxFit.fill,
-);
+final AssetImage imageLearn = AssetImage('assets/images/learn.jpg');
 
-final Widget imageMan_1 = Image.asset(
-  'assets/images/man_1.jpg',
-  fit: BoxFit.fill,
-);
+final AssetImage imageMan_1 = AssetImage('assets/images/man_1.jpg');
 
-final Widget imageMan_2 = Image.asset(
-  'assets/images/man_2.jpg',
-  fit: BoxFit.fill,
-);
+final AssetImage imageMan_2 = AssetImage('assets/images/man_2.jpg');
 
-final Widget imageOffice = Image.asset(
-  'assets/images/office.jpg',
-  fit: BoxFit.fill,
-);
-final Widget imagePaper = Image.asset(
-  'assets/images/paper.jpg',
-  fit: BoxFit.fill,
-);
-final Widget imageQuestions = Image.asset(
-  'assets/images/questions.jpg',
-  fit: BoxFit.fill,
-);
-final Widget imageReading = Image.asset(
-  'assets/images/reading.jpg',
-  fit: BoxFit.fill,
-);
-final Widget imageSchool_1 = Image.asset(
-  'assets/images/school_1.jpg',
-  fit: BoxFit.fill,
-);
-final Widget imageSchool_2 = Image.asset(
-  'assets/images/school_2.jpg',
-  fit: BoxFit.fill,
-);
-final Widget imageSchool_3 = Image.asset(
-  'assets/images/school_3.jpg',
-  fit: BoxFit.fill,
-);
-final Widget imageScience = Image.asset(
-  'assets/images/science.jpg',
-  fit: BoxFit.fill,
-);
+final AssetImage imageOffice = AssetImage('assets/images/office.jpg');
 
-final List<Widget> imageList = [
+final AssetImage imagePaper = AssetImage('assets/images/paper.jpg');
+
+final AssetImage imageQuestions = AssetImage('assets/images/questions.jpg');
+
+final AssetImage imageReading = AssetImage('assets/images/reading.jpg');
+
+final AssetImage imageSchool_1 = AssetImage('assets/images/school_1.jpg');
+
+final AssetImage imageSchool_2 = AssetImage('assets/images/school_2.jpg');
+
+final AssetImage imageSchool_3 = AssetImage('assets/images/school_3.jpg');
+
+final AssetImage imageScience = AssetImage('assets/images/science.jpg');
+
+final List<AssetImage> imageList = [
   imageAtom,
   imageBackToSchool,
   imageBrain,
