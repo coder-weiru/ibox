@@ -75,13 +75,13 @@ public class GetEntityDefinitionHandlerTest {
     public void getEventSchema_shouldReturnValidJsonSchema() throws Exception {
 
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
-        requestEvent.setQueryStringParameters(Collections.singletonMap("type", "event"));
+        requestEvent.setQueryStringParameters(Collections.singletonMap("type", "todo"));
         APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
 
         assertEquals(200, responseEvent.getStatusCode());
 
         String jsonSchema = responseEvent.getBody();
-        assertThat(jsonSchema, is(equalTo(loadSchema("event"))));
+        assertThat(jsonSchema, is(equalTo(loadSchema("todo"))));
     }
 
     @Test

@@ -4,7 +4,7 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import dagger.Module;
 import dagger.Provides;
 import ibox.iplanner.api.service.ActivityDataService;
-import ibox.iplanner.api.service.EventDataService;
+import ibox.iplanner.api.service.TodoDataService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -15,8 +15,8 @@ public class TestDataServiceModule {
     @Singleton
     @Provides
     @Inject
-    public EventDataService eventDataService(DynamoDB dynamoDB) {
-        return new EventDataService(dynamoDB);
+    public TodoDataService TodoDataService(DynamoDB dynamoDB) {
+        return new TodoDataService(dynamoDB);
     }
 
     @Singleton

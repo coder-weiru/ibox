@@ -621,7 +621,7 @@ Resources:
             RestApiId:
               Ref: ApiGatewayApi
           Type: Api
-      Handler: ibox.iplanner.api.lambda.CreateEventFromActivityHandlerWrapper::handleRequest
+      Handler: ibox.iplanner.api.lambda.CreateTodoFromActivityHandlerWrapper::handleRequest
       MemorySize: 512
       Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
       Runtime: java8
@@ -667,7 +667,7 @@ Resources:
             RestApiId:
               Ref: ApiGatewayApi
           Type: Api
-      Handler: ibox.iplanner.api.lambda.DeleteEventHandlerWrapper::handleRequest
+      Handler: ibox.iplanner.api.lambda.DeleteTodoHandlerWrapper::handleRequest
       MemorySize: 512
       Policies:
       - DynamoDBReadPolicy:
@@ -830,7 +830,7 @@ Resources:
             RestApiId:
               Ref: ApiGatewayApi
           Type: Api
-      Handler: ibox.iplanner.api.lambda.ListEventHandlerWrapper::handleRequest
+      Handler: ibox.iplanner.api.lambda.ListTodoHandlerWrapper::handleRequest
       MemorySize: 512
       Policies:
       - DynamoDBReadPolicy:
@@ -880,7 +880,7 @@ Resources:
             RestApiId:
               Ref: ApiGatewayApi
           Type: Api
-      Handler: ibox.iplanner.api.lambda.UpdateEventHandlerWrapper::handleRequest
+      Handler: ibox.iplanner.api.lambda.UpdateTodoHandlerWrapper::handleRequest
       MemorySize: 512
       Policies:
       - DynamoDBReadPolicy:

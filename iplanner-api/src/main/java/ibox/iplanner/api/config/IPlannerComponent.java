@@ -9,11 +9,11 @@ import javax.inject.Singleton;
 @Component(modules = {DynamoDBModule.class, DataServiceModule.class, HandlerModule.class, ValidatorModule.class})
 public interface IPlannerComponent {
 
-    void inject(AddEventHandler requestHandler);
-    void inject(GetEventHandler requestHandler);
-    void inject(ListEventHandler requestHandler);
-    void inject(UpdateEventHandler requestHandler);
-    void inject(DeleteEventHandler requestHandler);
+    void inject(AddTodoHandler requestHandler);
+    void inject(GetTodoHandler requestHandler);
+    void inject(ListTodoHandler requestHandler);
+    void inject(UpdateTodoHandler requestHandler);
+    void inject(DeleteTodoHandler requestHandler);
 
     void inject(AddActivityHandler requestHandler);
     void inject(GetActivityHandler requestHandler);
@@ -23,5 +23,5 @@ public interface IPlannerComponent {
 
     void inject(GetEntityDefinitionHandler requestHandler);
     void inject(GetActivityTemplateHandler requestHandler);
-    void inject(CreateEventFromActivityHandler requestHandler);
+    void inject(CreateTodoFromActivityHandler requestHandler);
 }

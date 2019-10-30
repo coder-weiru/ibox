@@ -11,32 +11,32 @@ public class HandlerModule {
 
     @Singleton
     @Provides
-    public static AddEventHandler addEventHandler() {
-        return new AddEventHandler();
+    public static AddTodoHandler addTodoHandler() {
+        return new AddTodoHandler();
     }
 
     @Singleton
     @Provides
-    public static GetEventHandler getEventHandler() {
-        return new GetEventHandler();
+    public static GetTodoHandler getTodoHandler() {
+        return new GetTodoHandler();
     }
 
     @Singleton
     @Provides
-    public static ListEventHandler listEventHandler() {
-        return new ListEventHandler();
+    public static ListTodoHandler listTodoHandler() {
+        return new ListTodoHandler();
     }
 
     @Singleton
     @Provides
-    public static UpdateEventHandler updateEventHandler() {
-        return new UpdateEventHandler();
+    public static UpdateTodoHandler updateTodoHandler() {
+        return new UpdateTodoHandler();
     }
 
     @Singleton
     @Provides
-    public static DeleteEventHandler deleteEventHandler() {
-        return new DeleteEventHandler();
+    public static DeleteTodoHandler deleteTodoHandler() {
+        return new DeleteTodoHandler();
     }
 
     @Singleton
@@ -81,5 +81,5 @@ public class HandlerModule {
 
     @Singleton
     @Provides
-    public static CreateEventFromActivityHandler createEventFromActivityHandler() { return new CreateEventFromActivityHandler();  }
+    public static CreateTodoFromActivityHandler createTodoFromActivityHandler() { return new CreateTodoFromActivityHandler();  }
 }

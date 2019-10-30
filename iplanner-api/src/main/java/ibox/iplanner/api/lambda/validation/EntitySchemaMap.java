@@ -9,7 +9,7 @@ import com.github.fge.jsonschema.core.load.uri.URITranslatorConfiguration;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import ibox.iplanner.api.model.Activity;
-import ibox.iplanner.api.model.Event;
+import ibox.iplanner.api.model.Todo;
 import ibox.iplanner.api.model.Meeting;
 import ibox.iplanner.api.model.Task;
 import ibox.iplanner.api.model.updatable.Updatable;
@@ -35,7 +35,7 @@ public class EntitySchemaMap {
         entitySchemaLookup = new HashMap<>();
 
         entitySchemaLookup.put(Activity.class, getResourcePath(Activity.class) + "activity.schema.json");
-        entitySchemaLookup.put(Event.class, getResourcePath(Event.class) + "event.schema.json");
+        entitySchemaLookup.put(Todo.class, getResourcePath(Todo.class) + "todo.schema.json");
         entitySchemaLookup.put(Meeting.class, getResourcePath(Meeting.class) + "meeting.schema.json");
         entitySchemaLookup.put(Task.class, getResourcePath(Task.class) + "task.schema.json");
         entitySchemaLookup.put(Updatable.class, getResourcePath(Updatable.class) + "updatable.schema.json");

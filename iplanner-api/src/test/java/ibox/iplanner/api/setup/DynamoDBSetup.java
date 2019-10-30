@@ -4,7 +4,7 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.model.*;
 import ibox.iplanner.api.service.dbmodel.ActivityDefinition;
-import ibox.iplanner.api.service.dbmodel.EventDefinition;
+import ibox.iplanner.api.service.dbmodel.TodoDefinition;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -23,19 +23,19 @@ public class DynamoDBSetup {
         return dynamoDBSetup;
     }
 
-    public void createEventTable(long readCapacityUnits, long writeCapacityUnits) {
+    public void createTodoTable(long readCapacityUnits, long writeCapacityUnits) {
 
         try {
             ArrayList<KeySchemaElement> keySchema = new ArrayList<KeySchemaElement>();
             // Partition Key
-            keySchema.add(new KeySchemaElement().withAttributeName(EventDefinition.FIELD_NAME_ID).withKeyType(KeyType.HASH));
+            keySchema.add(new KeySchemaElement().withAttributeName(TodoDefinition.FIELD_NAME_ID).withKeyType(KeyType.HASH));
 
             ArrayList<AttributeDefinition> attributeDefinitions = new ArrayList<AttributeDefinition>();
-            attributeDefinitions.add(new AttributeDefinition().withAttributeName(EventDefinition.FIELD_NAME_ID).withAttributeType("S"));
-            attributeDefinitions.add(new AttributeDefinition().withAttributeName(EventDefinition.FIELD_NAME_CREATED_BY).withAttributeType("S"));
-            attributeDefinitions.add(new AttributeDefinition().withAttributeName(EventDefinition.FIELD_NAME_START_TIME).withAttributeType("S"));
+            attributeDefinitions.add(new AttributeDefinition().withAttributeName(TodoDefinition.FIELD_NAME_ID).withAttributeType("S"));
+            attributeDefinitions.add(new AttributeDefinition().withAttributeName(TodoDefinition.FIELD_NAME_CREATED_BY).withAttributeType("S"));
+            attributeDefinitions.add(new AttributeDefinition().withAttributeName(TodoDefinition.FIELD_NAME_START_TIME).withAttributeType("S"));
 
-            CreateTableRequest request = new CreateTableRequest().withTableName(EventDefinition.TABLE_NAME_EVENTS).withKeySchema(keySchema)
+            CreateTableRequest request = new CreateTableRequest().withTableName(TodoDefinition.TABLE_NAME_TODOS).withKeySchema(keySchema)
                     .withProvisionedThroughput(new ProvisionedThroughput().withReadCapacityUnits(readCapacityUnits)
                             .withWriteCapacityUnits(writeCapacityUnits));
 
@@ -43,10 +43,10 @@ public class DynamoDBSetup {
 
             // Global Secondary Index
             ArrayList<GlobalSecondaryIndex> globalSecondaryIndexes = new ArrayList<GlobalSecondaryIndex>();
-            globalSecondaryIndexes.add(new GlobalSecondaryIndex().withIndexName(EventDefinition.GSI_CREATOR_EVENTS_SORT_BY_START_TIME)
+            globalSecondaryIndexes.add(new GlobalSecondaryIndex().withIndexName(TodoDefinition.GSI_CREATOR_TODOS_SORT_BY_START_TIME)
                     .withKeySchema(
-                        new KeySchemaElement().withAttributeName(EventDefinition.FIELD_NAME_CREATED_BY).withKeyType(KeyType.HASH),
-                        new KeySchemaElement().withAttributeName(EventDefinition.FIELD_NAME_START_TIME).withKeyType(KeyType.RANGE)
+                        new KeySchemaElement().withAttributeName(TodoDefinition.FIELD_NAME_CREATED_BY).withKeyType(KeyType.HASH),
+                        new KeySchemaElement().withAttributeName(TodoDefinition.FIELD_NAME_START_TIME).withKeyType(KeyType.RANGE)
                     )
                     .withProjection(new Projection().withProjectionType(ProjectionType.ALL))
                     .withProvisionedThroughput(new ProvisionedThroughput().withReadCapacityUnits(readCapacityUnits)
@@ -54,17 +54,17 @@ public class DynamoDBSetup {
 
             request.setGlobalSecondaryIndexes(globalSecondaryIndexes);
 
-            log.info("Issuing CreateTable request for " + EventDefinition.TABLE_NAME_EVENTS);
+            log.info("Issuing CreateTable request for " + TodoDefinition.TABLE_NAME_TODOS);
 
             Table table = dynamoDB.createTable(request);
 
-            log.info("Waiting for " + EventDefinition.TABLE_NAME_EVENTS + " to be created...this may take a while...");
+            log.info("Waiting for " + TodoDefinition.TABLE_NAME_TODOS + " to be created...this may take a while...");
 
             table.waitForActive();
 
         }
         catch (Exception e) {
-            log.error("CreateTable request failed for " + EventDefinition.TABLE_NAME_EVENTS);
+            log.error("CreateTable request failed for " + TodoDefinition.TABLE_NAME_TODOS);
             log.error(e.getMessage());
         }
     }

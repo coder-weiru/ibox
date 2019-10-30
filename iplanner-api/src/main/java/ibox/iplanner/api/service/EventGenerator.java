@@ -10,7 +10,7 @@ public class EventGenerator {
 
     private EventGenerator() { }
 
-    public static Event generate(Activity activity) {
+    public static Todo generate(Activity activity) {
 
         if (activity instanceof Meeting) {
             return generate((Meeting) activity);
@@ -22,9 +22,9 @@ public class EventGenerator {
         return null;
     }
 
-    public static Event generate(Meeting meeting) {
+    public static Todo generate(Meeting meeting) {
         Instant now = Instant.now();
-        return Event.builder()
+        return Todo.builder()
                 .summary(String.format("My %s", meeting.getTitle()))
                 .description(String.format("%s", meeting.getDescription()))
                 .creator(meeting.getCreator())
@@ -33,14 +33,14 @@ public class EventGenerator {
                 .start(now.plus(60, MINUTES))
                 .end(now.plus(120, MINUTES))
                 .activity(meeting.getId())
-                .status(EventStatus.OPEN.name())
+                .status(TodoStatus.OPEN.name())
                 .endTimeUnspecified(Boolean.TRUE)
                 .build();
     }
 
-    public static Event generate(Task task) {
+    public static Todo generate(Task task) {
         Instant now = Instant.now();
-        return Event.builder()
+        return Todo.builder()
                 .summary(String.format("My %s", task.getTitle()))
                 .description(String.format("%s", task.getDescription()))
                 .creator(task.getCreator())
@@ -48,7 +48,7 @@ public class EventGenerator {
                 .updated(now)
                 .start(now)
                 .activity(task.getId())
-                .status(EventStatus.OPEN.name())
+                .status(TodoStatus.OPEN.name())
                 .endTimeUnspecified(Boolean.FALSE)
                 .build();
     }
