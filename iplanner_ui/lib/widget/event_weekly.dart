@@ -10,7 +10,7 @@ class EventWeekly extends StatelessWidget {
 
   Map<String, List<Event>> get events => this._eventMap;
 
-  final List<String> weekDays = const [
+  final List<String> _weekDays = const [
     'Sun',
     'Mon',
     'Tue',
@@ -30,14 +30,12 @@ class EventWeekly extends StatelessWidget {
         ),
         child: GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: weekDays.length,
+              crossAxisCount: _weekDays.length,
             ),
-            itemCount: weekDays.length,
+            itemCount: _weekDays.length,
             itemBuilder: (context, index) {
               final event = getEventByWeekDay(eventList, index);
               return Container(
-                  //padding: EdgeInsets.all(5.0),
-                  //height: 60.0,
                   decoration: BoxDecoration(
                     color: Color.fromRGBO(223, 230, 233, 0.5),
                     border:
@@ -73,64 +71,63 @@ class EventWeekly extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(children: <Widget>[
-      Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            // Header
-            Container(
-                padding: EdgeInsets.all(5.0),
-                height: 60.0,
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(223, 230, 233, 0.5),
-                  borderRadius: BorderRadius.circular(25.0),
-                ),
-                child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: weekDays.length,
-                    ),
-                    itemCount: weekDays.length,
-                    itemBuilder: (context, index) {
-                      return Center(
-                          child: new Card(
-                              color: Colors.amberAccent,
-                              elevation: 5.0,
-                              child: new Container(
-                                  alignment: Alignment.center,
-                                  margin: new EdgeInsets.only(
-                                      top: 5.0,
-                                      bottom: 5.0,
-                                      left: 5.0,
-                                      right: 5.0),
-                                  decoration: new BoxDecoration(
-                                    color: Colors.white54,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: new Text(
-                                    weekDays[index],
-                                    style: TextStyle(
-                                      color: Colors.redAccent,
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
+    return Container(
+        padding: EdgeInsets.all(5.0),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                  padding: EdgeInsets.all(5.0),
+                  height: 60.0,
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(223, 230, 233, 0.5),
+                    borderRadius: BorderRadius.circular(25.0),
+                  ),
+                  child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: _weekDays.length,
+                      ),
+                      itemCount: _weekDays.length,
+                      itemBuilder: (context, index) {
+                        return Center(
+                            child: new Card(
+                                color: Colors.amberAccent,
+                                elevation: 5.0,
+                                child: new Container(
+                                    alignment: Alignment.center,
+                                    margin: new EdgeInsets.only(
+                                        top: 5.0,
+                                        bottom: 5.0,
+                                        left: 5.0,
+                                        right: 5.0),
+                                    decoration: new BoxDecoration(
+                                      color: Colors.white54,
+                                      shape: BoxShape.circle,
                                     ),
-                                  ))));
-                    })),
-            // Events by activities
-            Container(
-                padding: EdgeInsets.all(5.0),
-                height: 600.0,
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(223, 230, 233, 0.5),
-                  borderRadius: BorderRadius.circular(25.0),
-                ),
-                child: new ListView.builder(
-                    itemCount: _eventMap.keys.toList().length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return _buildRow(context, index);
-                    })),
-          ])
-    ]);
+                                    child: new Text(
+                                      _weekDays[index],
+                                      style: TextStyle(
+                                        color: Colors.redAccent,
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ))));
+                      })),
+              Expanded(
+                child: // Events by activities
+                    Container(
+                        decoration: BoxDecoration(
+                          color: Color.fromRGBO(223, 230, 233, 0.5),
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
+                        child: new ListView.builder(
+                            itemCount: _eventMap.keys.toList().length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return _buildRow(context, index);
+                            })),
+              )
+            ]));
   }
 }
 
