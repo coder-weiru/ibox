@@ -33,6 +33,7 @@ class EventWeekly extends StatelessWidget {
               crossAxisCount: _weekDays.length,
             ),
             itemCount: _weekDays.length,
+            physics: NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               final event = getEventByWeekDay(eventList, index);
               return Container(
