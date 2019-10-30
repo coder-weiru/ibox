@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../common/colors.dart';
 import '../common/constants.dart';
 import '../widget/event_card.dart';
+import '../widget/event_weekly.dart';
 
 class UpcomingEventTabState extends State<UpcomingEventTab> {
   Widget _buildRow(Event event) {
@@ -23,11 +24,11 @@ class UpcomingEventTabState extends State<UpcomingEventTab> {
             leading: Icon(Icons.access_alarm),
             title: Text(
               summary,
-              style: TEXT_TITLE_FONT,
+              style: Theme.of(context).textTheme.title,
             ),
             subtitle: Text(
               start,
-              style: TEXT_SUBTITLE_FONT,
+              style: Theme.of(context).textTheme.subtitle,
             ),
             trailing: Icon(Icons.expand_more),
             onTap: () {},
@@ -58,17 +59,23 @@ class UpcomingEventTab extends StatefulWidget {
   const UpcomingEventTab();
 }
 
-class EventCalendarTab extends StatelessWidget {
-  const EventCalendarTab();
-
+class EventCalendarTabState extends State<EventCalendarTab> {
   @override
   Widget build(BuildContext context) {
-    return Icon(Icons.cloud, size: 64.0, color: Colors.teal);
+    final eventListModel = Provider.of<EventList>(context);
+    final eventMap = eventListModel.getEventListByActivities();
+    return EventWeekly(eventMap: eventMap);
   }
 }
 
+class EventCalendarTab extends StatefulWidget {
+  @override
+  EventCalendarTabState createState() => EventCalendarTabState();
+
+  const EventCalendarTab();
+}
+
 class EventSliderTabState extends State<EventSliderTab> {
-  //
   CarouselSlider _carouselSlider;
   int _current = 0;
 

@@ -10,9 +10,6 @@ const HEADER_HEIGHT = 128.0;
 const MENU_EVENTS = 'My Events';
 const MENU_ACTIVITIES = 'My Activities';
 
-const TEXT_TITLE_FONT = const TextStyle(fontSize: 20.0);
-const TEXT_SUBTITLE_FONT = const TextStyle(fontSize: 16.0);
-
 final Widget splash = Image.asset(
   'assets/images/home-office.jpg',
   fit: BoxFit.cover,

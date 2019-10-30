@@ -36,6 +36,18 @@ class EventList {
     }
   }
 
+  Map<String, List<Event>> getEventListByActivities() {
+    final Map<String, List<Event>> map = new Map();
+    _events.forEach((event) {
+      final activity = event.activity;
+      map.putIfAbsent(activity, () => new List<Event>());
+      List<Event> list = map[activity];
+      list.add(event);
+    });
+
+    return map;
+  }
+
   void loadEvents() async {
     var jsonStr = await rootBundle.loadString("assets/data/events.json");
     _events.addAll(await compute(parseEvents, jsonStr));
