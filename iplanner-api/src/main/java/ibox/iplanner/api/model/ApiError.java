@@ -18,16 +18,9 @@ import java.util.List;
 public class ApiError implements Serializable {
     private static final long serialVersionUID = 679382664556289406L;
 
-    @NotNull(message = "Status {javax.validation.constraints.NotNull.message}")
     private int status;
-
-    @NotNull(message = "Error Code {javax.validation.constraints.NotNull.message}")
     private String error;
-
     private String message;
-
     private Instant timestamp;
-
     private List<String> errorDetails = new ArrayList<>();
-
 }

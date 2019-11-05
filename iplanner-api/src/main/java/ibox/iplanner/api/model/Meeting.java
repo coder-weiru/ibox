@@ -11,7 +11,6 @@ import java.time.Instant;
 @AllArgsConstructor
 public class Meeting extends Activity {
 
-    @NotNull(message = "Meeting frequency {javax.validation.constraints.NotNull.message}")
     private Frequency frequency;
 
     @Builder(builderMethodName = "meetingBuilder")

@@ -12,7 +12,6 @@ import java.time.Instant;
 @AllArgsConstructor
 public class Task extends Activity {
 
-    @NotNull(message = "Task deadline {javax.validation.constraints.NotNull.message}")
     private Instant deadline;
 
     @Builder(builderMethodName = "taskBuilder")
