@@ -1,12 +1,8 @@
 package ibox.iplanner.api.service;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.model.AmazonDynamoDBException;
+import ibox.iplanner.api.lambda.exception.InvalidInputException;
 import ibox.iplanner.api.model.*;
-import ibox.iplanner.api.model.updatable.Updatable;
-import ibox.iplanner.api.model.updatable.UpdatableAttribute;
-import ibox.iplanner.api.model.updatable.UpdatableKey;
-import ibox.iplanner.api.model.updatable.UpdateAction;
 import ibox.iplanner.api.util.TodoUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,10 +11,8 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static ibox.iplanner.api.service.TestHelper.*;
-import static ibox.iplanner.api.service.dbmodel.TodoDefinition.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -73,40 +67,15 @@ public class TodoDataServiceIntegrationTest extends LocalDynamoDBIntegrationTest
 
         Todo dbTodo = todoDataService.getTodo(myTodo.getId());
 
-        String newSummary = "new summary";
-        String newDescription = "new description";
-        String newActivity = "new activity";
+        dbTodo.setSummary("new summary");
+        dbTodo.setDescription("new description");
+        dbTodo.setActivityType("new activity");
 
-        Set<UpdatableAttribute> updatableAttributeSet = new HashSet<>();
-        updatableAttributeSet.add( UpdatableAttribute.builder()
-                .attributeName(FIELD_NAME_SUMMARY)
-                .action(UpdateAction.UPDATE)
-                .value(newSummary)
-                .build());
-        updatableAttributeSet.add( UpdatableAttribute.builder()
-                .attributeName(FIELD_NAME_DESCRIPTION)
-                .action(UpdateAction.UPDATE)
-                .value(newDescription)
-                .build());
-        updatableAttributeSet.add( UpdatableAttribute.builder()
-                .attributeName(FIELD_NAME_ACTIVITY_TYPE)
-                .action(UpdateAction.UPDATE)
-                .value(newActivity)
-                .build());
+        Todo updated = todoDataService.updateTodo(dbTodo);
 
-        Updatable updatable = Updatable.builder()
-                .objectType("todo")
-                .primaryKey(new UpdatableKey()
-                        .addComponent(FIELD_NAME_ID, dbTodo.getId()))
-                .updatableAttributes(updatableAttributeSet)
-                .build();
-
-        Todo updated = todoDataService.updateTodo(updatable);
-
-        assertThat(updated.getSummary(), is(equalTo(newSummary)));
-        assertThat(updated.getDescription(), is(equalTo(newDescription)));
-        assertThat(updated.getActivityType(), is(equalTo(newActivity)));
-
+        assertThat(updated.getSummary(), is(equalTo("new summary")));
+        assertThat(updated.getDescription(), is(equalTo("new description")));
+        assertThat(updated.getActivityType(), is(equalTo(myTodo.getActivityType())));
     }
 
     @Test
@@ -129,7 +98,7 @@ public class TodoDataServiceIntegrationTest extends LocalDynamoDBIntegrationTest
 
     }
 
-    @Test(expected = AmazonDynamoDBException.class)
+    @Test(expected = InvalidInputException.class)
     public void givenValidUpdatable_updateTodo_shouldNotUpdateKeyField() {
 
         Todo todo = TodoUtil.anyTodo();
@@ -137,21 +106,9 @@ public class TodoDataServiceIntegrationTest extends LocalDynamoDBIntegrationTest
         todoDataService.addTodo(todo);
 
         Todo dbTodo = todoDataService.getTodo(todo.getId());
+        dbTodo.setId("123456789");
 
-        Set<UpdatableAttribute> updatableAttributeSet = new HashSet<>();
-        updatableAttributeSet.add( UpdatableAttribute.builder()
-                .attributeName(FIELD_NAME_ID)
-                .action(UpdateAction.UPDATE)
-                .value("1234567890")
-                .build());
-        Updatable updatable = Updatable.builder()
-                .objectType("todo")
-                .primaryKey(new UpdatableKey()
-                        .addComponent(FIELD_NAME_ID, dbTodo.getId()))
-                .updatableAttributes(updatableAttributeSet)
-                .build();
-
-        Todo updated = todoDataService.updateTodo(updatable);
+        Todo updated = todoDataService.updateTodo(dbTodo);
     }
 
     @Test
@@ -220,7 +177,7 @@ public class TodoDataServiceIntegrationTest extends LocalDynamoDBIntegrationTest
     }
 
     private void verifyTodoAttributeSetAreEqual(AttributeSet expected, AttributeSet actual) {
-        assertThat(expected.getAllAttributes().size(), is(equalTo(actual.getAllAttributes().size())));
+        assertThat(expected.getAttributes().size(), is(equalTo(actual.getAttributes().size())));
         expected.getSupportedFeatures().stream().forEach(feature -> {
             TodoAttribute expectedAttribute = expected.getAttribute(feature);
             TodoAttribute actualAttribute = actual.getAttribute(feature);

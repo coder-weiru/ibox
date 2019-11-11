@@ -12,7 +12,6 @@ import ibox.iplanner.api.model.Activity;
 import ibox.iplanner.api.model.Todo;
 import ibox.iplanner.api.model.Meeting;
 import ibox.iplanner.api.model.Task;
-import ibox.iplanner.api.model.updatable.Updatable;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,7 +37,6 @@ public class EntitySchemaMap {
         entitySchemaLookup.put(Todo.class, getResourcePath(Todo.class) + "todo.schema.json");
         entitySchemaLookup.put(Meeting.class, getResourcePath(Meeting.class) + "meeting.schema.json");
         entitySchemaLookup.put(Task.class, getResourcePath(Task.class) + "task.schema.json");
-        entitySchemaLookup.put(Updatable.class, getResourcePath(Updatable.class) + "updatable.schema.json");
 
         initializeJsonSchemaFactory();
     }

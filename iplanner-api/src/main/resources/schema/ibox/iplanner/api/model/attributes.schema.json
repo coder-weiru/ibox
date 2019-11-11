@@ -1,94 +1,132 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "http://iplanner-api.ibox.com/activity.schema.json",
+  "$id": "http://iplanner-api.ibox.com/attributes.schema.json",
 
-  "activity-array": {
-    "type": "array",
-    "items": {
-      "$ref": "#/activity"
-    }
-  },
-
-  "activity": {
-    "title": "Activity",
-    "description": "An activity in iplanner api",
+  "event-attribute": {
+    "title": "Event Attribute",
+    "description": "Event related attributes",
     "type": "object",
     "properties": {
-      "id": {
-        "description": "The unique identifier for the activity",
-        "type": "string"
-      },
-      "title": {
-        "description": "The title of the activity",
-        "type": "string",
-        "minLength": 1
-      },
-      "description": {
-        "description": "The description of the activity",
-        "type": "string"
-      },
-      "type": {
-        "description": "The activity type",
-        "type": "string",
-        "minLength": 1
-      },
-      "created": {
-        "description": "The timestamp when the activity is created",
+      "start": {
+        "description": "The timestamp when the todo starts",
         "type": "string",
         "minLength": 1,
         "format": "date-time"
       },
-      "updated": {
-        "description": "The timestamp when the activity is updated",
+      "end": {
+        "description": "The timestamp when the todo ends",
         "type": "string",
         "minLength": 1,
         "format": "date-time"
       },
-      "status": {
-        "description": "The status of the activity",
-        "type": "string"
+      "frequency": {
+        "enum": [
+          "ONE_TIME",
+          "HOURLY",
+          "DAILY",
+          "WEEKLY",
+          "MONTHLY",
+          "ANNUALLY"
+        ]
       },
-      "creator": {
-        "$ref": "#/definitions/user"
+      "recurrence": {
+        "description": "The recurrence of the todo",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
       }
     },
     "required": [
-      "title",
-      "type",
-      "created",
-      "creator"
+      "start",
+      "end"
+    ]
+  },
+
+  "location-attribute": {
+    "title": "Location Attribute",
+    "description": "Location related attributes",
+    "type": "object",
+    "properties": {
+      "location": {
+        "description": "The text specifies the location",
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "required": [
+      "location"
+    ]
+  },
+
+  "tag-attribute": {
+    "title": "Tag Attribute",
+    "description": "Tag related attributes",
+    "type": "object",
+    "properties": {
+      "tags": {
+        "description": "The tags associated with the todo",
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/tag"
+        }
+      }
+    },
+    "required": [
+      "tags"
+    ]
+  },
+
+  "timeline-attribute": {
+    "title": "Timeline Attribute",
+    "description": "Timeline related attributes",
+    "type": "object",
+    "properties": {
+      "startBy": {
+        "description": "The timestamp when the todo should be started",
+        "type": "string",
+        "minLength": 1,
+        "format": "date-time"
+      },
+      "completeBy": {
+        "description": "The timestamp when the todo should be completed",
+        "type": "string",
+        "minLength": 1,
+        "format": "date-time"
+      }
+    },
+    "anyOf": [
+      {
+        "required": [
+          "startBy"
+        ]
+      },
+      {
+        "required": [
+          "completeBy"
+        ]
+      }
     ]
   },
 
   "definitions": {
-    "user": {
+    "tag": {
       "type": "object",
       "properties": {
-        "id": {
-          "description": "The unique identifier for the user",
+        "value": {
+          "description": "The text string for this tag",
           "type": "string",
           "minLength": 1
         },
-        "email": {
-          "description": "The email for the user",
+        "rgbHexCode": {
+          "description": "The RGB hex value for the color associated with this tag",
           "type": "string",
-          "format": "email"
-        },
-        "displayName": {
-          "description": "The display name for the user",
-          "type": "string",
-          "minLength": 1
-        },
-        "self": {
-          "description": "Whether this creator is the user himself",
-          "type": "boolean"
+          "minLength": 7,
+          "maxLength": 7
         }
       },
       "required": [
-        "id",
-        "email",
-        "displayName",
-        "self"
+        "value"
       ]
     }
   }

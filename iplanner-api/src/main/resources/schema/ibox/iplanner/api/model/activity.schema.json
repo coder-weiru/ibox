@@ -27,7 +27,7 @@
         "description": "The description of the activity",
         "type": "string"
       },
-      "type": {
+      "activityType": {
         "description": "The activity type",
         "type": "string",
         "minLength": 1
@@ -44,7 +44,7 @@
         "minLength": 1,
         "format": "date-time"
       },
-      "status": {
+      "activityStatus": {
         "description": "The status of the activity",
         "type": "string"
       },
@@ -54,7 +54,7 @@
     },
     "required": [
       "title",
-      "type",
+      "activityType",
       "created",
       "creator"
     ]

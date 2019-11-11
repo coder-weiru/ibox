@@ -23,6 +23,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.Collections;
 import java.util.UUID;
 
+import static ibox.iplanner.api.service.TestHelper.*;
 import static ibox.iplanner.api.util.ApiErrorConstants.*;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.is;
@@ -73,7 +74,6 @@ public class CreateTodoFromActivityHandlerTest {
 
     @Test
     public void createTodoFromMeeting_shouldReturnValidMeetingTodo() {
-        /*
         Meeting meeting = MeetingUtil.anyMeeting();
         meeting.setId(UUID.randomUUID().toString());
 
@@ -89,21 +89,21 @@ public class CreateTodoFromActivityHandlerTest {
 
         assertThat(todo.getSummary(), not(isEmptyString()));
         assertThat(todo.getDescription(), not(isEmptyString()));
-        assertThat(todo.getActivity(), is(equalTo(meeting.getId())));
-        assertThat(todo.getStatus(), not(isEmptyString()));
+        assertThat(todo.getActivityId(), is(equalTo(meeting.getId())));
+        assertThat(todo.getActivityType(), is(equalTo(Meeting.MEETING_TYPE)));
+        assertThat(todo.getStatus(), notNullValue());
         assertThat(todo.getCreator(), notNullValue());
         assertThat(todo.getCreated(), notNullValue());
         assertThat(todo.getUpdated(), notNullValue());
-        assertThat(todo.getStart(), notNullValue());
-        assertThat(todo.getEnd(), notNullValue());
-        assertThat(todo.getEndTimeUnspecified(), is(Boolean.TRUE));
 
-         */
+        verifyTaggingAttributeAreEqual((TagAttribute) meeting.getAttribute(TodoFeature.TAGGING_FEATURE), (TagAttribute) todo.getAttribute(TodoFeature.TAGGING_FEATURE));
+        verifyEventAttributeAreEqual((EventAttribute) meeting.getAttribute(TodoFeature.EVENT_FEATURE), (EventAttribute) todo.getAttribute(TodoFeature.EVENT_FEATURE));
+        verifyLocationAttributeAreEqual((LocationAttribute) meeting.getAttribute(TodoFeature.LOCATION_FEATURE), (LocationAttribute) todo.getAttribute(TodoFeature.LOCATION_FEATURE));
+
     }
 
     @Test
     public void createTodoFromTask_shouldReturnValidTaskTodo() {
-        /*
         Task task = TaskUtil.anyTask();
         task.setId(UUID.randomUUID().toString());
 
@@ -119,15 +119,16 @@ public class CreateTodoFromActivityHandlerTest {
 
         assertThat(todo.getSummary(), not(isEmptyString()));
         assertThat(todo.getDescription(), not(isEmptyString()));
-        assertThat(todo.getActivity(), is(equalTo(task.getId())));
-        assertThat(todo.getStatus(), not(isEmptyString()));
+        assertThat(todo.getActivityId(), is(equalTo(task.getId())));
+        assertThat(todo.getActivityType(), is(equalTo(Task.TASK_TYPE)));
+        assertThat(todo.getStatus(), notNullValue());
         assertThat(todo.getCreator(), notNullValue());
         assertThat(todo.getCreated(), notNullValue());
         assertThat(todo.getUpdated(), notNullValue());
-        assertThat(todo.getStart(), notNullValue());
-        assertThat(todo.getEndTimeUnspecified(), is(Boolean.FALSE));
 
-         */
+        verifyTaggingAttributeAreEqual((TagAttribute) task.getAttribute(TodoFeature.TAGGING_FEATURE), (TagAttribute) todo.getAttribute(TodoFeature.TAGGING_FEATURE));
+        verifyTimelineAttributeAreEqual((TimelineAttribute) task.getAttribute(TodoFeature.TIMELINE_FEATURE), (TimelineAttribute) todo.getAttribute(TodoFeature.TIMELINE_FEATURE));
+
     }
 
     @Test

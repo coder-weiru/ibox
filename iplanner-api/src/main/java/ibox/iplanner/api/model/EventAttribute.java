@@ -13,6 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @ToString
+@EqualsAndHashCode
 public class EventAttribute extends TodoAttribute {
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")

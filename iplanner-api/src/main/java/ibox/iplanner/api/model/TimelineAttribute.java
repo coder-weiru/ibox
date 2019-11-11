@@ -11,6 +11,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @Builder
 @ToString
+@EqualsAndHashCode
 public class TimelineAttribute extends TodoAttribute {
 
     private Instant startBy;

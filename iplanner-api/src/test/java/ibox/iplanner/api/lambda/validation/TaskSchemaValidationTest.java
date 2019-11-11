@@ -131,13 +131,4 @@ public class TaskSchemaValidationTest {
         task.getCreator().setSelf(null);
         validator.validate(JsonUtil.toJsonString(task), Task.class, "/task");
     }
-
-    @Test(expected = InvalidInputException.class)
-    public void givenTaskMissingDeadline_validateTaskShouldFail() {
-
-        Task task = TaskUtil.anyTask();
-        //task.setDeadline(null);
-        validator.validate(JsonUtil.toJsonString(task), Task.class, "/task");
-    }
-
 }

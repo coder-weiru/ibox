@@ -12,8 +12,10 @@ import ibox.iplanner.api.service.TodoDataService;
 import ibox.iplanner.api.util.JsonUtil;
 
 import javax.inject.Inject;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.StringTokenizer;
 
 import static ibox.iplanner.api.lambda.validation.RequestEventValidator.UUID_PATTERN;
 import static ibox.iplanner.api.util.ApiErrorConstants.SC_NOT_FOUND;
@@ -43,6 +45,14 @@ public class ListTodoHandler implements RequestHandler<APIGatewayProxyRequestEve
             final String creatorId  = pathParameterMap.get("creatorId");
 
             Map<String, String> requestParameterMap = requestEvent.getQueryStringParameters();
+            final String activitiesParam = Optional.ofNullable(requestParameterMap)
+                    .map(mapNode -> mapNode.get("activities"))
+                    .orElse(null);
+            HashSet<String> activitySet = new HashSet();
+            StringTokenizer st = new StringTokenizer(activitiesParam, ",");
+            while(st.hasMoreTokens()) {
+                activitySet.add(st.nextToken().trim());
+            }
             final String status = Optional.ofNullable(requestParameterMap)
                     .map(mapNode -> mapNode.get("status"))
                     .orElse(null);
@@ -57,7 +67,12 @@ public class ListTodoHandler implements RequestHandler<APIGatewayProxyRequestEve
             if (!StringUtils.isNullOrEmpty(limit)) {
                 queryLimit = Integer.valueOf(limit);
             }
-            Optional todoList = Optional.ofNullable(todoDataService.getMyTodoListByFilter(creatorId, null, queryStatus.name(), queryLimit));
+            Optional todoList;
+            if (activitySet.isEmpty()) {
+                todoList = Optional.ofNullable(todoDataService.getMyTodoListByFilter(creatorId, queryStatus.name(), queryLimit));
+            } else {
+                todoList = Optional.ofNullable(todoDataService.getMyTodoListByFilter(creatorId, activitySet, queryStatus.name(), queryLimit));
+            }
             if (todoList.isPresent()) {
                 responseEvent.setBody(JsonUtil.toJsonString(todoList.get()));
                 responseEvent.setStatusCode(SC_OK);

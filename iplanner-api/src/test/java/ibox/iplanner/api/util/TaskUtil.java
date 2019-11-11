@@ -14,11 +14,12 @@ public class TaskUtil extends ActivityUtil {
         Task task = new Task();
         task.setTitle(anyActivityTitle());
         task.setDescription(anyDescription());
-        task.setActivityStatus(anyActivityStatus().name());
-        task.setActivityType("task");
+        task.setActivityStatus(anyActivityStatus());
+        task.setActivityType(Task.TASK_TYPE);
         task.setCreated(anyCreatedTime());
         task.setUpdated(anyUpdatedTime());
         task.setCreator(anyActivityCreator());
+        task.setAttribute(anyTagAttribute());
         task.setAttribute(anyTimelineAttribute());
         return task;
     }

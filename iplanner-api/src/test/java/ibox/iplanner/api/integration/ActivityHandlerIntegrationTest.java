@@ -6,12 +6,7 @@ import ibox.iplanner.api.lambda.runtime.TestContext;
 import ibox.iplanner.api.model.Activity;
 import ibox.iplanner.api.model.ActivityStatus;
 import ibox.iplanner.api.model.User;
-import ibox.iplanner.api.model.updatable.Updatable;
-import ibox.iplanner.api.model.updatable.UpdatableAttribute;
-import ibox.iplanner.api.model.updatable.UpdatableKey;
-import ibox.iplanner.api.model.updatable.UpdateAction;
 import ibox.iplanner.api.service.LocalDynamoDBIntegrationTestSupport;
-import ibox.iplanner.api.service.dbmodel.ActivityDefinition;
 import ibox.iplanner.api.util.ActivityUtil;
 import ibox.iplanner.api.util.JsonUtil;
 import ibox.iplanner.api.util.MeetingUtil;
@@ -25,6 +20,7 @@ import java.util.*;
 
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,6 +45,7 @@ public class ActivityHandlerIntegrationTest extends LocalDynamoDBIntegrationTest
     @Before
     public void setup() {
         activity = ActivityUtil.anyActivity();
+        activity.setActivityStatus(ActivityStatus.ACTIVE);
     }
 
     @Test
@@ -105,44 +102,25 @@ public class ActivityHandlerIntegrationTest extends LocalDynamoDBIntegrationTest
         String newTitle = "new title";
         String newDescription = "new description";
         String newTemplate = "new template";
-        Set<UpdatableAttribute> updatableAttributeSet = new HashSet<>();
-        updatableAttributeSet.add( UpdatableAttribute.builder()
-                .attributeName(ActivityDefinition.FIELD_NAME_TITLE)
-                .action(UpdateAction.UPDATE)
-                .value(newTitle)
-                .build());
-        updatableAttributeSet.add( UpdatableAttribute.builder()
-                .attributeName(ActivityDefinition.FIELD_NAME_DESCRIPTION)
-                .action(UpdateAction.UPDATE)
-                .value(newDescription)
-                .build());
-        updatableAttributeSet.add( UpdatableAttribute.builder()
-                .attributeName(ActivityDefinition.FIELD_NAME_ACTIVITY_TYPE)
-                .action(UpdateAction.UPDATE)
-                .value(newTemplate)
-                .build());
 
-        Updatable updatable = Updatable.builder()
-                .objectType("activity")
-                .primaryKey(new UpdatableKey()
-                        .addComponent(ActivityDefinition.FIELD_NAME_ID, added.getId()))
-                .updatableAttributes(updatableAttributeSet)
-                .build();
+        added.setTitle(newTitle);
+        added.setDescription(newDescription);
+        added.setActivityType(newTemplate);
 
-        updateActivity(added.getId(), updatable);
+        updateActivity(added.getId(), added);
 
         Activity updated = getActivity(added.getId());
 
         assertThat(updated.getTitle(), is(equalTo(newTitle)));
         assertThat(updated.getDescription(), is(equalTo(newDescription)));
-        assertThat(updated.getActivityType(), is(equalTo(newTemplate)));
+        assertThat(updated.getActivityType(), is(equalTo(activity.getActivityType())));
 
         assertThat(updated.getCreator().getId(), is(equalTo(activity.getCreator().getId())));
         assertThat(updated.getCreator().getDisplayName(), is(equalTo(activity.getCreator().getDisplayName())));
         assertThat(updated.getCreator().getEmail(), is(equalTo(activity.getCreator().getEmail())));
         assertThat(updated.getCreator().getSelf(), is(equalTo(activity.getCreator().getSelf())));
         assertThat(updated.getCreated(), is(equalTo(activity.getCreated())));
-        assertThat(updated.getUpdated(), is(equalTo(activity.getUpdated())));
+        assertThat(updated.getUpdated(), not(equalTo(activity.getUpdated())));
         assertThat(updated.getActivityStatus(), is(equalTo(activity.getActivityStatus())));
 
     }
@@ -156,7 +134,7 @@ public class ActivityHandlerIntegrationTest extends LocalDynamoDBIntegrationTest
 
         Activity deleted = getActivity(added.getId());
 
-        assertThat(deleted.getActivityStatus(), is(equalTo(ActivityStatus.INACTIVE.name())));
+        assertThat(deleted.getActivityStatus(), is(equalTo(ActivityStatus.INACTIVE)));
 
     }
 
@@ -165,20 +143,9 @@ public class ActivityHandlerIntegrationTest extends LocalDynamoDBIntegrationTest
 
         Activity added = addActivity(activity);
 
-        Set<UpdatableAttribute> updatableAttributeSet = new HashSet<>();
-        updatableAttributeSet.add( UpdatableAttribute.builder()
-                .attributeName(ActivityDefinition.FIELD_NAME_ID)
-                .action(UpdateAction.UPDATE)
-                .value("1234567890")
-                .build());
-        Updatable updatable = Updatable.builder()
-                .objectType("activity")
-                .primaryKey(new UpdatableKey()
-                        .addComponent(ActivityDefinition.FIELD_NAME_ID, added.getId()))
-                .updatableAttributes(updatableAttributeSet)
-                .build();
+        added.setId("123456789");
 
-        updateActivityResultInInternalServerError(added.getId(), updatable);
+        updateActivityResultInInternalServerError(added.getId(), added);
     }
 
     @Test
@@ -190,27 +157,27 @@ public class ActivityHandlerIntegrationTest extends LocalDynamoDBIntegrationTest
 
         Activity activity1 = ActivityUtil.anyActivity();
         activity1.setCreator(creator1);
-        activity1.setActivityStatus(ActivityStatus.ACTIVE.name());
+        activity1.setActivityStatus(ActivityStatus.ACTIVE);
 
         Activity activity2 = ActivityUtil.anyActivity();
         activity2.setCreator(creator1);
-        activity2.setActivityStatus(ActivityStatus.ACTIVE.name());
+        activity2.setActivityStatus(ActivityStatus.ACTIVE);
 
         Activity activity3 = ActivityUtil.anyActivity();
         activity3.setCreator(creator1);
-        activity3.setActivityStatus(ActivityStatus.INACTIVE.name());
+        activity3.setActivityStatus(ActivityStatus.INACTIVE);
 
         Activity activity4 = ActivityUtil.anyActivity();
         activity4.setCreator(creator2);
-        activity4.setActivityStatus(ActivityStatus.INACTIVE.name());
+        activity4.setActivityStatus(ActivityStatus.INACTIVE);
 
         Activity activity5 = ActivityUtil.anyActivity();
         activity5.setCreator(creator1);
-        activity5.setActivityStatus(ActivityStatus.ACTIVE.name());
+        activity5.setActivityStatus(ActivityStatus.ACTIVE);
 
         Activity activity6 = ActivityUtil.anyActivity();
         activity6.setCreator(creator1);
-        activity6.setActivityStatus(ActivityStatus.ACTIVE.name());
+        activity6.setActivityStatus(ActivityStatus.ACTIVE);
 
         List<Activity> activities = Arrays.asList( new Activity[] {activity1, activity2, activity3, activity4, activity5, activity6});
 
@@ -267,7 +234,7 @@ public class ActivityHandlerIntegrationTest extends LocalDynamoDBIntegrationTest
         assertEquals(200, deleteResponseEvent.getStatusCode());
     }
 
-    private void updateActivity(String activityId, Updatable updatable) {
+    private void updateActivity(String activityId, Activity updatable) {
         APIGatewayProxyRequestEvent updateRequestEvent = new APIGatewayProxyRequestEvent();
         updateRequestEvent.setPathParameters(Collections.singletonMap("activityId", activityId));
         updateRequestEvent.setBody(JsonUtil.toJsonString(updatable));
@@ -276,7 +243,7 @@ public class ActivityHandlerIntegrationTest extends LocalDynamoDBIntegrationTest
         assertEquals(200, updateResponseEvent.getStatusCode());
     }
 
-    private void updateActivityResultInInternalServerError(String activityId, Updatable updatable) {
+    private void updateActivityResultInInternalServerError(String activityId, Activity updatable) {
         APIGatewayProxyRequestEvent updateRequestEvent = new APIGatewayProxyRequestEvent();
         updateRequestEvent.setPathParameters(Collections.singletonMap("activityId", activityId));
         updateRequestEvent.setBody(JsonUtil.toJsonString(updatable));

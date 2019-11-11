@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @ToString
+@EqualsAndHashCode
 public class TagAttribute extends TodoAttribute {
 
     private List<Tag> tags = new ArrayList<>();

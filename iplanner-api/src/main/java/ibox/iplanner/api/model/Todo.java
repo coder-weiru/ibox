@@ -69,8 +69,8 @@ public class Todo {
     }
 
     protected void copyAttributeValuesFromActivity(Activity activity) {
-        if (activity!=null && !activity.getAttributeSet().getAllAttributes().isEmpty()) {
-            activity.getAttributeSet().getAllAttributes().stream().forEach( attribute -> attributeSet.addAttribute(attribute));
+        if (activity!=null && !activity.getAttributeSet().getAttributes().isEmpty()) {
+            activity.getAttributeSet().getAttributes().stream().forEach( attribute -> attributeSet.addAttribute(attribute));
         }
     }
 }

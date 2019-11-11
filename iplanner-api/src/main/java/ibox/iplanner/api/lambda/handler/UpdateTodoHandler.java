@@ -8,7 +8,6 @@ import ibox.iplanner.api.lambda.exception.GlobalExceptionHandler;
 import ibox.iplanner.api.lambda.validation.JsonSchemaValidator;
 import ibox.iplanner.api.lambda.validation.RequestEventValidator;
 import ibox.iplanner.api.model.Todo;
-import ibox.iplanner.api.model.updatable.Updatable;
 import ibox.iplanner.api.service.TodoDataService;
 import ibox.iplanner.api.util.JsonUtil;
 
@@ -35,9 +34,9 @@ public class UpdateTodoHandler implements RequestHandler<APIGatewayProxyRequestE
         APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
         try {
             requestEventValidator.validateBody(requestEvent);
-            jsonSchemaValidator.validate(requestEvent.getBody(), Updatable.class);
+            jsonSchemaValidator.validate(requestEvent.getBody(), Todo.class);
 
-            Updatable updatable = (Updatable) JsonUtil.fromJsonString(requestEvent.getBody(), Updatable.class);
+            Todo updatable = (Todo) JsonUtil.fromJsonString(requestEvent.getBody(), Todo.class);
 
             Todo updated = todoDataService.updateTodo(updatable);
 

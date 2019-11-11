@@ -9,11 +9,9 @@ import ibox.iplanner.api.config.IPlannerComponent;
 import ibox.iplanner.api.lambda.runtime.TestContext;
 import ibox.iplanner.api.model.ApiError;
 import ibox.iplanner.api.model.Todo;
-import ibox.iplanner.api.model.updatable.*;
 import ibox.iplanner.api.service.TodoDataService;
-import ibox.iplanner.api.service.dbmodel.TodoDefinition;
-import ibox.iplanner.api.util.TodoUtil;
 import ibox.iplanner.api.util.JsonUtil;
+import ibox.iplanner.api.util.TodoUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,11 +21,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import static ibox.iplanner.api.util.ApiErrorConstants.*;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
@@ -42,14 +37,12 @@ public class UpdateTodoHandlerTest {
 
     private Todo todo;
 
-    private Updatable updatable;
-
     private String newSummary = "new title";
     private String newDescription = "new description";
     private String newActivity = "new activity";
 
     @Mock
-    private TodoDataService TodoDataServiceMock;
+    private TodoDataService todoDataServiceMock;
 
     public UpdateTodoHandlerTest() {
         IPlannerComponent iPlannerComponent = DaggerIPlannerComponent.builder().build();
@@ -58,115 +51,48 @@ public class UpdateTodoHandlerTest {
 
     @Before
     public void setUp() {
-        /*
         this.todo = TodoUtil.anyTodo();
-
-        Set<UpdatableAttribute> updatableAttributeSet = new HashSet<>();
-        updatableAttributeSet.add(UpdatableAttribute.builder()
-                .attributeName(TodoDefinition.FIELD_NAME_SUMMARY)
-                .action(UpdateAction.UPDATE)
-                .value(newSummary)
-                .build());
-        updatableAttributeSet.add(UpdatableAttribute.builder()
-                .attributeName(TodoDefinition.FIELD_NAME_DESCRIPTION)
-                .action(UpdateAction.UPDATE)
-                .value(newDescription)
-                .build());
-        updatableAttributeSet.add(UpdatableAttribute.builder()
-                .attributeName(TodoDefinition.FIELD_NAME_ACTIVITY)
-                .action(UpdateAction.UPDATE)
-                .value(newActivity)
-                .build());
-
-        updatable = Updatable.builder()
-                .objectType("todo")
-                .primaryKey(new UpdatableKey()
-                        .addComponent(TodoDefinition.FIELD_NAME_ID, todo.getId()))
-                .updatableAttributes(updatableAttributeSet)
-                .build();
-
-         */
     }
 
     @Test
     public void updateTodo_shouldInvokeTodoDateServiceWithUpdatable() throws Exception {
-        /*
-
-        when(TodoDataServiceMock.updateTodo(any(Updatable.class))).thenReturn(todo);
+        when(todoDataServiceMock.updateTodo(any(Todo.class))).thenReturn(todo);
 
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         requestEvent.setPathParameters(Collections.singletonMap("todoId", todo.getId()));
-        requestEvent.setBody(JsonUtil.toJsonString(updatable));
+        requestEvent.setBody(JsonUtil.toJsonString(todo));
         APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
 
         assertEquals(200, responseEvent.getStatusCode());
 
-        ArgumentCaptor<Updatable> requestCaptor = ArgumentCaptor.forClass(Updatable.class);
+        ArgumentCaptor<Todo> requestCaptor = ArgumentCaptor.forClass(Todo.class);
 
-        verify(TodoDataServiceMock, times(1)).updateTodo(requestCaptor.capture());
+        verify(todoDataServiceMock, times(1)).updateTodo(requestCaptor.capture());
 
-        verifyNoMoreInteractions(TodoDataServiceMock);
+        verifyNoMoreInteractions(todoDataServiceMock);
 
-        Updatable argument = requestCaptor.getValue();
+        Todo argument = requestCaptor.getValue();
 
-        assertThat(argument.getObjectType(), is(equalTo("todo")));
-        assertThat(argument.getPrimaryKey().getComponents(), hasItem(new KeyAttribute(TodoDefinition.FIELD_NAME_ID, todo.getId())));
-        assertThat(argument.getUpdatableAttributes(), hasItem(UpdatableAttribute.builder()
-                .attributeName(TodoDefinition.FIELD_NAME_SUMMARY)
-                .action(UpdateAction.UPDATE)
-                .value(newSummary)
-                .build()));
-        assertThat(argument.getUpdatableAttributes(), hasItem(UpdatableAttribute.builder()
-                .attributeName(TodoDefinition.FIELD_NAME_DESCRIPTION)
-                .action(UpdateAction.UPDATE)
-                .value(newDescription)
-                .build()));
-        assertThat(argument.getUpdatableAttributes(), hasItem(UpdatableAttribute.builder()
-                .attributeName(TodoDefinition.FIELD_NAME_ACTIVITY)
-                .action(UpdateAction.UPDATE)
-                .value(newActivity)
-                .build()));
-
-         */
+        assertThat(argument.getId(), is(equalTo(todo.getId())));
+        assertThat(argument.getSummary(), is(equalTo(newSummary)));
+        assertThat(argument.getDescription(), is(equalTo(newDescription)));
+        assertThat(argument.getActivityType(), is(equalTo(todo.getActivityType())));
     }
 
     @Test
     public void updateTodo_shouldReturnBadRequestMessageIfMissingKey() throws Exception {
-        updatable.setPrimaryKey(null);
+        todo.setId(null);
 
         verifyBadRequestMessage();
     }
-
-    @Test
-    public void updateTodo_shouldReturnBadRequestMessageIfMissingObjectType() throws Exception {
-        updatable.setObjectType(null);
-
-        verifyBadRequestMessage();
-    }
-
-    @Test
-    public void updateTodo_shouldReturnBadRequestMessageIfUpdatableAttributeIsEmpty() throws Exception {
-        updatable.getUpdatableAttributes().clear();
-
-        verifyBadRequestMessage();
-    }
-
-    @Test
-    public void updateTodo_shouldReturnBadRequestMessageIfUpdatableAttributeUpdateActionNotSpecified() throws Exception {
-        updatable.getUpdatableAttributes().stream().forEach(e -> {
-            e.setAction(null);
-        });
-        verifyBadRequestMessage();
-    }
-
 
     private void verifyBadRequestMessage() throws Exception {
 
-        when(TodoDataServiceMock.updateTodo(any(Updatable.class))).thenReturn(todo);
+        when(todoDataServiceMock.updateTodo(any(Todo.class))).thenReturn(todo);
 
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         requestEvent.setPathParameters(Collections.singletonMap("todoId", todo.getId()));
-        requestEvent.setBody(JsonUtil.toJsonString(updatable));
+        requestEvent.setBody(JsonUtil.toJsonString(todo));
         APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
 
         assertEquals(400, responseEvent.getStatusCode());
@@ -188,11 +114,11 @@ public class UpdateTodoHandlerTest {
         amazonDynamoDBException.setRequestId("request1");
         amazonDynamoDBException.setErrorMessage("error message");
 
-        doThrow(amazonDynamoDBException).when(TodoDataServiceMock).updateTodo(any(Updatable.class));
+        doThrow(amazonDynamoDBException).when(todoDataServiceMock).updateTodo(any(Todo.class));
 
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         requestEvent.setPathParameters(Collections.singletonMap("todoId", todo.getId()));
-        requestEvent.setBody(JsonUtil.toJsonString(updatable));
+        requestEvent.setBody(JsonUtil.toJsonString(todo));
         APIGatewayProxyResponseEvent responseEvent = handler.handleRequest(requestEvent, TestContext.builder().build());
 
         assertEquals(500, responseEvent.getStatusCode());

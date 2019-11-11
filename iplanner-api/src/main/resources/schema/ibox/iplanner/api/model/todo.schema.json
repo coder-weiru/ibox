@@ -27,10 +27,18 @@
         "description": "The description of the todo",
         "type": "string"
       },
-      "activity": {
+      "activityId": {
         "description": "The associated activity identifier of the todo",
         "type": "string",
         "minLength": 1
+      },
+      "activityType": {
+        "description": "The associated activity type of the todo",
+        "enum": [
+          "activity",
+          "meeting",
+          "task"
+        ]
       },
       "created": {
         "description": "The timestamp when the todo is created",
@@ -44,80 +52,52 @@
         "minLength": 1,
         "format": "date-time"
       },
-      "start": {
-        "description": "The timestamp when the todo starts",
-        "type": "string",
-        "minLength": 1,
-        "format": "date-time"
-      },
-      "end": {
-        "description": "The timestamp when the todo ends",
-        "type": "string",
-        "minLength": 1,
-        "format": "date-time"
-      },
       "status": {
         "description": "The status of the todo",
         "type": "string"
       },
       "creator": {
-        "$ref": "#/definitions/user"
+        "$ref": "http://iplanner-api.ibox.com/activity.schema.json#/definitions/user"
       },
-      "location": {
-        "description": "The location where the todo takes place",
-        "type": "string"
-      },
-      "endTimeUnspecified": {
-        "description": "Whether the end time has been specified for the todo",
-        "type": "boolean"
-      },
-      "recurrence": {
-        "description": "The recurrence of the todo",
-        "type": "array",
-        "items": {
-          "type": "string"
-        }
+      "attributeSet": {
+        "$ref": "#/definitions/attribute-set"
       }
     },
     "required": [
       "summary",
-      "activity",
+      "activityId",
+      "activityType",
       "created",
-      "creator",
-      "start"
+      "creator"
     ]
   },
 
   "definitions": {
-    "user": {
+    "attribute-set": {
+      "description": "A container to hold a set of attributes",
       "type": "object",
       "properties": {
-        "id": {
-          "description": "The unique identifier for the user",
-          "type": "string",
-          "minLength": 1
-        },
-        "email": {
-          "description": "The email for the user",
-          "type": "string",
-          "format": "email"
-        },
-        "displayName": {
-          "description": "The display name for the user",
-          "type": "string",
-          "minLength": 1
-        },
-        "self": {
-          "description": "Whether this creator is the user himself",
-          "type": "boolean"
+        "attributes": {
+          "description": "The attributes associated with the meeting",
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/tag-attribute"
+              },
+              {
+                "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/event-attribute"
+              },
+              {
+                "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/location-attribute"
+              },
+              {
+                "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/timeline-attribute"
+              }
+            ]
+          }
         }
-      },
-      "required": [
-        "id",
-        "email",
-        "displayName",
-        "self"
-      ]
+      }
     }
   }
 }

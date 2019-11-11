@@ -1,13 +1,8 @@
 package ibox.iplanner.api.service;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.model.AmazonDynamoDBException;
+import ibox.iplanner.api.lambda.exception.InvalidInputException;
 import ibox.iplanner.api.model.*;
-import ibox.iplanner.api.model.updatable.Updatable;
-import ibox.iplanner.api.model.updatable.UpdatableAttribute;
-import ibox.iplanner.api.model.updatable.UpdatableKey;
-import ibox.iplanner.api.model.updatable.UpdateAction;
-import ibox.iplanner.api.service.dbmodel.ActivityDefinition;
 import ibox.iplanner.api.util.ActivityUtil;
 import ibox.iplanner.api.util.MeetingUtil;
 import ibox.iplanner.api.util.TaskUtil;
@@ -16,9 +11,7 @@ import org.junit.Test;
 
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static ibox.iplanner.api.service.TestHelper.*;
 import static org.hamcrest.CoreMatchers.is;
@@ -95,38 +88,58 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
 
         Activity dbActivity = activityDataService.getActivity(activity.getId());
 
-        String newTitle = "new title";
-        String newDescription = "new description";
-        String newTemplate = "new template";
-        Set<UpdatableAttribute> updatableAttributeSet = new HashSet<>();
-        updatableAttributeSet.add( UpdatableAttribute.builder()
-            .attributeName(ActivityDefinition.FIELD_NAME_TITLE)
-            .action(UpdateAction.UPDATE)
-            .value(newTitle)
-            .build());
-        updatableAttributeSet.add( UpdatableAttribute.builder()
-                .attributeName(ActivityDefinition.FIELD_NAME_DESCRIPTION)
-                .action(UpdateAction.UPDATE)
-                .value(newDescription)
-                .build());
-        updatableAttributeSet.add( UpdatableAttribute.builder()
-                .attributeName(ActivityDefinition.FIELD_NAME_ACTIVITY_TYPE)
-                .action(UpdateAction.UPDATE)
-                .value(newTemplate)
-                .build());
+        dbActivity.setTitle("new title");
+        dbActivity.setDescription("new description");
+        dbActivity.setActivityType("new activity");
 
-        Updatable updatable = Updatable.builder()
-                .objectType("activity")
-                .primaryKey(new UpdatableKey()
-                        .addComponent(ActivityDefinition.FIELD_NAME_ID, dbActivity.getId()))
-                .updatableAttributes(updatableAttributeSet)
-                .build();
+        Activity updated = activityDataService.updateActivity(dbActivity);
 
-        Activity updated = activityDataService.updateActivity(updatable);
+        assertThat(updated.getTitle(), is(equalTo("new title")));
+        assertThat(updated.getDescription(), is(equalTo("new description")));
+        assertThat(updated.getActivityType(), is(equalTo(activity.getActivityType())));
 
-        assertThat(updated.getTitle(), is(equalTo(newTitle)));
-        assertThat(updated.getDescription(), is(equalTo(newDescription)));
-        assertThat(updated.getActivityType(), is(equalTo(newTemplate)));
+    }
+
+    @Test
+    public void givenValidUpdatable_updateActivity_shouldUpdateItsAttributeSet() {
+
+        Meeting meeting = MeetingUtil.anyMeeting();
+
+        activityDataService.addActivity(meeting);
+
+        Activity dbActivity = activityDataService.getActivity(meeting.getId());
+
+        Instant now = Instant.now();
+        EventAttribute eventAttribute = (EventAttribute) dbActivity.getAttribute(TodoFeature.EVENT_FEATURE);
+        eventAttribute.setStart(now);
+        eventAttribute.setFrequency(Frequency.ONE_TIME);
+        eventAttribute.getRecurrence().clear();
+
+        TagAttribute tagAttribute = (TagAttribute) dbActivity.getAttribute(TodoFeature.TAGGING_FEATURE);
+        tagAttribute.getTags().clear();
+        tagAttribute.getTags().add(new Tag("abc", "#111111"));
+
+        LocationAttribute locationAttribute = (LocationAttribute) dbActivity.getAttribute(TodoFeature.LOCATION_FEATURE);
+        locationAttribute.setLocation("new location");
+
+        dbActivity.setAttribute(eventAttribute);
+        dbActivity.setAttribute(tagAttribute);
+        dbActivity.setAttribute(locationAttribute);
+
+        Activity updated = activityDataService.updateActivity(dbActivity);
+
+        EventAttribute newEventAttribute = (EventAttribute) updated.getAttribute(TodoFeature.EVENT_FEATURE);
+        assertThat(newEventAttribute.getStart(), is(equalTo(now)));
+        assertThat(newEventAttribute.getFrequency(), is(equalTo(Frequency.ONE_TIME)));
+        assertThat(newEventAttribute.getRecurrence().size(), is(equalTo(0)));
+
+        TagAttribute newTagAttribute = (TagAttribute) dbActivity.getAttribute(TodoFeature.TAGGING_FEATURE);
+        assertThat(newTagAttribute.getTags().size(), is(equalTo(0)));
+        assertThat(newTagAttribute.getTags().get(0).getValue(), is(equalTo("abc")));
+        assertThat(newTagAttribute.getTags().get(0).getRgbHexCode(), is(equalTo("#111111")));
+
+        LocationAttribute newLocationAttribute = (LocationAttribute) dbActivity.getAttribute(TodoFeature.LOCATION_FEATURE);
+        assertThat(newLocationAttribute.getLocation(), is(equalTo("new location")));
 
     }
 
@@ -134,7 +147,7 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
     public void givenValidId_deleteActivity_shouldUpdateActivityStatus() {
 
         Activity activity = ActivityUtil.anyActivity();
-        activity.setActivityStatus(ActivityStatus.ACTIVE.name());
+        activity.setActivityStatus(ActivityStatus.ACTIVE);
 
         activityDataService.addActivity(activity);
 
@@ -142,15 +155,15 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
 
         Activity deleted = activityDataService.deleteActivity(dbActivity.getId());
 
-        assertThat(deleted.getActivityStatus(), is(equalTo(ActivityStatus.INACTIVE.name())));
+        assertThat(deleted.getActivityStatus(), is(equalTo(ActivityStatus.INACTIVE)));
 
         Activity theActivity = activityDataService.getActivity(dbActivity.getId());
 
-        assertThat(theActivity.getActivityStatus(), is(equalTo(ActivityStatus.INACTIVE.name())));
+        assertThat(theActivity.getActivityStatus(), is(equalTo(ActivityStatus.INACTIVE)));
 
     }
 
-    @Test(expected = AmazonDynamoDBException.class)
+    @Test(expected = InvalidInputException.class)
     public void givenValidUpdatable_updateActivity_shouldNotUpdateKeyField() {
 
         Activity activity = ActivityUtil.anyActivity();
@@ -159,20 +172,9 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
 
         Activity dbActivity = activityDataService.getActivity(activity.getId());
 
-        Set<UpdatableAttribute> updatableAttributeSet = new HashSet<>();
-        updatableAttributeSet.add( UpdatableAttribute.builder()
-                .attributeName(ActivityDefinition.FIELD_NAME_ID)
-                .action(UpdateAction.UPDATE)
-                .value("1234567890")
-                .build());
-        Updatable updatable = Updatable.builder()
-                .objectType("activity")
-                .primaryKey(new UpdatableKey()
-                        .addComponent(ActivityDefinition.FIELD_NAME_ID, dbActivity.getId()))
-                .updatableAttributes(updatableAttributeSet)
-                .build();
+        dbActivity.setId("123456789");
 
-        Activity updated = activityDataService.updateActivity(updatable);
+        Activity updated = activityDataService.updateActivity(dbActivity);
     }
 
     @Test
@@ -184,27 +186,27 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
 
         Activity activity1 = ActivityUtil.anyActivity();
         activity1.setCreator(creator1);
-        activity1.setActivityStatus(ActivityStatus.ACTIVE.name());
+        activity1.setActivityStatus(ActivityStatus.ACTIVE);
 
         Activity activity2 = ActivityUtil.anyActivity();
         activity2.setCreator(creator1);
-        activity2.setActivityStatus(ActivityStatus.ACTIVE.name());
+        activity2.setActivityStatus(ActivityStatus.ACTIVE);
 
         Activity activity3 = ActivityUtil.anyActivity();
         activity3.setCreator(creator1);
-        activity3.setActivityStatus(ActivityStatus.INACTIVE.name());
+        activity3.setActivityStatus(ActivityStatus.INACTIVE);
 
         Activity activity4 = ActivityUtil.anyActivity();
         activity4.setCreator(creator2);
-        activity4.setActivityStatus(ActivityStatus.INACTIVE.name());
+        activity4.setActivityStatus(ActivityStatus.INACTIVE);
 
         Activity activity5 = ActivityUtil.anyActivity();
         activity5.setCreator(creator1);
-        activity5.setActivityStatus(ActivityStatus.ACTIVE.name());
+        activity5.setActivityStatus(ActivityStatus.ACTIVE);
 
         Activity activity6 = ActivityUtil.anyActivity();
         activity6.setCreator(creator1);
-        activity6.setActivityStatus(ActivityStatus.ACTIVE.name());
+        activity6.setActivityStatus(ActivityStatus.ACTIVE);
 
         List<Activity> activities = Arrays.asList( new Activity[] {activity1, activity2, activity3, activity4, activity5, activity6});
 
@@ -230,14 +232,14 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
         assertThat(expected.getUpdated(), is(equalTo(actual.getUpdated())));
         assertThat(expected.getActivityType(), is(equalTo(actual.getActivityType())));
         assertThat(expected.getActivityStatus(), is(equalTo(actual.getActivityStatus())));
-        assertThat(expected.getAttributeSet().getAllAttributes().size(), is(equalTo(actual.getAttributeSet().getAllAttributes().size())));
-
-        verifyTaggingAttributeAreEqual((TagAttribute) expected.getAttribute(TodoFeature.TAGGING_FEATURE), (TagAttribute) actual.getAttribute(TodoFeature.TAGGING_FEATURE));
+        assertThat(expected.getAttributeSet().getAttributes().size(), is(equalTo(actual.getAttributeSet().getAttributes().size())));
 
         if (expected.getClass().equals(Meeting.class)) {
+            verifyTaggingAttributeAreEqual((TagAttribute) expected.getAttribute(TodoFeature.TAGGING_FEATURE), (TagAttribute) actual.getAttribute(TodoFeature.TAGGING_FEATURE));
             verifyEventAttributeAreEqual((EventAttribute) expected.getAttribute(TodoFeature.EVENT_FEATURE), (EventAttribute) actual.getAttribute(TodoFeature.EVENT_FEATURE));
             verifyLocationAttributeAreEqual((LocationAttribute) expected.getAttribute(TodoFeature.LOCATION_FEATURE), (LocationAttribute) actual.getAttribute(TodoFeature.LOCATION_FEATURE));
         } else if (expected.getClass().equals(Task.class)) {
+            verifyTaggingAttributeAreEqual((TagAttribute) expected.getAttribute(TodoFeature.TAGGING_FEATURE), (TagAttribute) actual.getAttribute(TodoFeature.TAGGING_FEATURE));
             verifyTimelineAttributeAreEqual((TimelineAttribute) expected.getAttribute(TodoFeature.TIMELINE_FEATURE), (TimelineAttribute) actual.getAttribute(TodoFeature.TIMELINE_FEATURE));
         }
     }

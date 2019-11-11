@@ -9,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @ToString
+@EqualsAndHashCode
 public class LocationAttribute extends TodoAttribute {
 
     private String location;

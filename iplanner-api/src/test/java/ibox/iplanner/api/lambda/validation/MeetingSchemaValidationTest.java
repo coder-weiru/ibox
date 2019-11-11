@@ -132,14 +132,4 @@ public class MeetingSchemaValidationTest {
         validator.validate(JsonUtil.toJsonString(meeting), Meeting.class, "/meeting");
     }
 
-    @Test(expected = InvalidInputException.class)
-    public void givenMeetingMissingFrequency_validateMeetingShouldFail() {
-/*
-        Meeting meeting = MeetingUtil.anyMeeting();
-        meeting.setFrequency(null);
-        validator.validate(JsonUtil.toJsonString(meeting), Meeting.class, "/meeting");
-
- */
-    }
-
 }

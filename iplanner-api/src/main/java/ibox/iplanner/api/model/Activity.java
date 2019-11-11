@@ -31,12 +31,10 @@ public class Activity {
     private Instant created;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Instant updated;
-    private String activityStatus;
+    private ActivityStatus activityStatus;
     private AttributeSet attributeSet = new AttributeSet();
 
-    public Activity() {
-        attributeSet.addAttribute(new TagAttribute());
-    }
+    public Activity() {}
 
     public TodoAttribute getAttribute(TodoFeature feature) {
         return attributeSet.getAttribute(feature);

@@ -8,7 +8,6 @@ import ibox.iplanner.api.lambda.exception.GlobalExceptionHandler;
 import ibox.iplanner.api.lambda.validation.JsonSchemaValidator;
 import ibox.iplanner.api.lambda.validation.RequestEventValidator;
 import ibox.iplanner.api.model.Activity;
-import ibox.iplanner.api.model.updatable.Updatable;
 import ibox.iplanner.api.service.ActivityDataService;
 import ibox.iplanner.api.util.JsonUtil;
 
@@ -35,9 +34,9 @@ public class UpdateActivityHandler implements RequestHandler<APIGatewayProxyRequ
         APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
         try {
             requestEventValidator.validateBody(requestEvent);
-            jsonSchemaValidator.validate(requestEvent.getBody(), Updatable.class);
+            jsonSchemaValidator.validate(requestEvent.getBody(), Activity.class);
 
-            Updatable updatable = (Updatable) JsonUtil.fromJsonString(requestEvent.getBody(), Updatable.class);
+            Activity updatable = (Activity) JsonUtil.fromJsonString(requestEvent.getBody(), Activity.class);
 
             Activity updated = activityDataService.updateActivity(updatable);
 

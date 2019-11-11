@@ -32,7 +32,7 @@ public class TodoSchemaValidationTest {
     public void givenTodoMissingSummary_validateTodoShouldFail() {
 
         Todo todo = TodoUtil.anyTodo();
-        //todo.setSummary(null);
+        todo.setSummary(null);
         validator.validate(JsonUtil.toJsonString(todo), Todo.class, "/todo");
     }
 
@@ -40,15 +40,23 @@ public class TodoSchemaValidationTest {
     public void givenTodoEmptySummary_validateTodoShouldFail() {
 
         Todo todo = TodoUtil.anyTodo();
-        //todo.setSummary("");
+        todo.setSummary("");
         validator.validate(JsonUtil.toJsonString(todo), Todo.class, "/todo");
     }
 
     @Test(expected = InvalidInputException.class)
-    public void givenTodoMissingActivity_validateTodoShouldFail() {
+    public void givenTodoMissingActivityId_validateTodoShouldFail() {
 
         Todo todo = TodoUtil.anyTodo();
-        //todo.setActivity(null);
+        todo.setActivityId(null);
+        validator.validate(JsonUtil.toJsonString(todo), Todo.class, "/todo");
+    }
+
+    @Test(expected = InvalidInputException.class)
+    public void givenTodoMissingActivityType_validateTodoShouldFail() {
+
+        Todo todo = TodoUtil.anyTodo();
+        todo.setActivityType(null);
         validator.validate(JsonUtil.toJsonString(todo), Todo.class, "/todo");
     }
 
@@ -56,7 +64,15 @@ public class TodoSchemaValidationTest {
     public void givenTodoEmptyActivity_validateTodoShouldFail() {
 
         Todo todo = TodoUtil.anyTodo();
-        //todo.setActivity("");
+        todo.setActivityId("");
+        validator.validate(JsonUtil.toJsonString(todo), Todo.class, "/todo");
+    }
+
+    @Test(expected = InvalidInputException.class)
+    public void givenTodoEmptyActivityType_validateTodoShouldFail() {
+
+        Todo todo = TodoUtil.anyTodo();
+        todo.setActivityType("");
         validator.validate(JsonUtil.toJsonString(todo), Todo.class, "/todo");
     }
 
@@ -64,15 +80,7 @@ public class TodoSchemaValidationTest {
     public void givenTodoMissingCreated_validateTodoShouldFail() {
 
         Todo todo = TodoUtil.anyTodo();
-        //todo.setCreated(null);
-        validator.validate(JsonUtil.toJsonString(todo), Todo.class, "/todo");
-    }
-
-    @Test(expected = InvalidInputException.class)
-    public void givenTodoMissingStart_validateTodoShouldFail() {
-
-        Todo todo = TodoUtil.anyTodo();
-        //todo.setStart(null);
+        todo.setCreated(null);
         validator.validate(JsonUtil.toJsonString(todo), Todo.class, "/todo");
     }
 
@@ -80,7 +88,7 @@ public class TodoSchemaValidationTest {
     public void givenTodoMissingCreator_validateTodoShouldFail() {
 
         Todo todo = TodoUtil.anyTodo();
-        //todo.setCreator(null);
+        todo.setCreator(null);
         validator.validate(JsonUtil.toJsonString(todo), Todo.class, "/todo");
     }
 
@@ -88,7 +96,7 @@ public class TodoSchemaValidationTest {
     public void givenTodoMissingCreatorId_validateTodoShouldFail() {
 
         Todo todo = TodoUtil.anyTodo();
-        //todo.getCreator().setId(null);
+        todo.getCreator().setId(null);
         validator.validate(JsonUtil.toJsonString(todo), Todo.class, "/todo");
     }
 
@@ -96,7 +104,7 @@ public class TodoSchemaValidationTest {
     public void givenTodoEmptyCreatorId_validateTodoShouldFail() {
 
         Todo todo = TodoUtil.anyTodo();
-        //todo.getCreator().setId("");
+        todo.getCreator().setId("");
         validator.validate(JsonUtil.toJsonString(todo), Todo.class, "/todo");
     }
 
@@ -104,7 +112,7 @@ public class TodoSchemaValidationTest {
     public void givenTodoMissingCreatorEmail_validateTodoShouldFail() {
 
         Todo todo = TodoUtil.anyTodo();
-        //todo.getCreator().setEmail(null);
+        todo.getCreator().setEmail(null);
         validator.validate(JsonUtil.toJsonString(todo), Todo.class, "/todo");
     }
 
@@ -112,7 +120,7 @@ public class TodoSchemaValidationTest {
     public void givenTodoEmptyCreatorEmail_validateTodoShouldFail() {
 
         Todo todo = TodoUtil.anyTodo();
-        //todo.getCreator().setEmail("");
+        todo.getCreator().setEmail("");
         validator.validate(JsonUtil.toJsonString(todo), Todo.class, "/todo");
     }
 
@@ -120,7 +128,7 @@ public class TodoSchemaValidationTest {
     public void givenTodoMissingCreatorDisplayName_validateTodoShouldFail() {
 
         Todo todo = TodoUtil.anyTodo();
-        //todo.getCreator().setDisplayName(null);
+        todo.getCreator().setDisplayName(null);
         validator.validate(JsonUtil.toJsonString(todo), Todo.class, "/todo");
     }
 
@@ -128,7 +136,7 @@ public class TodoSchemaValidationTest {
     public void givenTodoEmptyCreatorDisplayName_validateTodoShouldFail() {
 
         Todo todo = TodoUtil.anyTodo();
-        //todo.getCreator().setDisplayName("");
+        todo.getCreator().setDisplayName("");
         validator.validate(JsonUtil.toJsonString(todo), Todo.class, "/todo");
     }
 
@@ -136,7 +144,7 @@ public class TodoSchemaValidationTest {
     public void givenTodoMissingCreatorSelf_validateTodoShouldFail() {
 
         Todo todo = TodoUtil.anyTodo();
-        //todo.getCreator().setSelf(null);
+        todo.getCreator().setSelf(null);
         validator.validate(JsonUtil.toJsonString(todo), Todo.class, "/todo");
     }
 }

@@ -1,35 +1,9 @@
 package ibox.iplanner.api.integration;
 
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import ibox.iplanner.api.lambda.runtime.TestContext;
-import ibox.iplanner.api.model.Todo;
-import ibox.iplanner.api.model.TodoStatus;
-import ibox.iplanner.api.model.User;
-import ibox.iplanner.api.model.updatable.Updatable;
-import ibox.iplanner.api.model.updatable.UpdatableAttribute;
-import ibox.iplanner.api.model.updatable.UpdatableKey;
-import ibox.iplanner.api.model.updatable.UpdateAction;
 import ibox.iplanner.api.service.LocalDynamoDBIntegrationTestSupport;
-import ibox.iplanner.api.service.dbmodel.TodoDefinition;
-import ibox.iplanner.api.util.TodoUtil;
-import ibox.iplanner.api.util.JsonUtil;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import java.time.Instant;
-import java.util.*;
-
-import static ibox.iplanner.api.service.dbmodel.TodoDefinition.*;
-import static java.time.temporal.ChronoUnit.MINUTES;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TodoHandlerIntegrationTest extends LocalDynamoDBIntegrationTestSupport {
-
+/*
     private AddTodoHandlerTestWrapper addTodoHandler = new AddTodoHandlerTestWrapper();
     private GetTodoHandlerTestWrapper getTodoHandler = new GetTodoHandlerTestWrapper();
     private ListTodoHandlerTestWrapper listTodoHandler = new ListTodoHandlerTestWrapper();
@@ -72,8 +46,6 @@ public class TodoHandlerIntegrationTest extends LocalDynamoDBIntegrationTestSupp
 
     @Test
     public void givenValidUpdatable_updateTodo_shouldUpdateRecord() throws InterruptedException {
-        /*
-
         Todo added = addTodo(TodoUtil.anyTodo());
 
         String newSummary = "new summary";
@@ -93,6 +65,7 @@ public class TodoHandlerIntegrationTest extends LocalDynamoDBIntegrationTestSupp
                 .action(UpdateAction.UPDATE)
                 .value(newDescription)
                 .build());
+        /*
         updatableAttributeSet.add( UpdatableAttribute.builder()
                 .attributeName(FIELD_NAME_ACTIVITY)
                 .action(UpdateAction.UPDATE)
@@ -137,14 +110,10 @@ public class TodoHandlerIntegrationTest extends LocalDynamoDBIntegrationTestSupp
         assertThat(updated.getStatus(), is(equalTo(added.getStatus())));
         assertThat(updated.getEndTimeUnspecified(), is(equalTo(added.getEndTimeUnspecified())));
 
-         */
-
     }
 
     @Test
     public void givenValidId_deleteTodo_shouldUpdateTodoStatus() {
-        /*
-
         Todo added = addTodo(TodoUtil.anyTodo());
 
         deleteTodo(added.getId());
@@ -152,9 +121,6 @@ public class TodoHandlerIntegrationTest extends LocalDynamoDBIntegrationTestSupp
         Todo deleted = getTodo(added.getId());
 
         assertThat(deleted.getStatus(), is(equalTo(TodoStatus.CLOSED.name())));
-
-         */
-
     }
 
     @Test
@@ -180,7 +146,6 @@ public class TodoHandlerIntegrationTest extends LocalDynamoDBIntegrationTestSupp
 
     @Test
     public void givenTodosWithCreators_getMyTodosWithinTime_shouldReturnOnlyCreatorTodosWithinTime() {
-        /*
         User creator1 = TodoUtil.anyTodoCreator();
         User creator2 = TodoUtil.anyTodoCreator();
 
@@ -229,9 +194,6 @@ public class TodoHandlerIntegrationTest extends LocalDynamoDBIntegrationTestSupp
 
         verifyTodosAreEqual(todo2, listTodos.get(0));
         verifyTodosAreEqual(todo3, listTodos.get(1));
-
-         */
-
     }
 
     private Todo addTodo(Todo todo) {
@@ -324,7 +286,6 @@ public class TodoHandlerIntegrationTest extends LocalDynamoDBIntegrationTestSupp
     }
 
     private void verifyTodosAreEqual(Todo expected, Todo actual) {
-/*
         assertThat(expected.getSummary(), is(equalTo(actual.getSummary())));
         assertThat(expected.getDescription(), is(equalTo(actual.getDescription())));
         assertThat(expected.getCreator().getId(), is(equalTo(actual.getCreator().getId())));
@@ -341,8 +302,6 @@ public class TodoHandlerIntegrationTest extends LocalDynamoDBIntegrationTestSupp
         assertThat(expected.getEndTimeUnspecified(), is(equalTo(actual.getEndTimeUnspecified())));
 
         expected.getRecurrence().stream().forEach(s-> actual.getRecurrence().contains(s));
-        
- */
     }
-
+*/
 }

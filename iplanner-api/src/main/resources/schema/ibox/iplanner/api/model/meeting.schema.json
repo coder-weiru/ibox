@@ -1,12 +1,14 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "http://iplanner-api.ibox.com/meeting.schema.json",
+
   "meeting-array": {
     "type": "array",
     "items": {
       "$ref": "#/meeting"
     }
   },
+
   "meeting": {
     "title": "Meeting",
     "description": "A meeting activity type in iplanner api",
@@ -17,21 +19,40 @@
       },
       {
         "properties": {
-          "frequency": {
-            "enum": [
-              "ONE_TIME",
-              "HOURLY",
-              "DAILY",
-              "WEEKLY",
-              "MONTHLY",
-              "ANNUALLY"
-            ]
+          "attributeSet": {
+            "$ref": "#/definitions/attribute-set"
           }
         },
         "required": [
-          "frequency"
+          "attributeSet"
         ]
       }
     ]
+  },
+
+  "definitions": {
+    "attribute-set": {
+      "description": "A container to hold a set of attributes",
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "description": "The attributes associated with the meeting",
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/tag-attribute"
+              },
+              {
+                "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/event-attribute"
+              },
+              {
+                "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/location-attribute"
+              }
+            ]
+          }
+        }
+      }
+    }
   }
 }
