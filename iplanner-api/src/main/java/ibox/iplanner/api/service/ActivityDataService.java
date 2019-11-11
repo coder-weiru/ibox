@@ -7,18 +7,14 @@ import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.amazonaws.services.dynamodbv2.model.ReturnValue;
-import ibox.iplanner.api.model.Activity;
-import ibox.iplanner.api.model.ActivityStatus;
-import ibox.iplanner.api.model.User;
+import ibox.iplanner.api.model.*;
 import ibox.iplanner.api.model.updatable.Updatable;
 import ibox.iplanner.api.service.util.DynamoDBUtil;
 import ibox.iplanner.api.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static ibox.iplanner.api.service.dbmodel.ActivityDefinition.*;
 
@@ -43,7 +39,7 @@ public class ActivityDataService {
 
     public Activity getActivity(String activityId) {
         Table activitiesTable = this.dynamoDb.getTable(TABLE_NAME_ACTIVITIES);
-        String projectionExpression = String.format("%s, %s, %s, %s, %s, %s, %s, %s, %s",
+        String projectionExpression = String.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
                 FIELD_NAME_ID,
                 FIELD_NAME_TITLE,
                 FIELD_NAME_DESCRIPTION,
@@ -52,7 +48,8 @@ public class ActivityDataService {
                 FIELD_NAME_CREATED_TIME,
                 FIELD_NAME_UPDATED_TIME,
                 FIELD_NAME_ACTIVITY_TYPE,
-                FIELD_NAME_ACTIVITY_STATUS);
+                FIELD_NAME_ACTIVITY_STATUS,
+                FIELD_NAME_ATTRIBUTES);
         Item item = activitiesTable.getItem(new GetItemSpec()
                 .withPrimaryKey(FIELD_NAME_ID, activityId)
                 .withProjectionExpression(projectionExpression)
@@ -118,8 +115,9 @@ public class ActivityDataService {
                 .withString(FIELD_NAME_DESCRIPTION, activity.getDescription())
                 .withString(FIELD_NAME_CREATED_BY, activity.getCreator().getId())
                 .withJSON(FIELD_NAME_CREATOR, JsonUtil.toJsonString(activity.getCreator()))
-                .withString(FIELD_NAME_ACTIVITY_TYPE, activity.getType())
-                .withString(FIELD_NAME_ACTIVITY_STATUS, activity.getStatus());
+                .withString(FIELD_NAME_ACTIVITY_TYPE, activity.getActivityType())
+                .withString(FIELD_NAME_ACTIVITY_STATUS, activity.getActivityStatus())
+                .withJSON(FIELD_NAME_ATTRIBUTES, JsonUtil.toJsonString(activity.getAttributeSet()));
 
         if (created.isPresent()) {
             item.withString(FIELD_NAME_CREATED_TIME, created.get().toString());
@@ -142,8 +140,9 @@ public class ActivityDataService {
         if (Optional.ofNullable(item.getString(FIELD_NAME_UPDATED_TIME)).isPresent()) {
             activity.setUpdated(Instant.parse(item.getString(FIELD_NAME_UPDATED_TIME)));
         }
-        activity.setType(item.getString(FIELD_NAME_ACTIVITY_TYPE));
-        activity.setStatus(item.getString(FIELD_NAME_ACTIVITY_STATUS));
+        activity.setActivityType(item.getString(FIELD_NAME_ACTIVITY_TYPE));
+        activity.setActivityStatus(item.getString(FIELD_NAME_ACTIVITY_STATUS));
+        activity.setAttributeSet(JsonUtil.fromJsonString(item.getJSON(FIELD_NAME_ATTRIBUTES), AttributeSet.class));
 
         return activity;
     }

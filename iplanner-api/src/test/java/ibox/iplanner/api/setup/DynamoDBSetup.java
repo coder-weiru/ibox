@@ -33,9 +33,9 @@ public class DynamoDBSetup {
             ArrayList<AttributeDefinition> attributeDefinitions = new ArrayList<AttributeDefinition>();
             attributeDefinitions.add(new AttributeDefinition().withAttributeName(TodoDefinition.FIELD_NAME_ID).withAttributeType("S"));
             attributeDefinitions.add(new AttributeDefinition().withAttributeName(TodoDefinition.FIELD_NAME_CREATED_BY).withAttributeType("S"));
-            attributeDefinitions.add(new AttributeDefinition().withAttributeName(TodoDefinition.FIELD_NAME_START_TIME).withAttributeType("S"));
+            attributeDefinitions.add(new AttributeDefinition().withAttributeName(TodoDefinition.FIELD_NAME_TODO_STATUS).withAttributeType("S"));
 
-            CreateTableRequest request = new CreateTableRequest().withTableName(TodoDefinition.TABLE_NAME_TODOS).withKeySchema(keySchema)
+            CreateTableRequest request = new CreateTableRequest().withTableName(TodoDefinition.TABLE_NAME_TODO_LIST).withKeySchema(keySchema)
                     .withProvisionedThroughput(new ProvisionedThroughput().withReadCapacityUnits(readCapacityUnits)
                             .withWriteCapacityUnits(writeCapacityUnits));
 
@@ -43,10 +43,10 @@ public class DynamoDBSetup {
 
             // Global Secondary Index
             ArrayList<GlobalSecondaryIndex> globalSecondaryIndexes = new ArrayList<GlobalSecondaryIndex>();
-            globalSecondaryIndexes.add(new GlobalSecondaryIndex().withIndexName(TodoDefinition.GSI_CREATOR_TODOS_SORT_BY_START_TIME)
+            globalSecondaryIndexes.add(new GlobalSecondaryIndex().withIndexName(TodoDefinition.GSI_CREATOR_TODO_LIST)
                     .withKeySchema(
                         new KeySchemaElement().withAttributeName(TodoDefinition.FIELD_NAME_CREATED_BY).withKeyType(KeyType.HASH),
-                        new KeySchemaElement().withAttributeName(TodoDefinition.FIELD_NAME_START_TIME).withKeyType(KeyType.RANGE)
+                        new KeySchemaElement().withAttributeName(TodoDefinition.FIELD_NAME_TODO_STATUS).withKeyType(KeyType.RANGE)
                     )
                     .withProjection(new Projection().withProjectionType(ProjectionType.ALL))
                     .withProvisionedThroughput(new ProvisionedThroughput().withReadCapacityUnits(readCapacityUnits)
@@ -54,17 +54,17 @@ public class DynamoDBSetup {
 
             request.setGlobalSecondaryIndexes(globalSecondaryIndexes);
 
-            log.info("Issuing CreateTable request for " + TodoDefinition.TABLE_NAME_TODOS);
+            log.info("Issuing CreateTable request for " + TodoDefinition.TABLE_NAME_TODO_LIST);
 
             Table table = dynamoDB.createTable(request);
 
-            log.info("Waiting for " + TodoDefinition.TABLE_NAME_TODOS + " to be created...this may take a while...");
+            log.info("Waiting for " + TodoDefinition.TABLE_NAME_TODO_LIST + " to be created...this may take a while...");
 
             table.waitForActive();
 
         }
         catch (Exception e) {
-            log.error("CreateTable request failed for " + TodoDefinition.TABLE_NAME_TODOS);
+            log.error("CreateTable request failed for " + TodoDefinition.TABLE_NAME_TODO_LIST);
             log.error(e.getMessage());
         }
     }

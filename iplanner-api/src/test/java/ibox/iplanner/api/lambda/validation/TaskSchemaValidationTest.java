@@ -48,7 +48,7 @@ public class TaskSchemaValidationTest {
     public void givenTaskMissingType_validateTaskShouldFail() {
 
         Task task = TaskUtil.anyTask();
-        task.setType(null);
+        task.setActivityType(null);
         validator.validate(JsonUtil.toJsonString(task), Task.class, "/task");
     }
 
@@ -56,7 +56,7 @@ public class TaskSchemaValidationTest {
     public void givenTaskEmptyType_validateTaskShouldFail() {
 
         Task task = TaskUtil.anyTask();
-        task.setType("");
+        task.setActivityType("");
         validator.validate(JsonUtil.toJsonString(task), Task.class, "/task");
     }
 
@@ -136,7 +136,7 @@ public class TaskSchemaValidationTest {
     public void givenTaskMissingDeadline_validateTaskShouldFail() {
 
         Task task = TaskUtil.anyTask();
-        task.setDeadline(null);
+        //task.setDeadline(null);
         validator.validate(JsonUtil.toJsonString(task), Task.class, "/task");
     }
 

@@ -48,7 +48,7 @@ public class MeetingSchemaValidationTest {
     public void givenMeetingMissingType_validateMeetingShouldFail() {
 
         Meeting meeting = MeetingUtil.anyMeeting();
-        meeting.setType(null);
+        meeting.setActivityType(null);
         validator.validate(JsonUtil.toJsonString(meeting), Meeting.class, "/meeting");
     }
 
@@ -56,7 +56,7 @@ public class MeetingSchemaValidationTest {
     public void givenMeetingEmptyType_validateMeetingShouldFail() {
 
         Meeting meeting = MeetingUtil.anyMeeting();
-        meeting.setType("");
+        meeting.setActivityType("");
         validator.validate(JsonUtil.toJsonString(meeting), Meeting.class, "/meeting");
     }
 
@@ -134,10 +134,12 @@ public class MeetingSchemaValidationTest {
 
     @Test(expected = InvalidInputException.class)
     public void givenMeetingMissingFrequency_validateMeetingShouldFail() {
-
+/*
         Meeting meeting = MeetingUtil.anyMeeting();
         meeting.setFrequency(null);
         validator.validate(JsonUtil.toJsonString(meeting), Meeting.class, "/meeting");
+
+ */
     }
 
 }

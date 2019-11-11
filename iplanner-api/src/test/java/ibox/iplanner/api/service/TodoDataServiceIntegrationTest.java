@@ -2,9 +2,7 @@ package ibox.iplanner.api.service;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AmazonDynamoDBException;
-import ibox.iplanner.api.model.Todo;
-import ibox.iplanner.api.model.TodoStatus;
-import ibox.iplanner.api.model.User;
+import ibox.iplanner.api.model.*;
 import ibox.iplanner.api.model.updatable.Updatable;
 import ibox.iplanner.api.model.updatable.UpdatableAttribute;
 import ibox.iplanner.api.model.updatable.UpdatableKey;
@@ -19,9 +17,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static ibox.iplanner.api.service.TestHelper.*;
 import static ibox.iplanner.api.service.dbmodel.TodoDefinition.*;
-import static java.time.temporal.ChronoUnit.MINUTES;
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -29,12 +26,13 @@ import static org.junit.Assert.assertThat;
 public class TodoDataServiceIntegrationTest extends LocalDynamoDBIntegrationTestSupport {
 
     private static TodoDataService todoDataService;
+    private static DynamoDB dynamoDB;
 
     @BeforeClass
     public static void setup() {
         dynamoDBSetup.createTodoTable(10L, 5L);
-
-        todoDataService = new TodoDataService(new DynamoDB(amazonDynamoDB));
+        dynamoDB = new DynamoDB(amazonDynamoDB);
+        todoDataService = new TodoDataService(dynamoDB);
     }
 
     @Test
@@ -46,22 +44,22 @@ public class TodoDataServiceIntegrationTest extends LocalDynamoDBIntegrationTest
 
         Todo dbTodo = todoDataService.getTodo(todo.getId());
 
-        verifyTodosAreEqual(todo, dbTodo);
+        verifyTodoAreEqual(todo, dbTodo);
     }
 
     @Test
-    public void givenValidTodos_addTodos_shouldCreateRecords() {
+    public void givenValidTodoList_addTodoList_shouldCreateRecords() {
 
-        List<Todo> todos = TodoUtil.anyTodoList();
+        List<Todo> todoList = TodoUtil.anyTodoList();
 
-        todoDataService.addTodos(todos);
+        todoDataService.addTodoList(todoList);
 
-        todos.stream().forEach(e -> {
+        todoList.stream().forEach(e -> {
             String id = e.getId();
 
             Todo dbTodo = todoDataService.getTodo(e.getId());
 
-            verifyTodosAreEqual(e, dbTodo);
+            verifyTodoAreEqual(e, dbTodo);
 
         });
     }
@@ -69,18 +67,16 @@ public class TodoDataServiceIntegrationTest extends LocalDynamoDBIntegrationTest
     @Test
     public void givenValidUpdatable_updateTodo_shouldUpdateRecord() {
 
-        Todo activity = TodoUtil.anyTodo();
+        Todo myTodo = TodoUtil.anyTodo();
 
-        todoDataService.addTodo(activity);
+        todoDataService.addTodo(myTodo);
 
-        Todo dbTodo = todoDataService.getTodo(activity.getId());
+        Todo dbTodo = todoDataService.getTodo(myTodo.getId());
 
         String newSummary = "new summary";
         String newDescription = "new description";
-        String newLocation = "new location";
         String newActivity = "new activity";
-        Set<String> newRecurrence = new HashSet<>();
-        newRecurrence.add("abc");
+
         Set<UpdatableAttribute> updatableAttributeSet = new HashSet<>();
         updatableAttributeSet.add( UpdatableAttribute.builder()
                 .attributeName(FIELD_NAME_SUMMARY)
@@ -93,19 +89,9 @@ public class TodoDataServiceIntegrationTest extends LocalDynamoDBIntegrationTest
                 .value(newDescription)
                 .build());
         updatableAttributeSet.add( UpdatableAttribute.builder()
-                .attributeName(FIELD_NAME_ACTIVITY)
+                .attributeName(FIELD_NAME_ACTIVITY_TYPE)
                 .action(UpdateAction.UPDATE)
                 .value(newActivity)
-                .build());
-        updatableAttributeSet.add( UpdatableAttribute.builder()
-                .attributeName(FIELD_NAME_TODO_LOCATION)
-                .action(UpdateAction.UPDATE)
-                .value(newLocation)
-                .build());
-        updatableAttributeSet.add( UpdatableAttribute.builder()
-                .attributeName(FIELD_NAME_TODO_RECURRENCE)
-                .action(UpdateAction.UPDATE)
-                .value(newRecurrence)
                 .build());
 
         Updatable updatable = Updatable.builder()
@@ -119,16 +105,15 @@ public class TodoDataServiceIntegrationTest extends LocalDynamoDBIntegrationTest
 
         assertThat(updated.getSummary(), is(equalTo(newSummary)));
         assertThat(updated.getDescription(), is(equalTo(newDescription)));
-        assertThat(updated.getActivity(), is(equalTo(newActivity)));
-        assertThat(updated.getLocation(), is(equalTo(newLocation)));
-        assertThat(updated.getRecurrence(), hasItem("abc"));
+        assertThat(updated.getActivityType(), is(equalTo(newActivity)));
+
     }
 
     @Test
     public void givenValidId_deleteTodo_shouldUpdateTodoStatus() {
 
         Todo todo = TodoUtil.anyTodo();
-        todo.setStatus(TodoStatus.OPEN.name());
+        todo.setStatus(TodoStatus.OPEN);
 
         todoDataService.addTodo(todo);
 
@@ -136,11 +121,11 @@ public class TodoDataServiceIntegrationTest extends LocalDynamoDBIntegrationTest
 
         Todo deleted = todoDataService.deleteTodo(dbTodo.getId());
 
-        assertThat(deleted.getStatus(), is(equalTo(TodoStatus.CLOSED.name())));
+        assertThat(deleted.getStatus(), is(equalTo(TodoStatus.CLOSED)));
 
         Todo theTodo = todoDataService.getTodo(dbTodo.getId());
 
-        assertThat(theTodo.getStatus(), is(equalTo(TodoStatus.CLOSED.name())));
+        assertThat(theTodo.getStatus(), is(equalTo(TodoStatus.CLOSED)));
 
     }
 
@@ -170,7 +155,8 @@ public class TodoDataServiceIntegrationTest extends LocalDynamoDBIntegrationTest
     }
 
     @Test
-    public void givenTodosWithCreators_getMyTodosWithinTime_shouldReturnOnlyCreatorTodosWithinTime() {
+    public void givenTodoListWithCreators_getMyTodoListByFilter_shouldReturnOnlyCreatorTodoListForSpecifiedActivities() {
+
         User creator1 = TodoUtil.anyTodoCreator();
         User creator2 = TodoUtil.anyTodoCreator();
 
@@ -178,47 +164,46 @@ public class TodoDataServiceIntegrationTest extends LocalDynamoDBIntegrationTest
 
         Todo todo1 = TodoUtil.anyTodo();
         todo1.setCreator(creator1);
-        todo1.setStart(now);
-        todo1.setStatus(TodoStatus.OPEN.name());
+        todo1.setActivityId("activity_id_1");
+        todo1.setStatus(TodoStatus.OPEN);
 
         Todo todo2 = TodoUtil.anyTodo();
         todo2.setCreator(creator1);
-        todo2.setStart(now.plus(10, MINUTES));
-        todo2.setStatus(TodoStatus.OPEN.name());
+        todo2.setActivityId("activity_id_2");
+        todo2.setStatus(TodoStatus.OPEN);
 
         Todo todo3 = TodoUtil.anyTodo();
         todo3.setCreator(creator1);
-        todo3.setStart(now.plus(15, MINUTES));
-        todo3.setStatus(TodoStatus.OPEN.name());
+        todo3.setActivityId("activity_id_3");
+        todo3.setStatus(TodoStatus.OPEN);
 
         Todo todo4 = TodoUtil.anyTodo();
         todo4.setCreator(creator2);
-        todo4.setStart(now.plus(20, MINUTES));
-        todo4.setStatus(TodoStatus.OPEN.name());
+        todo4.setActivityId("activity_id_4");
+        todo4.setStatus(TodoStatus.OPEN);
 
         Todo todo5 = TodoUtil.anyTodo();
         todo5.setCreator(creator1);
-        todo5.setStart(now.plus(30, MINUTES));
-        todo5.setStatus(TodoStatus.OPEN.name());
+        todo5.setActivityId("activity_id_5");
+        todo5.setStatus(TodoStatus.OPEN);
 
         Todo todo6 = TodoUtil.anyTodo();
         todo6.setCreator(creator1);
-        todo6.setStart(now.plus(40, MINUTES));
-        todo6.setStatus(TodoStatus.OPEN.name());
+        todo6.setActivityId("activity_id_6");
+        todo6.setStatus(TodoStatus.OPEN);
 
-        List<Todo> todos = Arrays.asList( new Todo[] {todo1, todo2, todo3, todo4, todo5, todo6});
+        List<Todo> todoList = Arrays.asList( new Todo[] {todo1, todo2, todo3, todo4, todo5, todo6});
 
-        todoDataService.addTodos(todos);
+        todoDataService.addTodoList(todoList);
 
-        Instant timeWindowStart = now.plus(5, MINUTES);
-        Instant timeWindowEnd = now.plus(35, MINUTES);
+        List<String> selectedActivityIds = Arrays.asList( new String[]{"activity_id_1", "activity_id_2", "activity_id_3"});
 
-        List<Todo> myTodos = todoDataService.getMyTodosWithinTime(creator1.getId(), timeWindowStart, timeWindowEnd, TodoStatus.OPEN.name(),null);
+        List<Todo> myTodoList = todoDataService.getMyTodoListByFilter(creator1.getId(), new HashSet(selectedActivityIds), TodoStatus.OPEN.name(),null);
 
-        assertThat(myTodos.size(), is(equalTo(3)));
+        assertThat(myTodoList.size(), is(equalTo(3)));
     }
 
-    private void verifyTodosAreEqual(Todo expected, Todo actual) {
+    private void verifyTodoAreEqual(Todo expected, Todo actual) {
 
         assertThat(expected.getId(), is(equalTo(actual.getId())));
         assertThat(expected.getSummary(), is(equalTo(actual.getSummary())));
@@ -229,14 +214,33 @@ public class TodoDataServiceIntegrationTest extends LocalDynamoDBIntegrationTest
         assertThat(expected.getCreator().getSelf(), is(equalTo(actual.getCreator().getSelf())));
         assertThat(expected.getCreated(), is(equalTo(actual.getCreated())));
         assertThat(expected.getUpdated(), is(equalTo(actual.getUpdated())));
-        assertThat(expected.getStart(), is(equalTo(actual.getStart())));
-        assertThat(expected.getEnd(), is(equalTo(actual.getEnd())));
-        assertThat(expected.getActivity(), is(equalTo(actual.getActivity())));
         assertThat(expected.getStatus(), is(equalTo(actual.getStatus())));
-        assertThat(expected.getLocation(), is(equalTo(actual.getLocation())));
-        assertThat(expected.getEndTimeUnspecified(), is(equalTo(actual.getEndTimeUnspecified())));
 
-        expected.getRecurrence().stream().forEach(s-> actual.getRecurrence().contains(s));
+        verifyTodoAttributeSetAreEqual(expected.getAttributeSet(), actual.getAttributeSet());
     }
 
+    private void verifyTodoAttributeSetAreEqual(AttributeSet expected, AttributeSet actual) {
+        assertThat(expected.getAllAttributes().size(), is(equalTo(actual.getAllAttributes().size())));
+        expected.getSupportedFeatures().stream().forEach(feature -> {
+            TodoAttribute expectedAttribute = expected.getAttribute(feature);
+            TodoAttribute actualAttribute = actual.getAttribute(feature);
+            verifyTodoAttributeAreEqual(expectedAttribute, actualAttribute);
+        });
+    }
+
+    private void verifyTodoAttributeAreEqual(TodoAttribute expected, TodoAttribute actual) {
+
+        if (expected.getClass().equals(TagAttribute.class)) {
+            verifyTaggingAttributeAreEqual((TagAttribute) expected, (TagAttribute) actual);
+        }
+        else if (expected.getClass().equals(EventAttribute.class)) {
+            verifyEventAttributeAreEqual((EventAttribute) expected, (EventAttribute) actual);
+        }
+        else if (expected.getClass().equals(LocationAttribute.class)) {
+            verifyLocationAttributeAreEqual((LocationAttribute) expected, (LocationAttribute) actual);
+        }
+        else if (expected.getClass().equals(TimelineAttribute.class)) {
+            verifyTimelineAttributeAreEqual((TimelineAttribute) expected, (TimelineAttribute) actual);
+        }
+    }
 }

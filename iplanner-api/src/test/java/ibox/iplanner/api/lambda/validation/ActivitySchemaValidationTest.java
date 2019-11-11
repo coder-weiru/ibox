@@ -48,7 +48,7 @@ public class ActivitySchemaValidationTest {
     public void givenActivityMissingTemplate_validateActivityShouldFail() {
 
         Activity activity = ActivityUtil.anyActivity();
-        activity.setType(null);
+        activity.setActivityType(null);
         validator.validate(JsonUtil.toJsonString(activity), Activity.class, "/activity");
     }
 
@@ -56,7 +56,7 @@ public class ActivitySchemaValidationTest {
     public void givenActivityEmptyTemplate_validateActivityShouldFail() {
 
         Activity activity = ActivityUtil.anyActivity();
-        activity.setType("");
+        activity.setActivityType("");
         validator.validate(JsonUtil.toJsonString(activity), Activity.class, "/activity");
     }
 

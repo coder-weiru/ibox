@@ -47,7 +47,7 @@ public class AddTodoHandler implements RequestHandler<APIGatewayProxyRequestEven
                 return dbTodo;
             }).collect(Collectors.toList());
 
-            todoDataService.addTodos(dbTodos);
+            todoDataService.addTodoList(dbTodos);
 
             //setting up the response message
             responseEvent.setBody(JsonUtil.toJsonString(dbTodos));

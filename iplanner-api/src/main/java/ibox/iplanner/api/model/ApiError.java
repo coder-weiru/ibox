@@ -22,5 +22,6 @@ public class ApiError implements Serializable {
     private String error;
     private String message;
     private Instant timestamp;
+    @Builder.Default
     private List<String> errorDetails = new ArrayList<>();
 }

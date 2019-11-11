@@ -2,9 +2,7 @@ package ibox.iplanner.api.service;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AmazonDynamoDBException;
-import ibox.iplanner.api.model.Activity;
-import ibox.iplanner.api.model.ActivityStatus;
-import ibox.iplanner.api.model.User;
+import ibox.iplanner.api.model.*;
 import ibox.iplanner.api.model.updatable.Updatable;
 import ibox.iplanner.api.model.updatable.UpdatableAttribute;
 import ibox.iplanner.api.model.updatable.UpdatableKey;
@@ -22,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static ibox.iplanner.api.service.TestHelper.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -127,7 +126,7 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
 
         assertThat(updated.getTitle(), is(equalTo(newTitle)));
         assertThat(updated.getDescription(), is(equalTo(newDescription)));
-        assertThat(updated.getType(), is(equalTo(newTemplate)));
+        assertThat(updated.getActivityType(), is(equalTo(newTemplate)));
 
     }
 
@@ -135,7 +134,7 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
     public void givenValidId_deleteActivity_shouldUpdateActivityStatus() {
 
         Activity activity = ActivityUtil.anyActivity();
-        activity.setStatus(ActivityStatus.ACTIVE.name());
+        activity.setActivityStatus(ActivityStatus.ACTIVE.name());
 
         activityDataService.addActivity(activity);
 
@@ -143,11 +142,11 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
 
         Activity deleted = activityDataService.deleteActivity(dbActivity.getId());
 
-        assertThat(deleted.getStatus(), is(equalTo(ActivityStatus.INACTIVE.name())));
+        assertThat(deleted.getActivityStatus(), is(equalTo(ActivityStatus.INACTIVE.name())));
 
         Activity theActivity = activityDataService.getActivity(dbActivity.getId());
 
-        assertThat(theActivity.getStatus(), is(equalTo(ActivityStatus.INACTIVE.name())));
+        assertThat(theActivity.getActivityStatus(), is(equalTo(ActivityStatus.INACTIVE.name())));
 
     }
 
@@ -185,27 +184,27 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
 
         Activity activity1 = ActivityUtil.anyActivity();
         activity1.setCreator(creator1);
-        activity1.setStatus(ActivityStatus.ACTIVE.name());
+        activity1.setActivityStatus(ActivityStatus.ACTIVE.name());
 
         Activity activity2 = ActivityUtil.anyActivity();
         activity2.setCreator(creator1);
-        activity2.setStatus(ActivityStatus.ACTIVE.name());
+        activity2.setActivityStatus(ActivityStatus.ACTIVE.name());
 
         Activity activity3 = ActivityUtil.anyActivity();
         activity3.setCreator(creator1);
-        activity3.setStatus(ActivityStatus.INACTIVE.name());
+        activity3.setActivityStatus(ActivityStatus.INACTIVE.name());
 
         Activity activity4 = ActivityUtil.anyActivity();
         activity4.setCreator(creator2);
-        activity4.setStatus(ActivityStatus.INACTIVE.name());
+        activity4.setActivityStatus(ActivityStatus.INACTIVE.name());
 
         Activity activity5 = ActivityUtil.anyActivity();
         activity5.setCreator(creator1);
-        activity5.setStatus(ActivityStatus.ACTIVE.name());
+        activity5.setActivityStatus(ActivityStatus.ACTIVE.name());
 
         Activity activity6 = ActivityUtil.anyActivity();
         activity6.setCreator(creator1);
-        activity6.setStatus(ActivityStatus.ACTIVE.name());
+        activity6.setActivityStatus(ActivityStatus.ACTIVE.name());
 
         List<Activity> activities = Arrays.asList( new Activity[] {activity1, activity2, activity3, activity4, activity5, activity6});
 
@@ -229,8 +228,19 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
         assertThat(expected.getCreator().getSelf(), is(equalTo(actual.getCreator().getSelf())));
         assertThat(expected.getCreated(), is(equalTo(actual.getCreated())));
         assertThat(expected.getUpdated(), is(equalTo(actual.getUpdated())));
-        assertThat(expected.getType(), is(equalTo(actual.getType())));
-        assertThat(expected.getStatus(), is(equalTo(actual.getStatus())));
+        assertThat(expected.getActivityType(), is(equalTo(actual.getActivityType())));
+        assertThat(expected.getActivityStatus(), is(equalTo(actual.getActivityStatus())));
+        assertThat(expected.getAttributeSet().getAllAttributes().size(), is(equalTo(actual.getAttributeSet().getAllAttributes().size())));
+
+        verifyTaggingAttributeAreEqual((TagAttribute) expected.getAttribute(TodoFeature.TAGGING_FEATURE), (TagAttribute) actual.getAttribute(TodoFeature.TAGGING_FEATURE));
+
+        if (expected.getClass().equals(Meeting.class)) {
+            verifyEventAttributeAreEqual((EventAttribute) expected.getAttribute(TodoFeature.EVENT_FEATURE), (EventAttribute) actual.getAttribute(TodoFeature.EVENT_FEATURE));
+            verifyLocationAttributeAreEqual((LocationAttribute) expected.getAttribute(TodoFeature.LOCATION_FEATURE), (LocationAttribute) actual.getAttribute(TodoFeature.LOCATION_FEATURE));
+        } else if (expected.getClass().equals(Task.class)) {
+            verifyTimelineAttributeAreEqual((TimelineAttribute) expected.getAttribute(TodoFeature.TIMELINE_FEATURE), (TimelineAttribute) actual.getAttribute(TodoFeature.TIMELINE_FEATURE));
+        }
     }
+
 
 }

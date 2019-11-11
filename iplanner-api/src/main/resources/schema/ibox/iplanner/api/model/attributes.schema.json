@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://iplanner-api.ibox.com/activity.schema.json",
+
+  "activity-array": {
+    "type": "array",
+    "items": {
+      "$ref": "#/activity"
+    }
+  },
+
+  "activity": {
+    "title": "Activity",
+    "description": "An activity in iplanner api",
+    "type": "object",
+    "properties": {
+      "id": {
+        "description": "The unique identifier for the activity",
+        "type": "string"
+      },
+      "title": {
+        "description": "The title of the activity",
+        "type": "string",
+        "minLength": 1
+      },
+      "description": {
+        "description": "The description of the activity",
+        "type": "string"
+      },
+      "type": {
+        "description": "The activity type",
+        "type": "string",
+        "minLength": 1
+      },
+      "created": {
+        "description": "The timestamp when the activity is created",
+        "type": "string",
+        "minLength": 1,
+        "format": "date-time"
+      },
+      "updated": {
+        "description": "The timestamp when the activity is updated",
+        "type": "string",
+        "minLength": 1,
+        "format": "date-time"
+      },
+      "status": {
+        "description": "The status of the activity",
+        "type": "string"
+      },
+      "creator": {
+        "$ref": "#/definitions/user"
+      }
+    },
+    "required": [
+      "title",
+      "type",
+      "created",
+      "creator"
+    ]
+  },
+
+  "definitions": {
+    "user": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The unique identifier for the user",
+          "type": "string",
+          "minLength": 1
+        },
+        "email": {
+          "description": "The email for the user",
+          "type": "string",
+          "format": "email"
+        },
+        "displayName": {
+          "description": "The display name for the user",
+          "type": "string",
+          "minLength": 1
+        },
+        "self": {
+          "description": "Whether this creator is the user himself",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "displayName",
+        "self"
+      ]
+    }
+  }
+}

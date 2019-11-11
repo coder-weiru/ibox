@@ -1,8 +1,6 @@
 package ibox.iplanner.api.util;
 
-import ibox.iplanner.api.model.Activity;
-import ibox.iplanner.api.model.ActivityStatus;
-import ibox.iplanner.api.model.User;
+import ibox.iplanner.api.model.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,12 +38,12 @@ public class ActivityUtil extends BaseEntityUtil {
         Activity activity = new Activity();
         activity.setTitle(anyActivityTitle());
         activity.setDescription(anyDescription());
-        activity.setStatus(anyActivityStatus().name());
-        activity.setType(anyActivityType());
+        activity.setActivityStatus(anyActivityStatus().name());
+        activity.setActivityType(anyActivityType());
         activity.setCreated(anyCreatedTime());
         activity.setUpdated(anyUpdatedTime());
         activity.setCreator(anyActivityCreator());
-
+        activity.setAttribute(anyTagAttribute());
         return activity;
     }
 
@@ -58,5 +56,20 @@ public class ActivityUtil extends BaseEntityUtil {
             i ++;
         }
         return activityList;
+    }
+
+    public static TagAttribute anyTagAttribute() {
+        return TagAttribute.builder()
+                .tags( Arrays.asList( new Tag[]{
+                        Tag.builder()
+                        .value("tag1")
+                        .rgbHexCode("#567890")
+                        .build(),
+                        Tag.builder()
+                        .value("tag1")
+                        .rgbHexCode("#5FFF90")
+                        .build()
+                }))
+                .build();
     }
 }

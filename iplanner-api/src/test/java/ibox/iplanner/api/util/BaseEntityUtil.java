@@ -1,5 +1,6 @@
 package ibox.iplanner.api.util;
 
+import ibox.iplanner.api.model.Frequency;
 import ibox.iplanner.api.model.User;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -39,6 +40,10 @@ public class BaseEntityUtil {
 
     public static String anyLocation() {
         return RandomStringUtils.random(20, true, false);
+    }
+
+    public static Frequency anyFrequency() {
+        return Frequency.DAILY;
     }
 
     public static Instant anyCreatedTime() {

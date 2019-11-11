@@ -3,19 +3,18 @@ package ibox.iplanner.api.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
+import java.util.Set;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
-        property = "type",
+        property = "activityType",
         visible = true)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Activity.class, name = "activity"),
@@ -26,11 +25,41 @@ public class Activity {
     private String id;
     private String title;
     private String description;
-    private String type;
+    private String activityType;
     private User creator;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Instant created;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Instant updated;
-    private String status;
+    private String activityStatus;
+    private AttributeSet attributeSet = new AttributeSet();
+
+    public Activity() {
+        attributeSet.addAttribute(new TagAttribute());
+    }
+
+    public TodoAttribute getAttribute(TodoFeature feature) {
+        return attributeSet.getAttribute(feature);
+    }
+
+    public void addAttribute(TodoAttribute attribute) {
+        attributeSet.addAttribute(attribute);
+    }
+
+    public void setAttribute(TodoAttribute attribute) {
+        attributeSet.setAttribute(attribute);
+    }
+
+    public Set<TodoFeature> getSupportedFeatures() {
+        return attributeSet.getSupportedFeatures();
+    }
+
+    public boolean supports(TodoFeature feature) {
+        return getSupportedFeatures().contains(feature);
+    }
+
+    public boolean supports(Set<TodoFeature> features) {
+        return features.stream().allMatch(todoFeature -> supports(todoFeature));
+    }
+
 }

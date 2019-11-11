@@ -3,30 +3,13 @@ package ibox.iplanner.api.util;
 import ibox.iplanner.api.model.Todo;
 import ibox.iplanner.api.model.TodoStatus;
 import ibox.iplanner.api.model.User;
-import org.apache.commons.lang3.RandomStringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public class TodoUtil extends BaseEntityUtil {
-
-    public static String anyTodoLocation() {
-        return RandomStringUtils.random(20, true, false);
-    }
-
-    public static Boolean anyTodoEndTimeUnspecified() {
-        return randomBoolean();
-    }
-
-    public static Set<String> anyTodoRecurrence() {
-        int size = new Random().nextInt(10);
-        Set<String> recurrence = new HashSet<>();
-        int i = 0;
-        while (i < size) {
-            recurrence.add(RandomStringUtils.random(10, true, false));
-            i ++;
-        }
-        return recurrence;
-    }
 
     public static TodoStatus anyTodoStatus() {
         return Arrays.asList(new TodoStatus[] {
@@ -41,28 +24,15 @@ public class TodoUtil extends BaseEntityUtil {
     }
 
     public static Todo anyTodo() {
-        Todo todo = anyTodoWithoutId();
-        todo.setId(anyShortId());
-        return todo;
+        return Todo.fromActivity(ActivityUtil.anyActivity());
     }
 
-    public static Todo anyTodoWithoutId() {
-        Todo todo = new Todo();
-        todo.setSummary(anySummary());
-        todo.setDescription(anyDescription());
-        todo.setStatus(anyTodoStatus().name());
-        todo.setSummary(anySummary());
-        todo.setActivity(anyActivityId());
-        todo.setLocation(anyTodoLocation());
-        todo.setRecurrence(anyTodoRecurrence());
-        todo.setEndTimeUnspecified(anyTodoEndTimeUnspecified());
-        todo.setCreated(anyCreatedTime());
-        todo.setUpdated(anyUpdatedTime());
-        todo.setStart(anyStartTime());
-        todo.setEnd(anyEndTime());
-        todo.setCreator(anyTodoCreator());
+    public static Todo anyMeetingTodo() {
+        return Todo.fromActivity(MeetingUtil.anyMeeting());
+    }
 
-        return todo;
+    public static Todo anyTaskTodo() {
+        return Todo.fromActivity(TaskUtil.anyTask());
     }
 
     public static List<Todo> anyTodoList() {

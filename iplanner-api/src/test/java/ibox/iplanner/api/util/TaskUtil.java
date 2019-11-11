@@ -1,6 +1,7 @@
 package ibox.iplanner.api.util;
 
 import ibox.iplanner.api.model.Task;
+import ibox.iplanner.api.model.TimelineAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +14,12 @@ public class TaskUtil extends ActivityUtil {
         Task task = new Task();
         task.setTitle(anyActivityTitle());
         task.setDescription(anyDescription());
-        task.setStatus(anyActivityStatus().name());
-        task.setType("task");
+        task.setActivityStatus(anyActivityStatus().name());
+        task.setActivityType("task");
         task.setCreated(anyCreatedTime());
         task.setUpdated(anyUpdatedTime());
         task.setCreator(anyActivityCreator());
-        task.setDeadline(anyEndTime());
-
+        task.setAttribute(anyTimelineAttribute());
         return task;
     }
 
@@ -38,5 +38,12 @@ public class TaskUtil extends ActivityUtil {
             i ++;
         }
         return taskList;
+    }
+
+    public static TimelineAttribute anyTimelineAttribute() {
+        return TimelineAttribute.builder()
+                .startBy(anyStartTime())
+                .completeBy(anyEndTime())
+                .build();
     }
 }

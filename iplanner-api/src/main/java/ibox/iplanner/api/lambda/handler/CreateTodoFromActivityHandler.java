@@ -10,7 +10,6 @@ import ibox.iplanner.api.model.Activity;
 import ibox.iplanner.api.model.ApiError;
 import ibox.iplanner.api.model.Todo;
 import ibox.iplanner.api.service.ActivityDataService;
-import ibox.iplanner.api.service.EventGenerator;
 import ibox.iplanner.api.util.JsonUtil;
 
 import javax.inject.Inject;
@@ -49,7 +48,7 @@ public class CreateTodoFromActivityHandler implements RequestHandler<APIGatewayP
 
             if (activity.isPresent()) {
 
-                Todo todo = EventGenerator.generate(activity.get());
+                Todo todo = Todo.fromActivity(activity.get());
 
                 responseEvent.setBody(JsonUtil.toJsonString(todo));
                 responseEvent.setStatusCode(SC_OK);

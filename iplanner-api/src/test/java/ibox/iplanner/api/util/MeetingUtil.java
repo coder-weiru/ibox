@@ -1,26 +1,22 @@
 package ibox.iplanner.api.util;
 
-import ibox.iplanner.api.model.Frequency;
-import ibox.iplanner.api.model.Meeting;
+import ibox.iplanner.api.model.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class MeetingUtil extends ActivityUtil {
-
 
     public static Meeting anyMeetingWithoutId() {
         Meeting meeting = new Meeting();
         meeting.setTitle(anyActivityTitle());
         meeting.setDescription(anyDescription());
-        meeting.setStatus(anyActivityStatus().name());
-        meeting.setType("meeting");
+        meeting.setActivityStatus(anyActivityStatus().name());
+        meeting.setActivityType("meeting");
         meeting.setCreated(anyCreatedTime());
         meeting.setUpdated(anyUpdatedTime());
         meeting.setCreator(anyActivityCreator());
-        meeting.setFrequency(Frequency.DAILY);
-
+        meeting.setAttribute(anyEventAttribute());
+        meeting.setAttribute(anyLocationAttribute());
         return meeting;
     }
 
@@ -39,5 +35,24 @@ public class MeetingUtil extends ActivityUtil {
             i ++;
         }
         return meetingList;
+    }
+
+    public static EventAttribute anyEventAttribute() {
+        return EventAttribute.builder()
+                .start(anyStartTime())
+                .end(anyEndTime())
+                .frequency(anyFrequency())
+                .recurrence(new HashSet<>(Arrays.asList(new String[] {
+                        anyStartTime().toString(),
+                        anyStartTime().toString(),
+                        anyStartTime().toString()
+                })))
+                .build();
+    }
+
+    public static LocationAttribute anyLocationAttribute() {
+        return LocationAttribute.builder()
+                .location(anyLocation())
+                .build();
     }
 }
