@@ -45,7 +45,7 @@ public class ActivityHandlerIntegrationTest extends LocalDynamoDBIntegrationTest
     @Before
     public void setup() {
         activity = ActivityUtil.anyActivity();
-        activity.setActivityStatus(ActivityStatus.ACTIVE);
+        activity.setStatus(ActivityStatus.ACTIVE);
     }
 
     @Test
@@ -121,7 +121,7 @@ public class ActivityHandlerIntegrationTest extends LocalDynamoDBIntegrationTest
         assertThat(updated.getCreator().getSelf(), is(equalTo(activity.getCreator().getSelf())));
         assertThat(updated.getCreated(), is(equalTo(activity.getCreated())));
         assertThat(updated.getUpdated(), not(equalTo(activity.getUpdated())));
-        assertThat(updated.getActivityStatus(), is(equalTo(activity.getActivityStatus())));
+        assertThat(updated.getStatus(), is(equalTo(activity.getStatus())));
 
     }
 
@@ -134,7 +134,7 @@ public class ActivityHandlerIntegrationTest extends LocalDynamoDBIntegrationTest
 
         Activity deleted = getActivity(added.getId());
 
-        assertThat(deleted.getActivityStatus(), is(equalTo(ActivityStatus.INACTIVE)));
+        assertThat(deleted.getStatus(), is(equalTo(ActivityStatus.INACTIVE)));
 
     }
 
@@ -145,7 +145,7 @@ public class ActivityHandlerIntegrationTest extends LocalDynamoDBIntegrationTest
 
         added.setId("123456789");
 
-        updateActivityResultInInternalServerError(added.getId(), added);
+        updateActivityResultInBadRequestError(added.getId(), added);
     }
 
     @Test
@@ -157,27 +157,27 @@ public class ActivityHandlerIntegrationTest extends LocalDynamoDBIntegrationTest
 
         Activity activity1 = ActivityUtil.anyActivity();
         activity1.setCreator(creator1);
-        activity1.setActivityStatus(ActivityStatus.ACTIVE);
+        activity1.setStatus(ActivityStatus.ACTIVE);
 
         Activity activity2 = ActivityUtil.anyActivity();
         activity2.setCreator(creator1);
-        activity2.setActivityStatus(ActivityStatus.ACTIVE);
+        activity2.setStatus(ActivityStatus.ACTIVE);
 
         Activity activity3 = ActivityUtil.anyActivity();
         activity3.setCreator(creator1);
-        activity3.setActivityStatus(ActivityStatus.INACTIVE);
+        activity3.setStatus(ActivityStatus.INACTIVE);
 
         Activity activity4 = ActivityUtil.anyActivity();
         activity4.setCreator(creator2);
-        activity4.setActivityStatus(ActivityStatus.INACTIVE);
+        activity4.setStatus(ActivityStatus.INACTIVE);
 
         Activity activity5 = ActivityUtil.anyActivity();
         activity5.setCreator(creator1);
-        activity5.setActivityStatus(ActivityStatus.ACTIVE);
+        activity5.setStatus(ActivityStatus.ACTIVE);
 
         Activity activity6 = ActivityUtil.anyActivity();
         activity6.setCreator(creator1);
-        activity6.setActivityStatus(ActivityStatus.ACTIVE);
+        activity6.setStatus(ActivityStatus.ACTIVE);
 
         List<Activity> activities = Arrays.asList( new Activity[] {activity1, activity2, activity3, activity4, activity5, activity6});
 
@@ -243,13 +243,13 @@ public class ActivityHandlerIntegrationTest extends LocalDynamoDBIntegrationTest
         assertEquals(200, updateResponseEvent.getStatusCode());
     }
 
-    private void updateActivityResultInInternalServerError(String activityId, Activity updatable) {
+    private void updateActivityResultInBadRequestError(String activityId, Activity updatable) {
         APIGatewayProxyRequestEvent updateRequestEvent = new APIGatewayProxyRequestEvent();
         updateRequestEvent.setPathParameters(Collections.singletonMap("activityId", activityId));
         updateRequestEvent.setBody(JsonUtil.toJsonString(updatable));
         APIGatewayProxyResponseEvent updateResponseEvent = updateActivityHandler.handleRequest(updateRequestEvent, testContext);
 
-        assertEquals(500, updateResponseEvent.getStatusCode());
+        assertEquals(400, updateResponseEvent.getStatusCode());
     }
 
     private List<Activity> listActivities(String creatorId, Instant timeWindowStart, Instant timeWindowEnd, ActivityStatus status, Integer limit) {
@@ -290,7 +290,7 @@ public class ActivityHandlerIntegrationTest extends LocalDynamoDBIntegrationTest
         assertThat(expected.getCreated(), is(equalTo(actual.getCreated())));
         assertThat(expected.getUpdated(), is(equalTo(actual.getUpdated())));
         assertThat(expected.getActivityType(), is(equalTo(actual.getActivityType())));
-        assertThat(expected.getActivityStatus(), is(equalTo(actual.getActivityStatus())));
+        assertThat(expected.getStatus(), is(equalTo(actual.getStatus())));
 
     }
 

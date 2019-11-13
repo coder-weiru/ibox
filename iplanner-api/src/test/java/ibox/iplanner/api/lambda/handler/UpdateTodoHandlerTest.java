@@ -37,7 +37,7 @@ public class UpdateTodoHandlerTest {
 
     private Todo todo;
 
-    private String newSummary = "new title";
+    private String newSummary = "new summary";
     private String newDescription = "new description";
     private String newActivity = "new activity";
 
@@ -57,6 +57,10 @@ public class UpdateTodoHandlerTest {
     @Test
     public void updateTodo_shouldInvokeTodoDateServiceWithUpdatable() throws Exception {
         when(todoDataServiceMock.updateTodo(any(Todo.class))).thenReturn(todo);
+
+        todo.setSummary(newSummary);
+        todo.setDescription(newDescription);
+        todo.setActivityType(newActivity);
 
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         requestEvent.setPathParameters(Collections.singletonMap("todoId", todo.getId()));
@@ -83,11 +87,6 @@ public class UpdateTodoHandlerTest {
     public void updateTodo_shouldReturnBadRequestMessageIfMissingKey() throws Exception {
         todo.setId(null);
 
-        verifyBadRequestMessage();
-    }
-
-    private void verifyBadRequestMessage() throws Exception {
-
         when(todoDataServiceMock.updateTodo(any(Todo.class))).thenReturn(todo);
 
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
@@ -101,7 +100,7 @@ public class UpdateTodoHandlerTest {
         assertEquals(400, error.getStatus());
         assertEquals(ERROR_BAD_REQUEST, error.getError());
         assertFalse(StringUtils.isNullOrEmpty(error.getMessage()));
-        assertFalse(error.getErrorDetails().isEmpty());
+        assertTrue(error.getErrorDetails().isEmpty());
     }
 
     @Test

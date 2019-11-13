@@ -1,20 +1,28 @@
 package ibox.iplanner.api.model;
 
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @Setter
-@Builder
 public class Task extends Activity {
 
-    public static final String TASK_TYPE = "task";
+    private TimelineAttribute timeline = new TimelineAttribute();
 
     public Task() {
         super();
-        addAttribute(new TagAttribute());
-        addAttribute(new TimelineAttribute());
     }
+
+    public Set<TodoFeature> getSupportedFeatures() {
+        return new HashSet(Arrays.asList(new TodoFeature[] {
+                TodoFeature.TAGGING_FEATURE,
+                TodoFeature.TIMELINE_FEATURE
+        } ));
+    }
+
 }

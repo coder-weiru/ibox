@@ -2,7 +2,7 @@
   "myActivity": {
     "title": "My Activity",
     "description": "Description for an activity",
-    "type": "activity",
+    "activityType": "activity",
     "creator": {
       "id": "317c7b98-9f9e-4cce-9781-f6e144c21df5",
       "email": "john.doe@gmail.com",
@@ -10,12 +10,21 @@
       "self": false
     },
     "created": "2000-01-01T00:00:00.000Z",
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "tags": {
+      "class": "ibox.iplanner.api.model.TagAttribute",
+      "tags": [
+        {
+          "value":  "myTag",
+          "rgbHexCode": "#123456"
+        }
+      ]
+    }
   },
   "myMeeting": {
     "title": "My Meeting",
     "description": "Description for a meeting",
-    "type": "meeting",
+    "activityType": "meeting",
     "creator": {
       "id": "317c7b98-9f9e-4cce-9781-f6e144c21df5",
       "email": "john.doe@gmail.com",
@@ -24,12 +33,32 @@
     },
     "created": "2000-01-01T00:00:00.000Z",
     "status": "ACTIVE",
-    "frequency": "DAILY"
+    "frequency": "DAILY",
+    "tags": {
+      "class": "ibox.iplanner.api.model.TagAttribute",
+      "tags": [
+        {
+          "value":  "myTag",
+          "rgbHexCode": "#123456"
+        }
+      ]
+    },
+    "locationInfo": {
+      "class": "ibox.iplanner.api.model.LocationAttribute",
+      "location": "myLocation"
+    },
+    "eventInfo": {
+      "class": "ibox.iplanner.api.model.EventAttribute",
+      "start": "2019-10-31T00:00:00.000Z",
+      "end": "2019-11-31T00:00:00.000Z",
+      "frequency": "ONE_TIME",
+      "recurrence": []
+    }
   },
   "myTask": {
     "title": "My Task",
     "description": "Description for a task",
-    "type": "task",
+    "activityType": "task",
     "creator": {
       "id": "317c7b98-9f9e-4cce-9781-f6e144c21df5",
       "email": "john.doe@gmail.com",
@@ -38,6 +67,19 @@
     },
     "created": "2000-01-01T00:00:00.000Z",
     "status": "ACTIVE",
-    "deadline": "2099-12-31T00:00:00.000Z"
+    "tags": {
+      "class": "ibox.iplanner.api.model.TagAttribute",
+      "tags": [
+        {
+          "value":  "myTag",
+          "rgbHexCode": "#123456"
+        }
+      ]
+    },
+    "timeline": {
+      "class": "ibox.iplanner.api.model.TimelineAttribute",
+      "startBy": "2019-12-31T00:00:00.000Z",
+      "completeBy": "2099-12-31T00:00:00.000Z"
+    }
   }
 }

@@ -19,40 +19,18 @@
       },
       {
         "properties": {
-          "attributeSet": {
-            "$ref": "#/definitions/attribute-set"
+          "eventInfo": {
+            "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/event-attribute"
+          },
+          "locationInfo": {
+            "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/location-attribute"
           }
         },
         "required": [
-          "attributeSet"
+          "eventInfo",
+          "locationInfo"
         ]
       }
     ]
-  },
-
-  "definitions": {
-    "attribute-set": {
-      "description": "A container to hold a set of attributes",
-      "type": "object",
-      "properties": {
-        "attributes": {
-          "description": "The attributes associated with the meeting",
-          "type": "array",
-          "items": {
-            "anyOf": [
-              {
-                "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/tag-attribute"
-              },
-              {
-                "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/event-attribute"
-              },
-              {
-                "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/location-attribute"
-              }
-            ]
-          }
-        }
-      }
-    }
   }
 }

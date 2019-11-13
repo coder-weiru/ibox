@@ -83,7 +83,7 @@ public class AddActivityHandlerTest {
         assertThat(argument.get(0).getTitle(), is(equalTo(activities.get(0).getTitle())));
         assertThat(argument.get(0).getDescription(), is(equalTo(activities.get(0).getDescription())));
         assertThat(argument.get(0).getActivityType(), is(equalTo(activities.get(0).getActivityType())));
-        assertThat(argument.get(0).getActivityStatus(), is(equalTo(activities.get(0).getActivityStatus())));
+        assertThat(argument.get(0).getStatus(), is(equalTo(activities.get(0).getStatus())));
         assertThat(argument.get(0).getCreator().getId(), is(equalTo(activities.get(0).getCreator().getId())));
         assertThat(argument.get(0).getCreator().getEmail(), is(equalTo(activities.get(0).getCreator().getEmail())));
         assertThat(argument.get(0).getCreator().getDisplayName(), is(equalTo(activities.get(0).getCreator().getDisplayName())));
@@ -95,7 +95,7 @@ public class AddActivityHandlerTest {
         assertThat(argument.get(1).getTitle(), is(equalTo(activities.get(1).getTitle())));
         assertThat(argument.get(1).getDescription(), is(equalTo(activities.get(1).getDescription())));
         assertThat(argument.get(1).getActivityType(), is(equalTo(activities.get(1).getActivityType())));
-        assertThat(argument.get(1).getActivityStatus(), is(equalTo(activities.get(1).getActivityStatus())));
+        assertThat(argument.get(1).getStatus(), is(equalTo(activities.get(1).getStatus())));
         assertThat(argument.get(1).getCreator().getId(), is(equalTo(activities.get(1).getCreator().getId())));
         assertThat(argument.get(1).getCreator().getEmail(), is(equalTo(activities.get(1).getCreator().getEmail())));
         assertThat(argument.get(1).getCreator().getDisplayName(), is(equalTo(activities.get(1).getCreator().getDisplayName())));
@@ -107,7 +107,7 @@ public class AddActivityHandlerTest {
         assertThat(argument.get(2).getTitle(), is(equalTo(activities.get(2).getTitle())));
         assertThat(argument.get(2).getDescription(), is(equalTo(activities.get(2).getDescription())));
         assertThat(argument.get(2).getActivityType(), is(equalTo(activities.get(2).getActivityType())));
-        assertThat(argument.get(2).getActivityStatus(), is(equalTo(activities.get(2).getActivityStatus())));
+        assertThat(argument.get(2).getStatus(), is(equalTo(activities.get(2).getStatus())));
         assertThat(argument.get(2).getCreator().getId(), is(equalTo(activities.get(2).getCreator().getId())));
         assertThat(argument.get(2).getCreator().getEmail(), is(equalTo(activities.get(2).getCreator().getEmail())));
         assertThat(argument.get(2).getCreator().getDisplayName(), is(equalTo(activities.get(2).getCreator().getDisplayName())));
@@ -146,7 +146,7 @@ public class AddActivityHandlerTest {
         assertThat(argument.get(0).getTitle(), is(equalTo(multiActivities.get(0).getTitle())));
         assertThat(argument.get(0).getDescription(), is(equalTo(multiActivities.get(0).getDescription())));
         assertThat(argument.get(0).getActivityType(), is(equalTo(multiActivities.get(0).getActivityType())));
-        assertThat(argument.get(0).getActivityStatus(), is(equalTo(multiActivities.get(0).getActivityStatus())));
+        assertThat(argument.get(0).getStatus(), is(equalTo(multiActivities.get(0).getStatus())));
         assertThat(argument.get(0).getCreator().getId(), is(equalTo(multiActivities.get(0).getCreator().getId())));
         assertThat(argument.get(0).getCreator().getEmail(), is(equalTo(multiActivities.get(0).getCreator().getEmail())));
         assertThat(argument.get(0).getCreator().getDisplayName(), is(equalTo(multiActivities.get(0).getCreator().getDisplayName())));
@@ -158,7 +158,7 @@ public class AddActivityHandlerTest {
         assertThat(argument.get(1).getTitle(), is(equalTo(multiActivities.get(1).getTitle())));
         assertThat(argument.get(1).getDescription(), is(equalTo(multiActivities.get(1).getDescription())));
         assertThat(argument.get(1).getActivityType(), is(equalTo(multiActivities.get(1).getActivityType())));
-        assertThat(argument.get(1).getActivityStatus(), is(equalTo(multiActivities.get(1).getActivityStatus())));
+        assertThat(argument.get(1).getStatus(), is(equalTo(multiActivities.get(1).getStatus())));
         assertThat(argument.get(1).getCreator().getId(), is(equalTo(multiActivities.get(1).getCreator().getId())));
         assertThat(argument.get(1).getCreator().getEmail(), is(equalTo(multiActivities.get(1).getCreator().getEmail())));
         assertThat(argument.get(1).getCreator().getDisplayName(), is(equalTo(multiActivities.get(1).getCreator().getDisplayName())));
@@ -170,7 +170,7 @@ public class AddActivityHandlerTest {
         assertThat(argument.get(2).getTitle(), is(equalTo(multiActivities.get(2).getTitle())));
         assertThat(argument.get(2).getDescription(), is(equalTo(multiActivities.get(2).getDescription())));
         assertThat(argument.get(2).getActivityType(), is(equalTo(multiActivities.get(2).getActivityType())));
-        assertThat(argument.get(2).getActivityStatus(), is(equalTo(multiActivities.get(2).getActivityStatus())));
+        assertThat(argument.get(2).getStatus(), is(equalTo(multiActivities.get(2).getStatus())));
         assertThat(argument.get(2).getCreator().getId(), is(equalTo(multiActivities.get(2).getCreator().getId())));
         assertThat(argument.get(2).getCreator().getEmail(), is(equalTo(multiActivities.get(2).getCreator().getEmail())));
         assertThat(argument.get(2).getCreator().getDisplayName(), is(equalTo(multiActivities.get(2).getCreator().getDisplayName())));

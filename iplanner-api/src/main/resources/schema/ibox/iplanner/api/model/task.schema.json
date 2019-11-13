@@ -19,40 +19,14 @@
       },
       {
         "properties": {
-          "attributeSet": {
-            "$ref": "#/definitions/attribute-set"
+          "timeline": {
+            "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/timeline-attribute"
           }
         },
         "required": [
-          "attributeSet"
+          "timeline"
         ]
       }
     ]
-  },
-
-  "definitions": {
-    "attribute-set": {
-      "description": "A container to hold a set of attributes",
-      "type": "object",
-      "properties": {
-        "attributes": {
-          "description": "The attributes associated with the task",
-          "type": "array",
-          "items": {
-            "anyOf": [
-              {
-                "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/tag-attribute"
-              },
-              {
-                "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/tag-attribute"
-              },
-              {
-                "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/timeline-attribute"
-              }
-            ]
-          }
-        }
-      }
-    }
   }
 }

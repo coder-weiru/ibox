@@ -23,7 +23,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.Collections;
 import java.util.UUID;
 
-import static ibox.iplanner.api.service.TestHelper.*;
+import static ibox.iplanner.api.util.TestHelper.*;
 import static ibox.iplanner.api.util.ApiErrorConstants.*;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.is;
@@ -90,7 +90,7 @@ public class CreateTodoFromActivityHandlerTest {
         assertThat(todo.getSummary(), not(isEmptyString()));
         assertThat(todo.getDescription(), not(isEmptyString()));
         assertThat(todo.getActivityId(), is(equalTo(meeting.getId())));
-        assertThat(todo.getActivityType(), is(equalTo(Meeting.MEETING_TYPE)));
+        assertThat(todo.getActivityType(), is(equalTo(Activities.MEETING_TYPE)));
         assertThat(todo.getStatus(), notNullValue());
         assertThat(todo.getCreator(), notNullValue());
         assertThat(todo.getCreated(), notNullValue());
@@ -120,7 +120,7 @@ public class CreateTodoFromActivityHandlerTest {
         assertThat(todo.getSummary(), not(isEmptyString()));
         assertThat(todo.getDescription(), not(isEmptyString()));
         assertThat(todo.getActivityId(), is(equalTo(task.getId())));
-        assertThat(todo.getActivityType(), is(equalTo(Task.TASK_TYPE)));
+        assertThat(todo.getActivityType(), is(equalTo(Activities.TASK_TYPE)));
         assertThat(todo.getStatus(), notNullValue());
         assertThat(todo.getCreator(), notNullValue());
         assertThat(todo.getCreated(), notNullValue());

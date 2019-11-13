@@ -60,7 +60,7 @@ public class ListTodoHandlerTest {
         when(todoDataServiceMock.getMyTodoListByFilter(any(String.class), any(Set.class), any(String.class), any(Integer.class))).thenReturn(todos);
 
         String creatorId = UUID.randomUUID().toString();
-        String selectedActivityIds = String.format("s%, s%", todos.get(0).getActivityId(), todos.get(1).getActivityId());
+        String selectedActivityIds = String.format("%s, %s", todos.get(0).getActivityId(), todos.get(1).getActivityId());
         String status = TodoStatus.OPEN.name();
         String limit = "10";
 
@@ -96,7 +96,7 @@ public class ListTodoHandlerTest {
         when(todoDataServiceMock.getMyTodoListByFilter(any(String.class), any(Set.class), any(String.class), any(Integer.class))).thenReturn(todos);
 
         String creatorId = UUID.randomUUID().toString();
-        String selectedActivityIds = String.format("s%, s%", todos.get(0).getActivityId(), todos.get(1).getActivityId());
+        String selectedActivityIds = String.format("%s, %s", todos.get(0).getActivityId(), todos.get(1).getActivityId());
         String status = TodoStatus.FINISHED.name();
 
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
@@ -177,7 +177,7 @@ public class ListTodoHandlerTest {
 
         Instant now = Instant.now();
         String creatorId = UUID.randomUUID().toString();
-        String selectedActivityIds = String.format("s%, s%", todos.get(0).getActivityId(), todos.get(1).getActivityId());
+        String selectedActivityIds = String.format("%s, %s", todos.get(0).getActivityId(), todos.get(1).getActivityId());
 
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
         requestEvent.setPathParameters(Collections.singletonMap("creatorId", creatorId));

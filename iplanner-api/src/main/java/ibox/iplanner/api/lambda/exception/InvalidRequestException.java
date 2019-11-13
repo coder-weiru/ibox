@@ -6,10 +6,6 @@ public class InvalidRequestException extends IllegalArgumentException {
 
     private ApiError apiError;
 
-    public InvalidRequestException(final String message) {
-        super(message);
-    }
-
     public InvalidRequestException(final String message, final ApiError error) {
         super(message);
         this.apiError = error;

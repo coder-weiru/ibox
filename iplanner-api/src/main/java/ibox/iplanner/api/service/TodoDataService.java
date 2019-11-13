@@ -5,27 +5,21 @@ import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.PutItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
+import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.amazonaws.services.dynamodbv2.model.ReturnValue;
-import ibox.iplanner.api.lambda.exception.InvalidInputException;
+import ibox.iplanner.api.lambda.exception.RecordNotFoundException;
 import ibox.iplanner.api.model.*;
 import ibox.iplanner.api.service.util.DynamoDBUtil;
 import ibox.iplanner.api.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static ibox.iplanner.api.service.dbmodel.TodoDefinition.*;
-import static ibox.iplanner.api.util.ApiErrorConstants.ERROR_BAD_REQUEST;
-import static ibox.iplanner.api.util.ApiErrorConstants.SC_BAD_REQUEST;
 
 @Slf4j
 public class TodoDataService {
-
-    private static final String TODO_NOT_FOUND_ERROR_MESSAGE = "The specified todo is not found";
 
     private final DynamoDB dynamoDb;
 
@@ -45,7 +39,7 @@ public class TodoDataService {
 
     public Todo getTodo(String todoId) {
         Table todolistTable = this.dynamoDb.getTable(TABLE_NAME_TODO_LIST);
-        String projectionExpression = String.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
+        StringBuilder projectionExpressionBuilder = new StringBuilder(String.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
                 FIELD_NAME_ID,
                 FIELD_NAME_SUMMARY,
                 FIELD_NAME_DESCRIPTION,
@@ -55,11 +49,18 @@ public class TodoDataService {
                 FIELD_NAME_CREATED_BY,
                 FIELD_NAME_CREATED_TIME,
                 FIELD_NAME_UPDATED_TIME,
-                FIELD_NAME_TODO_STATUS,
-                FIELD_NAME_ATTRIBUTES);
+                FIELD_NAME_TODO_STATUS));
+
+        Set<TodoFeature> supported = Activities.getAllFeatures();
+        Iterator<TodoFeature> iter = supported.iterator();
+        while (iter.hasNext()) {
+            projectionExpressionBuilder.append(", ");
+            projectionExpressionBuilder.append(iter.next().getValue());
+        }
+
         Item item = todolistTable.getItem(new GetItemSpec()
                 .withPrimaryKey(FIELD_NAME_ID, todoId)
-                .withProjectionExpression(projectionExpression)
+                .withProjectionExpression(projectionExpressionBuilder.toString())
                 .withConsistentRead(true));
 
         return convertToTodo(item);
@@ -101,65 +102,101 @@ public class TodoDataService {
     public Todo updateTodo(final Todo updatable) {
         Todo dbTodo = this.getTodo(updatable.getId());
         if (dbTodo==null) {
-            ApiError error = ApiError.builder()
-                    .error(ERROR_BAD_REQUEST)
-                    .message(TODO_NOT_FOUND_ERROR_MESSAGE)
-                    .status(SC_BAD_REQUEST)
-                    .build();
-            throw new InvalidInputException(String.format(TODO_NOT_FOUND_ERROR_MESSAGE), error);
+            throw new RecordNotFoundException("The todo to be updated is not found");
         }
-        List<AttributeUpdate> attributeUpdates = new ArrayList<>();
+        StringBuilder addStatementBuilder = new StringBuilder("");
+        StringBuilder setStatementBuilder = new StringBuilder("");
+        ValueMap valueMap = new ValueMap();
         Optional<String> summary = Optional.ofNullable(dbTodo.getSummary());
         if (summary.isPresent()) {
             if (!summary.get().equals(updatable.getSummary())) {
-                attributeUpdates.add(DynamoDBUtil.updateAttributeUpdate(FIELD_NAME_SUMMARY, updatable.getSummary()));
+                if (setStatementBuilder.length()>0) {
+                    setStatementBuilder.append(", ");
+                }
+                setStatementBuilder.append(String.format("%s = :val%s", FIELD_NAME_SUMMARY, FIELD_NAME_SUMMARY));
+                valueMap.withString(String.format(":val%s", FIELD_NAME_SUMMARY), updatable.getSummary());
             }
-            // Does not allow deleting summary
         } else {
-            attributeUpdates.add(DynamoDBUtil.addAttributeUpdate(FIELD_NAME_SUMMARY, updatable.getSummary()));
+            if (addStatementBuilder.length()>0) {
+                addStatementBuilder.append(", ");
+            }
+            addStatementBuilder.append(String.format("%s = :val%s", FIELD_NAME_SUMMARY, FIELD_NAME_SUMMARY));
+            valueMap.withString(String.format(":val%s", FIELD_NAME_SUMMARY), updatable.getSummary());
         }
         Optional<String> description = Optional.ofNullable(dbTodo.getDescription());
         if (description.isPresent()) {
             String n = updatable.getDescription();
             String o = description.get();
             if (!o.equals(n)) {
-                if (n==null) {
-                    attributeUpdates.add(DynamoDBUtil.deleteAttributeUpdate(FIELD_NAME_DESCRIPTION, updatable.getDescription()));
-                } else {
-                    attributeUpdates.add(DynamoDBUtil.updateAttributeUpdate(FIELD_NAME_DESCRIPTION, updatable.getDescription()));
+                if (setStatementBuilder.length()>0) {
+                    setStatementBuilder.append(", ");
                 }
+                setStatementBuilder.append(String.format("%s = :val%s", FIELD_NAME_DESCRIPTION, FIELD_NAME_DESCRIPTION));
+                valueMap.withString(String.format(":val%s", FIELD_NAME_DESCRIPTION), updatable.getDescription());
             }
         } else {
-            attributeUpdates.add(DynamoDBUtil.addAttributeUpdate(FIELD_NAME_DESCRIPTION, updatable.getDescription()));
+            if (addStatementBuilder.length()>0) {
+                addStatementBuilder.append(", ");
+            }
+            addStatementBuilder.append(String.format("%s = :val%s", FIELD_NAME_DESCRIPTION, FIELD_NAME_DESCRIPTION));
+            valueMap.withString(String.format(":val%s", FIELD_NAME_DESCRIPTION), updatable.getDescription());
         }
         Optional<Instant> updated = Optional.ofNullable(dbTodo.getUpdated());
         if (updated.isPresent()) {
-            attributeUpdates.add(DynamoDBUtil.updateAttributeUpdate(FIELD_NAME_UPDATED_TIME, JsonUtil.toJsonString(Instant.now())));
+            if (setStatementBuilder.length()>0) {
+                setStatementBuilder.append(", ");
+            }
+            setStatementBuilder.append(String.format("%s = :val%s", FIELD_NAME_UPDATED_TIME, FIELD_NAME_UPDATED_TIME));
+            valueMap.withString(String.format(":val%s", FIELD_NAME_UPDATED_TIME), JsonUtil.toJsonString(Instant.now()));
         } else {
-            attributeUpdates.add(DynamoDBUtil.addAttributeUpdate(FIELD_NAME_UPDATED_TIME, JsonUtil.toJsonString(Instant.now())));
+            if (addStatementBuilder.length()>0) {
+                addStatementBuilder.append(", ");
+            }
+            addStatementBuilder.append(String.format("%s = :val%s", FIELD_NAME_UPDATED_TIME, FIELD_NAME_UPDATED_TIME));
+            valueMap.withString(String.format(":val%s", FIELD_NAME_UPDATED_TIME), JsonUtil.toJsonString(Instant.now()));
         }
         Optional<TodoStatus> status = Optional.ofNullable(dbTodo.getStatus());
         if (status.isPresent()) {
             if (!status.get().equals(updatable.getStatus())) {
-                attributeUpdates.add(DynamoDBUtil.updateAttributeUpdate(FIELD_NAME_TODO_STATUS, updatable.getStatus()));
+                if (setStatementBuilder.length()>0) {
+                    setStatementBuilder.append(", ");
+                }
+                setStatementBuilder.append(String.format("%s = :val%s", FIELD_NAME_TODO_STATUS, FIELD_NAME_TODO_STATUS));
+                valueMap.withString(String.format(":val%s", FIELD_NAME_TODO_STATUS), updatable.getStatus().name());
             }
         } else {
-            attributeUpdates.add(DynamoDBUtil.addAttributeUpdate(FIELD_NAME_TODO_STATUS, updatable.getStatus()));
+            if (addStatementBuilder.length()>0) {
+                addStatementBuilder.append(", ");
+            }
+            addStatementBuilder.append(String.format("%s = :val%s", FIELD_NAME_TODO_STATUS, FIELD_NAME_TODO_STATUS));
+            valueMap.withString(String.format(":val%s", FIELD_NAME_TODO_STATUS), updatable.getStatus().name());
         }
-        Optional<AttributeSet> attributeSet = Optional.ofNullable(dbTodo.getAttributeSet());
-        if (attributeSet.isPresent()) {
-            if (!attributeSet.get().equals(updatable.getAttributeSet())) {
-                attributeUpdates.add(DynamoDBUtil.updateAttributeUpdate(FIELD_NAME_ATTRIBUTES, JsonUtil.toJsonString(updatable.getAttributeSet())));
+        Set<TodoFeature> supported = dbTodo.getSupportedFeatures();
+        Iterator<TodoFeature> iter = supported.iterator();
+        while (iter.hasNext()) {
+            TodoFeature feature = iter.next();
+            TodoAttribute attribute = updatable.getAttribute(feature);
+            if (attribute!=null) {
+                if (setStatementBuilder.length()>0) {
+                    setStatementBuilder.append(",");
+                }
+                setStatementBuilder.append(String.format("%s = :val%s", feature.getValue(), feature.getValue()));
+                valueMap.withJSON(String.format(":val%s", feature.getValue()), JsonUtil.toJsonString(attribute));
             }
-        } else {
-            attributeUpdates.add(DynamoDBUtil.addAttributeUpdate(FIELD_NAME_ATTRIBUTES, JsonUtil.toJsonString(updatable.getAttributeSet())));
         }
 
         Table todolistTable = this.dynamoDb.getTable(TABLE_NAME_TODO_LIST);
-
+        StringBuilder updateExpressionBuilder = new StringBuilder("");
+        if (!addStatementBuilder.toString().isEmpty()) {
+            updateExpressionBuilder.append(String.format("add %s ", addStatementBuilder.toString()));
+        }
+        if (!setStatementBuilder.toString().isEmpty()) {
+            updateExpressionBuilder.append(String.format("set %s ", setStatementBuilder.toString()));
+        }
         UpdateItemOutcome outcome = todolistTable.updateItem(new UpdateItemSpec()
                 .withPrimaryKey(DynamoDBUtil.primaryKeyBuilder().addComponent(FIELD_NAME_ID, dbTodo.getId()).build())
-                .withAttributeUpdate(attributeUpdates)
+                .withUpdateExpression(updateExpressionBuilder.toString())
+                .withValueMap(valueMap)
                 .withReturnValues(ReturnValue.ALL_NEW));
 
         return convertToTodo(outcome.getItem());
@@ -189,8 +226,12 @@ public class TodoDataService {
                 .withString(FIELD_NAME_CREATED_BY, creatorId.orElse(""))
                 .withString(FIELD_NAME_ACTIVITY_ID, todo.getActivityId())
                 .withString(FIELD_NAME_ACTIVITY_TYPE, todo.getActivityType())
-                .withJSON(FIELD_NAME_ATTRIBUTES, JsonUtil.toJsonString(todo.getAttributeSet()))
                 .withString(FIELD_NAME_TODO_STATUS, todo.getStatus().name());
+
+        Set<TodoFeature> supported = todo.getSupportedFeatures();
+        supported.stream().forEach( feature -> {
+            item.withJSON(feature.getValue(), JsonUtil.toJsonString(todo.getAttribute(feature)));
+        });
 
         if (created.isPresent()) {
             item.withString(FIELD_NAME_CREATED_TIME, JsonUtil.toJsonString(created.get()));
@@ -220,8 +261,11 @@ public class TodoDataService {
             todo.setUpdated(JsonUtil.fromJsonString(item.getString(FIELD_NAME_UPDATED_TIME), Instant.class));
         }
         todo.setStatus(TodoStatus.of(item.getString(FIELD_NAME_TODO_STATUS)));
-        todo.setAttributeSet(JsonUtil.fromJsonString(item.getJSON(FIELD_NAME_ATTRIBUTES), AttributeSet.class));
 
+        Set<TodoFeature> supported = todo.getSupportedFeatures();
+        supported.stream().forEach( feature -> {
+            todo.setAttribute(JsonUtil.fromJsonString(item.getJSON(feature.getValue()), TodoAttribute.class));
+        });
         return todo;
     }
 }

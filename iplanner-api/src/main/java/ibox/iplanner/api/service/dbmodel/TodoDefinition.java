@@ -17,6 +17,5 @@ public final class TodoDefinition {
     public static final String FIELD_NAME_ACTIVITY_ID = "ActivityId";
     public static final String FIELD_NAME_ACTIVITY_TYPE = "ActivityType";
     public static final String FIELD_NAME_TODO_STATUS = "TodoStatus";
-    public static final String FIELD_NAME_ATTRIBUTES = "Attributes";
     public static final String GSI_CREATOR_TODO_LIST = "CreatorTodoList-GSI";
 }

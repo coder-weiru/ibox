@@ -38,7 +38,7 @@ public class ActivityUtil extends BaseEntityUtil {
         Activity activity = new Activity();
         activity.setTitle(anyActivityTitle());
         activity.setDescription(anyDescription());
-        activity.setActivityStatus(anyActivityStatus());
+        activity.setStatus(anyActivityStatus());
         activity.setActivityType(anyActivityType());
         activity.setCreated(anyCreatedTime());
         activity.setUpdated(anyUpdatedTime());

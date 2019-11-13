@@ -10,8 +10,8 @@ public class MeetingUtil extends ActivityUtil {
         Meeting meeting = new Meeting();
         meeting.setTitle(anyActivityTitle());
         meeting.setDescription(anyDescription());
-        meeting.setActivityStatus(anyActivityStatus());
-        meeting.setActivityType(Meeting.MEETING_TYPE);
+        meeting.setStatus(anyActivityStatus());
+        meeting.setActivityType(Activities.MEETING_TYPE);
         meeting.setCreated(anyCreatedTime());
         meeting.setUpdated(anyUpdatedTime());
         meeting.setCreator(anyActivityCreator());

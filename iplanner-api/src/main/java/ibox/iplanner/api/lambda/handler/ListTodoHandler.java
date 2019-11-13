@@ -47,7 +47,7 @@ public class ListTodoHandler implements RequestHandler<APIGatewayProxyRequestEve
             Map<String, String> requestParameterMap = requestEvent.getQueryStringParameters();
             final String activitiesParam = Optional.ofNullable(requestParameterMap)
                     .map(mapNode -> mapNode.get("activities"))
-                    .orElse(null);
+                    .orElse("");
             HashSet<String> activitySet = new HashSet();
             StringTokenizer st = new StringTokenizer(activitiesParam, ",");
             while(st.hasMoreTokens()) {

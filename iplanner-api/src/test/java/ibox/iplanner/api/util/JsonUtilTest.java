@@ -1,7 +1,6 @@
 package ibox.iplanner.api.util;
 
 import ibox.iplanner.api.model.*;
-import ibox.iplanner.api.service.TestHelper;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertTrue;
@@ -45,42 +44,7 @@ public class JsonUtilTest {
 
         String json = JsonUtil.toJsonString(activity);
 
-        assertTrue(json.contains("\"attributeSet\""));
+        assertTrue(json.contains("\"tags\""));
     }
 
-    @Test
-    public void testTodoAttributeSetToJsonString() {
-        AttributeSet attributeSet = new AttributeSet();
-
-        attributeSet.addAttribute(ActivityUtil.anyTagAttribute());
-        attributeSet.addAttribute(MeetingUtil.anyEventAttribute());
-        attributeSet.addAttribute(MeetingUtil.anyLocationAttribute());
-        attributeSet.addAttribute(TaskUtil.anyTimelineAttribute());
-
-        String json = JsonUtil.toJsonString(attributeSet);
-
-        assertTrue(json.contains(TimelineAttribute.class.getName()));
-        assertTrue(json.contains(EventAttribute.class.getName()));
-        assertTrue(json.contains(LocationAttribute.class.getName()));
-        assertTrue(json.contains(TagAttribute.class.getName()));
-    }
-
-    @Test
-    public void testTodoAttributeSetFromJsonString() {
-        AttributeSet attributeSet = new AttributeSet();
-
-        attributeSet.addAttribute(ActivityUtil.anyTagAttribute());
-        attributeSet.addAttribute(MeetingUtil.anyEventAttribute());
-        attributeSet.addAttribute(MeetingUtil.anyLocationAttribute());
-        attributeSet.addAttribute(TaskUtil.anyTimelineAttribute());
-
-        String json = JsonUtil.toJsonString(attributeSet);
-
-        AttributeSet newAttributeSet = JsonUtil.fromJsonString(json, AttributeSet.class);
-
-        TestHelper.verifyTaggingAttributeAreEqual((TagAttribute) attributeSet.getAttribute(TodoFeature.TAGGING_FEATURE), (TagAttribute) newAttributeSet.getAttribute(TodoFeature.TAGGING_FEATURE));
-        TestHelper.verifyEventAttributeAreEqual((EventAttribute) attributeSet.getAttribute(TodoFeature.EVENT_FEATURE), (EventAttribute) newAttributeSet.getAttribute(TodoFeature.EVENT_FEATURE));
-        TestHelper.verifyLocationAttributeAreEqual((LocationAttribute) attributeSet.getAttribute(TodoFeature.LOCATION_FEATURE), (LocationAttribute) newAttributeSet.getAttribute(TodoFeature.LOCATION_FEATURE));
-        TestHelper.verifyTimelineAttributeAreEqual((TimelineAttribute) attributeSet.getAttribute(TodoFeature.TIMELINE_FEATURE), (TimelineAttribute) newAttributeSet.getAttribute(TodoFeature.TIMELINE_FEATURE));
-    }
 }

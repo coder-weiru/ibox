@@ -57,10 +57,24 @@
         "type": "string"
       },
       "creator": {
+        "description": "The creator of the todo",
         "$ref": "http://iplanner-api.ibox.com/activity.schema.json#/definitions/user"
       },
-      "attributeSet": {
-        "$ref": "#/definitions/attribute-set"
+      "tags": {
+        "description": "The tags of the todo if there is any",
+        "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/tag-attribute"
+      },
+      "eventInfo": {
+        "description": "The event information of the todo if there is any",
+        "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/event-attribute"
+      },
+      "locationInfo": {
+        "description": "The location information of the todo if there is any",
+        "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/location-attribute"
+      },
+      "timeline": {
+        "description": "The timeline information of the todo if there is any",
+        "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/timeline-attribute"
       }
     },
     "required": [
@@ -70,34 +84,5 @@
       "created",
       "creator"
     ]
-  },
-
-  "definitions": {
-    "attribute-set": {
-      "description": "A container to hold a set of attributes",
-      "type": "object",
-      "properties": {
-        "attributes": {
-          "description": "The attributes associated with the meeting",
-          "type": "array",
-          "items": {
-            "anyOf": [
-              {
-                "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/tag-attribute"
-              },
-              {
-                "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/event-attribute"
-              },
-              {
-                "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/location-attribute"
-              },
-              {
-                "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/timeline-attribute"
-              }
-            ]
-          }
-        }
-      }
-    }
   }
 }

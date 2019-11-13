@@ -50,6 +50,9 @@
       },
       "creator": {
         "$ref": "#/definitions/user"
+      },
+      "tags": {
+        "$ref": "http://iplanner-api.ibox.com/attributes.schema.json#/tag-attribute"
       }
     },
     "required": [

@@ -10,14 +10,12 @@ import ibox.iplanner.api.model.*;
 import ibox.iplanner.api.util.JsonUtil;
 import org.junit.Test;
 
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Map;
 
 import static ibox.iplanner.api.util.ApiErrorConstants.ERROR_INTERNAL_SERVER_ERROR;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GetActivityTemplateHandlerTest {
@@ -45,15 +43,25 @@ public class GetActivityTemplateHandlerTest {
         assertThat(activities.get("myMeeting").getTitle(), equalTo("My Meeting"));
         assertThat(activities.get("myMeeting").getDescription(), equalTo("Description for a meeting"));
         assertThat(activities.get("myMeeting").getActivityType(), equalTo("meeting"));
-        assertThat(activities.get("myMeeting").getActivityStatus(), equalTo("ACTIVE"));
-        //assertThat(((Meeting)activities.get("myMeeting")).getFrequency(), equalTo(Frequency.DAILY));
+        assertThat(activities.get("myMeeting").getStatus(), equalTo(ActivityStatus.ACTIVE));
+
+        Meeting myMeeting =  (Meeting) activities.get("myMeeting");
+        assertThat(myMeeting.getTags().getTags().size(), equalTo(1));
+        assertThat(myMeeting.getLocationInfo().getLocation(), equalTo("myLocation"));
+        assertNotNull(myMeeting.getEventInfo().getStart());
+        assertNotNull(myMeeting.getEventInfo().getEnd());
+        assertThat(myMeeting.getEventInfo().getFrequency(), equalTo(Frequency.ONE_TIME));
+        assertThat(myMeeting.getEventInfo().getRecurrence().size(), equalTo(0));
 
         assertThat(activities.get("myTask").getTitle(), equalTo("My Task"));
         assertThat(activities.get("myTask").getDescription(), equalTo("Description for a task"));
         assertThat(activities.get("myTask").getActivityType(), equalTo("task"));
-        assertThat(activities.get("myTask").getActivityStatus(), equalTo("ACTIVE"));
-        //assertThat(((Task)activities.get("myTask")).getDeadline(), equalTo(Instant.parse("2099-12-31T00:00:00.000Z")));
+        assertThat(activities.get("myTask").getStatus(), equalTo(ActivityStatus.ACTIVE));
 
+        Task myTask =  (Task) activities.get("myTask");
+        assertThat(myTask.getTags().getTags().size(), equalTo(1));
+        assertNotNull(myTask.getTimeline().getStartBy());
+        assertNotNull(myTask.getTimeline().getCompleteBy());
     }
 
     @Test
@@ -81,8 +89,8 @@ public class GetActivityTemplateHandlerTest {
         assertThat(activities.get("myMeeting").getTitle(), equalTo("My Meeting"));
         assertThat(activities.get("myMeeting").getDescription(), equalTo("Description for a meeting"));
         assertThat(activities.get("myMeeting").getActivityType(), equalTo("meeting"));
-        assertThat(activities.get("myMeeting").getActivityStatus(), equalTo("ACTIVE"));
-        //assertThat(((Meeting)activities.get("myMeeting")).getFrequency(), equalTo(Frequency.DAILY));
+        assertThat(activities.get("myMeeting").getStatus(), equalTo(ActivityStatus.ACTIVE));
+        assertThat(((Meeting)activities.get("myMeeting")).getEventInfo().getFrequency(), equalTo(Frequency.ONE_TIME));
 
     }
 

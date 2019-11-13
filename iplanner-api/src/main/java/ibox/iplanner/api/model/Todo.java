@@ -3,7 +3,11 @@ package ibox.iplanner.api.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
@@ -13,6 +17,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Slf4j
 public class Todo {
 
     private String id;
@@ -26,9 +31,10 @@ public class Todo {
     private String activityType;
     private User creator;
     private TodoStatus status;
-
-    @Builder.Default
-    private AttributeSet attributeSet = new AttributeSet();
+    private TagAttribute tags = new TagAttribute();
+    private EventAttribute eventInfo = new EventAttribute();
+    private LocationAttribute locationInfo = new LocationAttribute();
+    private TimelineAttribute timeline = new TimelineAttribute();
 
     public static Todo fromActivity(Activity activity) {
         Instant now = Instant.now();
@@ -49,28 +55,33 @@ public class Todo {
     }
 
     public TodoAttribute getAttribute(TodoFeature feature) {
-        return attributeSet.getAttribute(feature);
+        PropertyDescriptor pd;
+        try {
+            pd = new PropertyDescriptor(feature.getValue(), this.getClass());
+            return (TodoAttribute) pd.getReadMethod().invoke(this);
+        } catch (IntrospectionException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+            log.error("Cannot access field %s", feature.getValue());
+        }
+        return null;
     }
 
-    protected void addFeatureAttribute(TodoAttribute attribute) {
-        attributeSet.addAttribute(attribute);
+    public void setAttribute(TodoAttribute attribute) {
+        TodoFeature feature = attribute.feature();
+        PropertyDescriptor pd;
+        try {
+            pd = new PropertyDescriptor(feature.getValue(), this.getClass());
+            pd.getWriteMethod().invoke(this, attribute);
+        } catch (IntrospectionException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            log.error("Cannot access field %s", feature.getValue());
+        }
     }
 
     public Set<TodoFeature> getSupportedFeatures() {
-        return attributeSet.getSupportedFeatures();
-    }
-
-    public boolean supports(TodoFeature feature) {
-        return getSupportedFeatures().contains(feature);
-    }
-
-    public boolean supports(Set<TodoFeature> features) {
-        return features.stream().allMatch(todoFeature -> supports(todoFeature));
+        return Activities.getSupportedFeatures(Activities.getActivityType(this.activityType));
     }
 
     protected void copyAttributeValuesFromActivity(Activity activity) {
-        if (activity!=null && !activity.getAttributeSet().getAttributes().isEmpty()) {
-            activity.getAttributeSet().getAttributes().stream().forEach( attribute -> attributeSet.addAttribute(attribute));
-        }
+        Set<TodoFeature> supported = activity.getSupportedFeatures();
+        supported.stream().forEach( feature -> this.setAttribute(activity.getAttribute(feature)));
     }
 }

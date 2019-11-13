@@ -1,5 +1,6 @@
 package ibox.iplanner.api.util;
 
+import ibox.iplanner.api.model.Activities;
 import ibox.iplanner.api.model.Task;
 import ibox.iplanner.api.model.TimelineAttribute;
 
@@ -14,8 +15,8 @@ public class TaskUtil extends ActivityUtil {
         Task task = new Task();
         task.setTitle(anyActivityTitle());
         task.setDescription(anyDescription());
-        task.setActivityStatus(anyActivityStatus());
-        task.setActivityType(Task.TASK_TYPE);
+        task.setStatus(anyActivityStatus());
+        task.setActivityType(Activities.TASK_TYPE);
         task.setCreated(anyCreatedTime());
         task.setUpdated(anyUpdatedTime());
         task.setCreator(anyActivityCreator());

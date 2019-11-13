@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import static ibox.iplanner.api.service.TestHelper.*;
+import static ibox.iplanner.api.util.TestHelper.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -160,44 +160,5 @@ public class TodoDataServiceIntegrationTest extends LocalDynamoDBIntegrationTest
         assertThat(myTodoList.size(), is(equalTo(3)));
     }
 
-    private void verifyTodoAreEqual(Todo expected, Todo actual) {
 
-        assertThat(expected.getId(), is(equalTo(actual.getId())));
-        assertThat(expected.getSummary(), is(equalTo(actual.getSummary())));
-        assertThat(expected.getDescription(), is(equalTo(actual.getDescription())));
-        assertThat(expected.getCreator().getId(), is(equalTo(actual.getCreator().getId())));
-        assertThat(expected.getCreator().getDisplayName(), is(equalTo(actual.getCreator().getDisplayName())));
-        assertThat(expected.getCreator().getEmail(), is(equalTo(actual.getCreator().getEmail())));
-        assertThat(expected.getCreator().getSelf(), is(equalTo(actual.getCreator().getSelf())));
-        assertThat(expected.getCreated(), is(equalTo(actual.getCreated())));
-        assertThat(expected.getUpdated(), is(equalTo(actual.getUpdated())));
-        assertThat(expected.getStatus(), is(equalTo(actual.getStatus())));
-
-        verifyTodoAttributeSetAreEqual(expected.getAttributeSet(), actual.getAttributeSet());
-    }
-
-    private void verifyTodoAttributeSetAreEqual(AttributeSet expected, AttributeSet actual) {
-        assertThat(expected.getAttributes().size(), is(equalTo(actual.getAttributes().size())));
-        expected.getSupportedFeatures().stream().forEach(feature -> {
-            TodoAttribute expectedAttribute = expected.getAttribute(feature);
-            TodoAttribute actualAttribute = actual.getAttribute(feature);
-            verifyTodoAttributeAreEqual(expectedAttribute, actualAttribute);
-        });
-    }
-
-    private void verifyTodoAttributeAreEqual(TodoAttribute expected, TodoAttribute actual) {
-
-        if (expected.getClass().equals(TagAttribute.class)) {
-            verifyTaggingAttributeAreEqual((TagAttribute) expected, (TagAttribute) actual);
-        }
-        else if (expected.getClass().equals(EventAttribute.class)) {
-            verifyEventAttributeAreEqual((EventAttribute) expected, (EventAttribute) actual);
-        }
-        else if (expected.getClass().equals(LocationAttribute.class)) {
-            verifyLocationAttributeAreEqual((LocationAttribute) expected, (LocationAttribute) actual);
-        }
-        else if (expected.getClass().equals(TimelineAttribute.class)) {
-            verifyTimelineAttributeAreEqual((TimelineAttribute) expected, (TimelineAttribute) actual);
-        }
-    }
 }

@@ -7,25 +7,19 @@ import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.amazonaws.services.dynamodbv2.model.ReturnValue;
-import ibox.iplanner.api.lambda.exception.InvalidInputException;
+import ibox.iplanner.api.lambda.exception.RecordNotFoundException;
 import ibox.iplanner.api.model.*;
 import ibox.iplanner.api.service.util.DynamoDBUtil;
 import ibox.iplanner.api.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static ibox.iplanner.api.service.dbmodel.ActivityDefinition.*;
-import static ibox.iplanner.api.util.ApiErrorConstants.ERROR_BAD_REQUEST;
-import static ibox.iplanner.api.util.ApiErrorConstants.SC_BAD_REQUEST;
 
 @Slf4j
 public class ActivityDataService {
-
-    private static final String ACTIVITY_NOT_FOUND_ERROR_MESSAGE = "The specified activity is not found";
 
     private final DynamoDB dynamoDb;
 
@@ -45,7 +39,7 @@ public class ActivityDataService {
 
     public Activity getActivity(final String activityId) {
         Table activitiesTable = this.dynamoDb.getTable(TABLE_NAME_ACTIVITIES);
-        String projectionExpression = String.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
+        StringBuilder projectionExpressionBuilder = new StringBuilder(String.format("%s, %s, %s, %s, %s, %s, %s, %s, %s",
                 FIELD_NAME_ID,
                 FIELD_NAME_TITLE,
                 FIELD_NAME_DESCRIPTION,
@@ -54,11 +48,17 @@ public class ActivityDataService {
                 FIELD_NAME_CREATED_TIME,
                 FIELD_NAME_UPDATED_TIME,
                 FIELD_NAME_ACTIVITY_TYPE,
-                FIELD_NAME_ACTIVITY_STATUS,
-                FIELD_NAME_ATTRIBUTES);
+                FIELD_NAME_ACTIVITY_STATUS));
+
+        Set<TodoFeature> supported = Activities.getAllFeatures();
+        Iterator<TodoFeature> iter = supported.iterator();
+        while (iter.hasNext()) {
+            projectionExpressionBuilder.append(", ");
+            projectionExpressionBuilder.append(iter.next().getValue());
+        }
         Item item = activitiesTable.getItem(new GetItemSpec()
                 .withPrimaryKey(FIELD_NAME_ID, activityId)
-                .withProjectionExpression(projectionExpression)
+                .withProjectionExpression(projectionExpressionBuilder.toString())
                 .withConsistentRead(true));
 
         return convertToActivity(item);
@@ -91,65 +91,100 @@ public class ActivityDataService {
     public Activity updateActivity(final Activity updatable) {
         Activity dbActivity = this.getActivity(updatable.getId());
         if (dbActivity==null) {
-            ApiError error = ApiError.builder()
-                    .error(ERROR_BAD_REQUEST)
-                    .message(ACTIVITY_NOT_FOUND_ERROR_MESSAGE)
-                    .status(SC_BAD_REQUEST)
-                    .build();
-            throw new InvalidInputException(String.format(ACTIVITY_NOT_FOUND_ERROR_MESSAGE), error);
+            throw new RecordNotFoundException("The activity to be updated is not found");
         }
-        List<AttributeUpdate> attributeUpdates = new ArrayList<>();
+        StringBuilder addStatementBuilder = new StringBuilder("");
+        StringBuilder setStatementBuilder = new StringBuilder("");
+        ValueMap valueMap = new ValueMap();
         Optional<String> title = Optional.ofNullable(dbActivity.getTitle());
         if (title.isPresent()) {
             if (!title.get().equals(updatable.getTitle())) {
-                attributeUpdates.add(DynamoDBUtil.updateAttributeUpdate(FIELD_NAME_TITLE, updatable.getTitle()));
+                if (setStatementBuilder.length()>0) {
+                    setStatementBuilder.append(", ");
+                }
+                setStatementBuilder.append(String.format("%s = :val%s", FIELD_NAME_TITLE, FIELD_NAME_TITLE));
+                valueMap.withString(String.format(":val%s", FIELD_NAME_TITLE), updatable.getTitle());
             }
-            // Does not allow deleting title
         } else {
-            attributeUpdates.add(DynamoDBUtil.addAttributeUpdate(FIELD_NAME_TITLE, updatable.getTitle()));
+            if (addStatementBuilder.length()>0) {
+                addStatementBuilder.append(", ");
+            }
+            addStatementBuilder.append(String.format("%s = :val%s", FIELD_NAME_TITLE, FIELD_NAME_TITLE));
+            valueMap.withString(String.format(":val%s", FIELD_NAME_TITLE), updatable.getTitle());
         }
         Optional<String> description = Optional.ofNullable(dbActivity.getDescription());
         if (description.isPresent()) {
             String n = updatable.getDescription();
             String o = description.get();
             if (!o.equals(n)) {
-                if (n==null) {
-                    attributeUpdates.add(DynamoDBUtil.deleteAttributeUpdate(FIELD_NAME_DESCRIPTION, updatable.getDescription()));
-                } else {
-                    attributeUpdates.add(DynamoDBUtil.updateAttributeUpdate(FIELD_NAME_DESCRIPTION, updatable.getDescription()));
+                if (setStatementBuilder.length()>0) {
+                    setStatementBuilder.append(", ");
                 }
+                setStatementBuilder.append(String.format("%s = :val%s", FIELD_NAME_DESCRIPTION, FIELD_NAME_DESCRIPTION));
+                valueMap.withString(String.format(":val%s", FIELD_NAME_DESCRIPTION), updatable.getDescription());
             }
         } else {
-            attributeUpdates.add(DynamoDBUtil.addAttributeUpdate(FIELD_NAME_DESCRIPTION, updatable.getDescription()));
+            if (addStatementBuilder.length()>0) {
+                addStatementBuilder.append(", ");
+            }
+            addStatementBuilder.append(String.format("%s = :val%s", FIELD_NAME_DESCRIPTION, FIELD_NAME_DESCRIPTION));
+            valueMap.withString(String.format(":val%s", FIELD_NAME_DESCRIPTION), updatable.getDescription());
         }
         Optional<Instant> updated = Optional.ofNullable(dbActivity.getUpdated());
         if (updated.isPresent()) {
-            attributeUpdates.add(DynamoDBUtil.updateAttributeUpdate(FIELD_NAME_UPDATED_TIME, JsonUtil.toJsonString(Instant.now())));
+            if (setStatementBuilder.length()>0) {
+                setStatementBuilder.append(", ");
+            }
+            setStatementBuilder.append(String.format("%s = :val%s", FIELD_NAME_UPDATED_TIME, FIELD_NAME_UPDATED_TIME));
+            valueMap.withString(String.format(":val%s", FIELD_NAME_UPDATED_TIME), JsonUtil.toJsonString(Instant.now()));
         } else {
-            attributeUpdates.add(DynamoDBUtil.addAttributeUpdate(FIELD_NAME_UPDATED_TIME, JsonUtil.toJsonString(Instant.now())));
+            if (addStatementBuilder.length()>0) {
+                addStatementBuilder.append(", ");
+            }
+            addStatementBuilder.append(String.format("%s = :val%s", FIELD_NAME_UPDATED_TIME, FIELD_NAME_UPDATED_TIME));
+            valueMap.withString(String.format(":val%s", FIELD_NAME_UPDATED_TIME), JsonUtil.toJsonString(Instant.now()));
         }
-        Optional<ActivityStatus> status = Optional.ofNullable(dbActivity.getActivityStatus());
+        Optional<ActivityStatus> status = Optional.ofNullable(dbActivity.getStatus());
         if (status.isPresent()) {
-            if (!status.get().equals(updatable.getActivityStatus())) {
-                attributeUpdates.add(DynamoDBUtil.updateAttributeUpdate(FIELD_NAME_ACTIVITY_STATUS, updatable.getActivityStatus()));
+            if (!status.get().equals(updatable.getStatus())) {
+                if (setStatementBuilder.length()>0) {
+                    setStatementBuilder.append(", ");
+                }
+                setStatementBuilder.append(String.format("%s = :val%s", FIELD_NAME_ACTIVITY_STATUS, FIELD_NAME_ACTIVITY_STATUS));
+                valueMap.withString(String.format(":val%s", FIELD_NAME_ACTIVITY_STATUS), updatable.getStatus().name());
             }
         } else {
-            attributeUpdates.add(DynamoDBUtil.addAttributeUpdate(FIELD_NAME_ACTIVITY_STATUS, updatable.getActivityStatus()));
-        }
-        Optional<AttributeSet> attributeSet = Optional.ofNullable(dbActivity.getAttributeSet());
-        if (attributeSet.isPresent()) {
-            if (!attributeSet.get().equals(updatable.getAttributeSet())) {
-                attributeUpdates.add(DynamoDBUtil.updateAttributeUpdate(FIELD_NAME_ATTRIBUTES, JsonUtil.toJsonString(updatable.getAttributeSet())));
+            if (addStatementBuilder.length()>0) {
+                addStatementBuilder.append(", ");
             }
-        } else {
-            attributeUpdates.add(DynamoDBUtil.addAttributeUpdate(FIELD_NAME_ATTRIBUTES, JsonUtil.toJsonString(updatable.getAttributeSet())));
+            addStatementBuilder.append(String.format("%s = :val%s", FIELD_NAME_ACTIVITY_STATUS, FIELD_NAME_ACTIVITY_STATUS));
+            valueMap.withString(String.format(":val%s", FIELD_NAME_ACTIVITY_STATUS), updatable.getStatus().name());
         }
-
+        Set<TodoFeature> supported = Activities.getAllFeatures();
+        Iterator<TodoFeature> iter = supported.iterator();
+        while (iter.hasNext()) {
+            TodoFeature feature = iter.next();
+            TodoAttribute attribute = updatable.getAttribute(feature);
+            if (attribute!=null) {
+                if (setStatementBuilder.length()>0) {
+                    setStatementBuilder.append(",");
+                }
+                setStatementBuilder.append(String.format("%s = :val%s", feature.getValue(), feature.getValue()));
+                valueMap.withJSON(String.format(":val%s", feature.getValue()), JsonUtil.toJsonString(attribute));
+            }
+        }
         Table activitiesTable = this.dynamoDb.getTable(TABLE_NAME_ACTIVITIES);
-
+        StringBuilder updateExpressionBuilder = new StringBuilder("");
+        if (!addStatementBuilder.toString().isEmpty()) {
+            updateExpressionBuilder.append(String.format("add %s ", addStatementBuilder.toString()));
+        }
+        if (!setStatementBuilder.toString().isEmpty()) {
+            updateExpressionBuilder.append(String.format("set %s ", setStatementBuilder.toString()));
+        }
         UpdateItemOutcome outcome = activitiesTable.updateItem(new UpdateItemSpec()
                 .withPrimaryKey(DynamoDBUtil.primaryKeyBuilder().addComponent(FIELD_NAME_ID, dbActivity.getId()).build())
-                .withAttributeUpdate(attributeUpdates)
+                .withUpdateExpression(updateExpressionBuilder.toString())
+                .withValueMap(valueMap)
                 .withReturnValues(ReturnValue.ALL_NEW));
 
         return convertToActivity(outcome.getItem());
@@ -178,8 +213,12 @@ public class ActivityDataService {
                 .withString(FIELD_NAME_CREATED_BY, activity.getCreator().getId())
                 .withJSON(FIELD_NAME_CREATOR, JsonUtil.toJsonString(activity.getCreator()))
                 .withString(FIELD_NAME_ACTIVITY_TYPE, activity.getActivityType())
-                .withString(FIELD_NAME_ACTIVITY_STATUS, activity.getActivityStatus().name())
-                .withJSON(FIELD_NAME_ATTRIBUTES, JsonUtil.toJsonString(activity.getAttributeSet()));
+                .withString(FIELD_NAME_ACTIVITY_STATUS, activity.getStatus().name());
+
+        Set<TodoFeature> supported = activity.getSupportedFeatures();
+        supported.stream().forEach( feature -> {
+           item.withJSON(feature.getValue(), JsonUtil.toJsonString(activity.getAttribute(feature)));
+        });
 
         if (created.isPresent()) {
             item.withString(FIELD_NAME_CREATED_TIME, JsonUtil.toJsonString(created.get()));
@@ -194,7 +233,8 @@ public class ActivityDataService {
         if (item==null) {
             return null;
         }
-        Activity activity = new Activity();
+        String activityType = item.getString(FIELD_NAME_ACTIVITY_TYPE);
+        Activity activity = Activities.newInstanceOf(activityType);
         activity.setId(item.getString(FIELD_NAME_ID));
         activity.setTitle(item.getString(FIELD_NAME_TITLE));
         activity.setDescription(item.getString(FIELD_NAME_DESCRIPTION));
@@ -206,9 +246,12 @@ public class ActivityDataService {
             activity.setUpdated(JsonUtil.fromJsonString(item.getString(FIELD_NAME_UPDATED_TIME), Instant.class));
         }
         activity.setActivityType(item.getString(FIELD_NAME_ACTIVITY_TYPE));
-        activity.setActivityStatus(ActivityStatus.of(item.getString(FIELD_NAME_ACTIVITY_STATUS)));
-        activity.setAttributeSet(JsonUtil.fromJsonString(item.getJSON(FIELD_NAME_ATTRIBUTES), AttributeSet.class));
+        activity.setStatus(ActivityStatus.of(item.getString(FIELD_NAME_ACTIVITY_STATUS)));
 
+        Set<TodoFeature> supported = activity.getSupportedFeatures();
+        supported.stream().forEach( feature -> {
+            activity.setAttribute(JsonUtil.fromJsonString(item.getJSON(feature.getValue()), TodoAttribute.class));
+        });
         return activity;
     }
 

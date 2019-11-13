@@ -45,6 +45,7 @@ public class EntitySchemaMap {
         final URITranslatorConfiguration translatorCfg
                 = URITranslatorConfiguration.newBuilder()
                 .addSchemaRedirect(String.format("%s/activity.schema.json#", URI_BASE), String.format("%s/activity.schema.json#", RESOURCE_BASE))
+                .addSchemaRedirect(String.format("%s/attributes.schema.json#", URI_BASE), String.format("%s/attributes.schema.json#", RESOURCE_BASE))
                 .freeze();
         final LoadingConfiguration cfg = LoadingConfiguration.newBuilder()
                 .setURITranslatorConfiguration(translatorCfg).freeze();

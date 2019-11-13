@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import ibox.iplanner.api.lambda.exception.GlobalExceptionHandler;
+import ibox.iplanner.api.lambda.exception.RecordNotFoundException;
 import ibox.iplanner.api.lambda.validation.JsonSchemaValidator;
 import ibox.iplanner.api.lambda.validation.RequestEventValidator;
 import ibox.iplanner.api.model.Activity;
@@ -36,7 +37,11 @@ public class UpdateActivityHandler implements RequestHandler<APIGatewayProxyRequ
             requestEventValidator.validateBody(requestEvent);
             jsonSchemaValidator.validate(requestEvent.getBody(), Activity.class);
 
-            Activity updatable = (Activity) JsonUtil.fromJsonString(requestEvent.getBody(), Activity.class);
+            Activity updatable = JsonUtil.fromJsonString(requestEvent.getBody(), Activity.class);
+
+            if (updatable.getId()==null) {
+                throw new RecordNotFoundException("Missing activity Id");
+            }
 
             Activity updated = activityDataService.updateActivity(updatable);
 

@@ -5,7 +5,7 @@
   "event-attribute": {
     "title": "Event Attribute",
     "description": "Event related attributes",
-    "type": "object",
+    "type": ["object", "null"],
     "properties": {
       "start": {
         "description": "The timestamp when the todo starts",
@@ -46,7 +46,7 @@
   "location-attribute": {
     "title": "Location Attribute",
     "description": "Location related attributes",
-    "type": "object",
+    "type": ["object", "null"],
     "properties": {
       "location": {
         "description": "The text specifies the location",
@@ -62,7 +62,7 @@
   "tag-attribute": {
     "title": "Tag Attribute",
     "description": "Tag related attributes",
-    "type": "object",
+    "type": ["object", "null"],
     "properties": {
       "tags": {
         "description": "The tags associated with the todo",
@@ -80,7 +80,7 @@
   "timeline-attribute": {
     "title": "Timeline Attribute",
     "description": "Timeline related attributes",
-    "type": "object",
+    "type": ["object", "null"],
     "properties": {
       "startBy": {
         "description": "The timestamp when the todo should be started",

@@ -89,11 +89,6 @@ public class UpdateActivityHandlerTest {
     public void updateActivity_shouldReturnBadRequestMessageIfMissingKey() throws Exception {
         activity.setId(null);
 
-        verifyBadRequestMessage();
-    }
-
-    private void verifyBadRequestMessage() throws Exception {
-
         when(activityDataServiceMock.updateActivity(any(Activity.class))).thenReturn(activity);
 
         APIGatewayProxyRequestEvent requestEvent = new APIGatewayProxyRequestEvent();
@@ -107,7 +102,7 @@ public class UpdateActivityHandlerTest {
         assertEquals(400, error.getStatus());
         assertEquals(ERROR_BAD_REQUEST, error.getError());
         assertFalse(StringUtils.isNullOrEmpty(error.getMessage()));
-        assertFalse(error.getErrorDetails().isEmpty());
+        assertTrue(error.getErrorDetails().isEmpty());
     }
 
     @Test

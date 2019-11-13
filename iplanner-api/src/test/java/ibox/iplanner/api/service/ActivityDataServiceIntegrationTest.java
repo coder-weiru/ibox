@@ -13,7 +13,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 
-import static ibox.iplanner.api.service.TestHelper.*;
+import static ibox.iplanner.api.util.TestHelper.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -134,7 +134,7 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
         assertThat(newEventAttribute.getRecurrence().size(), is(equalTo(0)));
 
         TagAttribute newTagAttribute = (TagAttribute) dbActivity.getAttribute(TodoFeature.TAGGING_FEATURE);
-        assertThat(newTagAttribute.getTags().size(), is(equalTo(0)));
+        assertThat(newTagAttribute.getTags().size(), is(equalTo(1)));
         assertThat(newTagAttribute.getTags().get(0).getValue(), is(equalTo("abc")));
         assertThat(newTagAttribute.getTags().get(0).getRgbHexCode(), is(equalTo("#111111")));
 
@@ -147,7 +147,7 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
     public void givenValidId_deleteActivity_shouldUpdateActivityStatus() {
 
         Activity activity = ActivityUtil.anyActivity();
-        activity.setActivityStatus(ActivityStatus.ACTIVE);
+        activity.setStatus(ActivityStatus.ACTIVE);
 
         activityDataService.addActivity(activity);
 
@@ -155,11 +155,11 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
 
         Activity deleted = activityDataService.deleteActivity(dbActivity.getId());
 
-        assertThat(deleted.getActivityStatus(), is(equalTo(ActivityStatus.INACTIVE)));
+        assertThat(deleted.getStatus(), is(equalTo(ActivityStatus.INACTIVE)));
 
         Activity theActivity = activityDataService.getActivity(dbActivity.getId());
 
-        assertThat(theActivity.getActivityStatus(), is(equalTo(ActivityStatus.INACTIVE)));
+        assertThat(theActivity.getStatus(), is(equalTo(ActivityStatus.INACTIVE)));
 
     }
 
@@ -186,27 +186,27 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
 
         Activity activity1 = ActivityUtil.anyActivity();
         activity1.setCreator(creator1);
-        activity1.setActivityStatus(ActivityStatus.ACTIVE);
+        activity1.setStatus(ActivityStatus.ACTIVE);
 
         Activity activity2 = ActivityUtil.anyActivity();
         activity2.setCreator(creator1);
-        activity2.setActivityStatus(ActivityStatus.ACTIVE);
+        activity2.setStatus(ActivityStatus.ACTIVE);
 
         Activity activity3 = ActivityUtil.anyActivity();
         activity3.setCreator(creator1);
-        activity3.setActivityStatus(ActivityStatus.INACTIVE);
+        activity3.setStatus(ActivityStatus.INACTIVE);
 
         Activity activity4 = ActivityUtil.anyActivity();
         activity4.setCreator(creator2);
-        activity4.setActivityStatus(ActivityStatus.INACTIVE);
+        activity4.setStatus(ActivityStatus.INACTIVE);
 
         Activity activity5 = ActivityUtil.anyActivity();
         activity5.setCreator(creator1);
-        activity5.setActivityStatus(ActivityStatus.ACTIVE);
+        activity5.setStatus(ActivityStatus.ACTIVE);
 
         Activity activity6 = ActivityUtil.anyActivity();
         activity6.setCreator(creator1);
-        activity6.setActivityStatus(ActivityStatus.ACTIVE);
+        activity6.setStatus(ActivityStatus.ACTIVE);
 
         List<Activity> activities = Arrays.asList( new Activity[] {activity1, activity2, activity3, activity4, activity5, activity6});
 
@@ -231,8 +231,7 @@ public class ActivityDataServiceIntegrationTest extends LocalDynamoDBIntegration
         assertThat(expected.getCreated(), is(equalTo(actual.getCreated())));
         assertThat(expected.getUpdated(), is(equalTo(actual.getUpdated())));
         assertThat(expected.getActivityType(), is(equalTo(actual.getActivityType())));
-        assertThat(expected.getActivityStatus(), is(equalTo(actual.getActivityStatus())));
-        assertThat(expected.getAttributeSet().getAttributes().size(), is(equalTo(actual.getAttributeSet().getAttributes().size())));
+        assertThat(expected.getStatus(), is(equalTo(actual.getStatus())));
 
         if (expected.getClass().equals(Meeting.class)) {
             verifyTaggingAttributeAreEqual((TagAttribute) expected.getAttribute(TodoFeature.TAGGING_FEATURE), (TagAttribute) actual.getAttribute(TodoFeature.TAGGING_FEATURE));

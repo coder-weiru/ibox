@@ -22,7 +22,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.List;
 
-import static ibox.iplanner.api.service.TestHelper.*;
+import static ibox.iplanner.api.util.TestHelper.*;
 import static ibox.iplanner.api.util.ApiErrorConstants.*;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -51,8 +51,8 @@ public class AddTodoHandlerTest {
     public void setUp() {
         this.todos = Arrays.asList(new Todo[]{
                 TodoUtil.anyTodo(),
-                TodoUtil.anyTodo(),
-                TodoUtil.anyTodo()
+                TodoUtil.anyMeetingTodo(),
+                TodoUtil.anyTaskTodo()
         });
     }
 

@@ -2,30 +2,29 @@ package ibox.iplanner.api.model;
 
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public enum TodoFeature {
 
-    EVENT_FEATURE("event-info") {
+    EVENT_FEATURE("EventInfo") {
         @Override
         public Class<? extends TodoAttribute> attributeType() {
             return EventAttribute.class;
         }
     },
-    LOCATION_FEATURE("location") {
+    LOCATION_FEATURE("LocationInfo") {
         @Override
         public Class<? extends TodoAttribute> attributeType() {
             return LocationAttribute.class;
         }
     },
-    TAGGING_FEATURE("tags") {
+    TAGGING_FEATURE("Tags") {
         @Override
         public Class<? extends TodoAttribute> attributeType() {
             return TagAttribute.class;
         }
     },
-    TIMELINE_FEATURE("timeline") {
+    TIMELINE_FEATURE("Timeline") {
         @Override
         public Class<? extends TodoAttribute> attributeType() {
             return TimelineAttribute.class;

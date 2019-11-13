@@ -197,10 +197,6 @@
           <groupId>commons-cli</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>commons-lang3</artifactId>
-          <groupId>org.apache.commons</groupId>
-        </exclusion>
-        <exclusion>
           <artifactId>libsqlite4java-linux-i386</artifactId>
           <groupId>com.almworks.sqlite4java</groupId>
         </exclusion>
@@ -413,6 +409,7 @@
     <jacoco.maven.plugin.version>0.8.1</jacoco.maven.plugin.version>
     <maven.enforcer.plugin.version>3.0.0-M2</maven.enforcer.plugin.version>
     <aws.lambda.java.core.version>1.2.0</aws.lambda.java.core.version>
+    <commons-lang3.version>3.3.2</commons-lang3.version>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.shade.plugin.version>3.2.0</maven.shade.plugin.version>
     <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
