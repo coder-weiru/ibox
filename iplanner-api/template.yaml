@@ -7,7 +7,7 @@ Globals:
     OpenApiVersion: '2.0'
 
 Resources:
-  EventTable:
+  TodoTable:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
@@ -15,7 +15,7 @@ Resources:
           AttributeType: "S"
         - AttributeName: "CreatedBy"
           AttributeType: "S"
-        - AttributeName: "StartTime"
+        - AttributeName: "TodoStatus"
           AttributeType: "S"
       KeySchema:
         - AttributeName: "Id"
@@ -23,13 +23,13 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"
-      TableName: "iplanner-events"
+      TableName: "iplanner-todolist"
       GlobalSecondaryIndexes:
-        - IndexName: "CreatorEventsByStart-GSI"
+        - IndexName: "CreatorTodoList-GSI"
           KeySchema:
             - AttributeName: "CreatedBy"
               KeyType: "HASH"
-            - AttributeName: "StartTime"
+            - AttributeName: "TodoStatus"
               KeyType: "RANGE"
           Projection:
             ProjectionType: "ALL"
@@ -65,10 +65,10 @@ Resources:
           ProvisionedThroughput:
             ReadCapacityUnits: '5'
             WriteCapacityUnits: '5'
-  AddEventFunction:
+  AddTodoFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: ibox.iplanner.api.lambda.AddEventHandlerWrapper::handleRequest
+      Handler: ibox.iplanner.api.lambda.AddTodoHandlerWrapper::handleRequest
       Runtime: java8
       Timeout: 50
       MemorySize: 512
@@ -76,22 +76,22 @@ Resources:
       Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref EventTable
+            TableName: !Ref TodoTable
       Environment:
         Variables:
-          TABLE_NAME: !Ref EventTable
+          TABLE_NAME: !Ref TodoTable
       Events:
-        AddEventApi:
+        AddTodoApi:
           Type: Api
           Properties:
-            Path: /events
+            Path: /todos
             Method: POST
             RestApiId:
               Ref: ApiGatewayApi
-  GetEventFunction:
+  GetTodoFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: ibox.iplanner.api.lambda.GetEventHandlerWrapper::handleRequest
+      Handler: ibox.iplanner.api.lambda.GetTodoHandlerWrapper::handleRequest
       Runtime: java8
       Timeout: 50
       MemorySize: 512
@@ -99,19 +99,19 @@ Resources:
       Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref EventTable
+            TableName: !Ref TodoTable
       Environment:
         Variables:
-          TABLE_NAME: !Ref EventTable
+          TABLE_NAME: !Ref TodoTable
       Events:
-        GetEventByIdApi:
+        GetTodoByIdApi:
           Type: Api
           Properties:
             Path: /events/{id}
             Method: GET
             RestApiId:
               Ref: ApiGatewayApi
-  ListEventFunction:
+  ListTodoFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: ibox.iplanner.api.lambda.ListTodoHandlerWrapper::handleRequest
@@ -122,19 +122,19 @@ Resources:
       Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref EventTable
+            TableName: !Ref TodoTable
       Environment:
         Variables:
-          TABLE_NAME: !Ref EventTable
+          TABLE_NAME: !Ref TodoTable
       Events:
-        ListEventApi:
+        ListTodoApi:
           Type: Api
           Properties:
             Path: /events/createdBy/{creatorId}
             Method: GET
             RestApiId:
               Ref: ApiGatewayApi
-  UpdateEventFunction:
+  UpdateTodoFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: ibox.iplanner.api.lambda.UpdateTodoHandlerWrapper::handleRequest
@@ -145,19 +145,19 @@ Resources:
       Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref EventTable
+            TableName: !Ref TodoTable
       Environment:
         Variables:
-          TABLE_NAME: !Ref EventTable
+          TABLE_NAME: !Ref TodoTable
       Events:
-        UpdateEventApi:
+        UpdateTodoApi:
           Type: Api
           Properties:
             Path: /events/{creatorId}
             Method: PUT
             RestApiId:
               Ref: ApiGatewayApi
-  DeleteEventFunction:
+  DeleteTodoFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: ibox.iplanner.api.lambda.DeleteTodoHandlerWrapper::handleRequest
@@ -168,12 +168,12 @@ Resources:
       Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref EventTable
+            TableName: !Ref TodoTable
       Environment:
         Variables:
-          TABLE_NAME: !Ref EventTable
+          TABLE_NAME: !Ref TodoTable
       Events:
-        DeleteEventApi:
+        DeleteTodoApi:
           Type: Api
           Properties:
             Path: /events/{creatorId}
@@ -196,7 +196,7 @@ Resources:
         Variables:
           TABLE_NAME: !Ref ActivityTable
       Events:
-        AddEventApi:
+        AddTodoApi:
           Type: Api
           Properties:
             Path: /activities
@@ -219,7 +219,7 @@ Resources:
         Variables:
           TABLE_NAME: !Ref ActivityTable
       Events:
-        GetEventByIdApi:
+        GetTodoByIdApi:
           Type: Api
           Properties:
             Path: /activities/{id}
@@ -265,7 +265,7 @@ Resources:
         Variables:
           TABLE_NAME: !Ref ActivityTable
       Events:
-        UpdateEventApi:
+        UpdateTodoApi:
           Type: Api
           Properties:
             Path: /activities/{creatorId}
@@ -288,7 +288,7 @@ Resources:
         Variables:
           TABLE_NAME: !Ref ActivityTable
       Events:
-        DeleteEventApi:
+        DeleteTodoApi:
           Type: Api
           Properties:
             Path: /activities/{creatorId}
@@ -329,7 +329,7 @@ Resources:
             Method: POST
             RestApiId:
               Ref: ApiGatewayApi
-  CreateEventFromActivityFunction:
+  CreateTodoFromActivityFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: ibox.iplanner.api.lambda.CreateTodoFromActivityHandlerWrapper::handleRequest
@@ -339,7 +339,7 @@ Resources:
       CodeUri: target/iplanner-api-1.0-SNAPSHOT.jar
       Role: arn:aws:iam::529599130512:role/li.ibox.iplanner.lambda.role
       Events:
-        CreateEventFromActivityApi:
+        CreateTodoFromActivityApi:
           Type: Api
           Properties:
             Path: /events/activity/{activityId}
@@ -357,12 +357,12 @@ Resources:
           title: iPlanner API
           version: 1.0.0
         paths:
-          /events:
+          /todos:
             post:
-              summary: Create one or multiple events
-              operationId: createEvents
+              summary: Create one or multiple todos
+              operationId: createTodos
               tags:
-                - events
+                - todos
               responses:
                 '201':
                   description: Null response
@@ -374,22 +374,22 @@ Resources:
                         $ref: "#/components/schemas/Error"
               x-amazon-apigateway-integration:
                 uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddEventFunction.Arn}/invocations
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddTodoFunction.Arn}/invocations
                 responses: {}
                 httpMethod: "POST"
                 type: "aws_proxy"
             put:
-              summary: To update a specific event
-              operationId: updateEvent
+              summary: To update a specific todo
+              operationId: updateTodo
               tags:
-                - events
+                - todos
               responses:
                 '200':
                   description: Expected response to a valid request
                   content:
                     application/json:
                       schema:
-                        $ref: "#/components/schemas/Event"
+                        $ref: "#/components/schemas/Todo"
                 default:
                   description: unexpected error
                   content:
@@ -398,21 +398,21 @@ Resources:
                         $ref: "#/components/schemas/Error"
               x-amazon-apigateway-integration:
                 uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateEventFunction.Arn}/invocations
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateTodoFunction.Arn}/invocations
                 responses: {}
                 httpMethod: "PUT"
                 type: "aws_proxy"
-          /events/activity/{activityId}:
+          /todos/activity/{activityId}:
             post:
-              summary: Create an Event based on the specified Activity
-              operationId: createEventFromActivity
+              summary: Create an Todo based on the specified Activity
+              operationId: createTodoFromActivity
               tags:
-                - events
+                - todos
               parameters:
                 - in: path
                   name: activityId
                   required: true
-                  description: The id of the activity to model the event after
+                  description: The id of the activity to model the todo after
                   schema:
                     type: string
               responses:
@@ -421,7 +421,7 @@ Resources:
                   content:
                     application/json:
                       schema:
-                        $ref: "#/components/schemas/Event"
+                        $ref: "#/components/schemas/Todo"
                 '201':
                   description: Null response
                 default:
@@ -432,21 +432,21 @@ Resources:
                         $ref: "#/components/schemas/Error"
               x-amazon-apigateway-integration:
                 uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddEventFunction.Arn}/invocations
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateTodoFromActivityFunction.Arn}/invocations
                 responses: {}
                 httpMethod: "POST"
                 type: "aws_proxy"
-          /events/{id}:
+          /todos/{id}:
             get:
-              summary: Info for a specific event
-              operationId: getEventById
+              summary: Info for a specific todo
+              operationId: getTodoById
               tags:
-                - events
+                - todos
               parameters:
                 - in: path
                   name: id
                   required: true
-                  description: The id of the event to retrieve
+                  description: The id of the todo to retrieve
                   schema:
                     type: string
               responses:
@@ -455,7 +455,7 @@ Resources:
                   content:
                     application/json:
                       schema:
-                        $ref: "#/components/schemas/Event"
+                        $ref: "#/components/schemas/Todo"
                 default:
                   description: unexpected error
                   content:
@@ -464,20 +464,20 @@ Resources:
                         $ref: "#/components/schemas/Error"
               x-amazon-apigateway-integration:
                 uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetEventFunction.Arn}/invocations
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetTodoFunction.Arn}/invocations
                 responses: {}
                 httpMethod: "GET"
                 type: "aws_proxy"
             delete:
-              summary: To remove a specific event
-              operationId: deleteEventById
+              summary: To remove a specific todo
+              operationId: deleteTodoById
               tags:
-                - events
+                - todos
               parameters:
                 - in: path
                   name: id
                   required: true
-                  description: The id of the event to remove
+                  description: The id of the todo to remove
                   schema:
                     type: string
               responses:
@@ -486,7 +486,7 @@ Resources:
                   content:
                     application/json:
                       schema:
-                        $ref: "#/components/schemas/Event"
+                        $ref: "#/components/schemas/Todo"
                 default:
                   description: unexpected error
                   content:
@@ -495,39 +495,33 @@ Resources:
                         $ref: "#/components/schemas/Error"
               x-amazon-apigateway-integration:
                 uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DeleteEventFunction.Arn}/invocations
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DeleteTodoFunction.Arn}/invocations
                 responses: {}
                 httpMethod: "DELETE"
                 type: "aws_proxy"
-          /events/createdBy/{creatorId}:
+          /todos/createdBy/{creatorId}:
             get:
-              summary: A list of events that satisfy the search criteria
-              operationId: listEvents
+              summary: A list of todos that satisfy the search criteria
+              operationId: listTodos
               tags:
-                - events
+                - todos
               parameters:
                 - in: path
                   name: creatorId
                   required: true
-                  description: The user id of the event creator
+                  description: The user id of the todo creator
                   schema:
                     type: string
                 - in: query
-                  name: start
+                  name: activities
                   required: false
-                  description: The start time of the time period within which these events should reside
-                  schema:
-                    type: string
-                - name: end
-                  in: query
-                  required: false
-                  description: The end time of the time period within which these events should reside
+                  description: A list of activity ids (seperated by commas) that the returned todos should match against
                   schema:
                     type: string
                 - name: status
                   in: query
                   required: false
-                  description: Limiting by the status of the event
+                  description: Limiting by the status of the todo
                   schema:
                     type: string
                 - name: limit
@@ -542,7 +536,7 @@ Resources:
                   content:
                     application/json:
                       schema:
-                        $ref: "#/components/schemas/Events"
+                        $ref: "#/components/schemas/Todos"
                 default:
                   description: unexpected error
                   content:
@@ -551,7 +545,7 @@ Resources:
                         $ref: "#/components/schemas/Error"
               x-amazon-apigateway-integration:
                 uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ListEventFunction.Arn}/invocations
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ListTodoFunction.Arn}/invocations
                 responses: {}
                 httpMethod: "GET"
                 type: "aws_proxy"
@@ -762,12 +756,12 @@ Resources:
                 type: "aws_proxy"
         components:
           schemas:
-            Event:
+            Todo:
               required:
                 - summary
                 - creator
-                - start
-                - activity
+                - activityId
+                - activityType
               properties:
                 id:
                   type: integer
@@ -786,36 +780,38 @@ Resources:
                   example: 1995-09-07T10:40:52Z
                   format: date-time
                   type: string
-                start:
-                  example: 1995-09-07T10:40:52Z
-                  format: date-time
+                activityId:
                   type: string
-                end:
-                  example: 1995-09-07T10:40:52Z
-                  format: date-time
-                  type: string
-                activity:
+                activityType:
                   type: string
                 status:
                   type: string
-                location:
-                  type: string
-                endTimeUnspecified:
-                  type: boolean
-                recurrence:
-                  type: array
-                  items:
-                    type: string
-            Events:
+                eventInfo:
+                  type:
+                    - $ref: "#/components/schemas/EventAttribute"
+                    - 'null'
+                locationInfo:
+                  type:
+                    - $ref: "#/components/schemas/LocationAttribute"
+                    - 'null'
+                tags:
+                  type:
+                    - $ref: "#/components/schemas/TagAttribute"
+                    - 'null'
+                timeline:
+                  type:
+                    - $ref: "#/components/schemas/TimelineAttribute"
+                    - 'null'
+            Todos:
               type: array
               items:
-                $ref: "#/components/schemas/Event"
+                $ref: "#/components/schemas/Todo"
             Activity:
               required:
                 - title
                 - creator
                 - status
-                - type
+                - activityType
               properties:
                 id:
                   type: integer
@@ -834,14 +830,84 @@ Resources:
                   example: 1995-09-07T10:40:52Z
                   format: date-time
                   type: string
-                type:
+                activityType:
                   type: string
                 status:
                   type: string
+                eventInfo:
+                  type:
+                    - $ref: "#/components/schemas/EventAttribute"
+                    - 'null'
+                locationInfo:
+                  type:
+                    - $ref: "#/components/schemas/LocationAttribute"
+                    - 'null'
+                tags:
+                  type:
+                    - $ref: "#/components/schemas/TagAttribute"
+                    - 'null'
+                timeline:
+                  type:
+                    - $ref: "#/components/schemas/TimelineAttribute"
+                    - 'null'
             Activities:
               type: array
               items:
                 $ref: "#/components/schemas/Activity"
+            EventAttribute:
+              required:
+                - start
+                - end
+              properties:
+                start:
+                  example: 1995-09-07T10:40:52Z
+                  format: date-time
+                  type: string
+                end:
+                  example: 1995-09-07T10:40:52Z
+                  format: date-time
+                  type: string
+                frequency:
+                  enum: [
+                    "ONE_TIME",
+                    "HOURLY",
+                    "DAILY",
+                    "WEEKLY",
+                    "MONTHLY",
+                    "ANNUALLY"
+                  ]
+                recurrence:
+                  type: array
+                  items:
+                    type: string
+            LocationAttribute:
+              required:
+                - location
+              properties:
+                location:
+                  type: string
+            TimelineAttribute:
+              properties:
+                startBy:
+                  type: string
+                completeBy:
+                  type: string
+            TagAttribute:
+              required:
+                - tags
+              properties:
+                tags:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Tag"
+            Tag:
+              required:
+                - value
+              properties:
+                value:
+                  type: string
+                rgbHexCode:
+                  type: string
             User:
               required:
                 - id
