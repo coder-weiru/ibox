@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iplanner_ui/model/activity_list.dart';
-import 'package:iplanner_ui/model/event_list.dart';
+import 'package:iplanner_ui/model/todo_list.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -52,7 +52,7 @@ class _MyMainApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider(builder: (context) => ActivityList()),
-        Provider(builder: (context) => EventList()),
+        Provider(builder: (context) => TodoList()),
       ],
       child: MaterialApp(
         title: 'iPlanner',

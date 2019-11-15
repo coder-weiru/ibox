@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:http/http.dart' as http;
 
+import './attributes.dart';
 import './user.dart';
 
 class ActivityList {
@@ -14,6 +15,10 @@ class ActivityList {
 
   ActivityList() {
     loadActivities();
+  }
+
+  List<Activity> getAllActivities() {
+    return _activities;
   }
 
   Set<Activity> getSavedActivity() {
@@ -57,33 +62,52 @@ class Activity {
   final String id;
   final String title;
   final String description;
-  final String type;
+  final String activityType;
   final User creator;
   final DateTime created;
   final DateTime updated;
-  final String status;
+  final String _status;
+  final TagAttribute tags;
+  final EventAttribute eventInfo;
+  final LocationAttribute locationInfo;
+  final TimelineAttribute timeline;
 
   Activity(
       {this.id,
       this.title,
       this.description,
-      this.type,
+      this.activityType,
       this.creator,
       this.created,
       this.updated,
+      this.tags,
+      this.eventInfo,
+      this.locationInfo,
+      this.timeline,
       status})
-      : status = status ?? "ACTIVE";
+      : _status = status ?? "ACTIVE";
 
   factory Activity.fromJson(Map<String, dynamic> json) {
     return Activity(
       id: json['id'] as String,
       title: json['title'] as String,
       description: json['description'] as String,
-      type: json['type'] as String,
+      activityType: json['activityType'] as String,
       creator: User.fromJson(json['creator']),
       created: DateTime.parse(json['created']),
       updated: DateTime.parse(json['updated']),
       status: json['status'],
+      tags:
+          json.containsKey('tags') ? TagAttribute.fromJson(json['tags']) : null,
+      eventInfo: json.containsKey('eventInfo')
+          ? EventAttribute.fromJson(json['eventInfo'])
+          : null,
+      locationInfo: json.containsKey('locationInfo')
+          ? LocationAttribute.fromJson(json['locationInfo'])
+          : null,
+      timeline: json.containsKey('timeline')
+          ? TimelineAttribute.fromJson(json['timeline'])
+          : null,
     );
   }
 
@@ -96,13 +120,13 @@ class Activity {
       other.id == id &&
       other.title == title &&
       other.description == description &&
-      other.type == type &&
+      other.activityType == activityType &&
       other.creator == creator &&
       other.created == created &&
       other.updated == updated &&
-      other.status == status;
+      other._status == _status;
 
   @override
   String toString() =>
-      'Activity($id, $title, $description, $type, $creator, $created, $updated, $status)';
+      'Activity($id, $title, $description, $activityType, $creator, $created, $updated, $_status $tags, $eventInfo, $locationInfo, $timeline)';
 }

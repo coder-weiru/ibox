@@ -7,7 +7,7 @@ const APP_DESCRIPTION = 'An app helps manage schedule and tasks.'
     '\n\nDeveloped by Chris Ru.';
 
 const HEADER_HEIGHT = 128.0;
-const MENU_EVENTS = 'My Events';
+const MENU_EVENTS = 'My Todos';
 const MENU_ACTIVITIES = 'My Activities';
 
 final Widget splash = Image.asset(

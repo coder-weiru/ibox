@@ -1,24 +1,25 @@
+import 'dart:math';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:iplanner_ui/model/event_list.dart';
 import 'package:provider/provider.dart';
 
 import '../common/colors.dart';
 import '../common/constants.dart';
-import '../widget/event_card.dart';
-import '../widget/event_weekly.dart';
+import '../model/todo_list.dart';
+import '../widget/todo_card.dart';
+import '../widget/todo_weekly.dart';
 
-class UpcomingEventTabState extends State<UpcomingEventTab> {
-  Widget _buildRow(Event event) {
-    if (event != null) {
-      final activity = event.activity;
-      final summary = event.summary;
+class UpcomingTodoTabState extends State<UpcomingTodoTab> {
+  Widget _buildRow(Todo todo) {
+    if (todo != null) {
+      final activity = todo.activity;
+      final summary = todo.summary;
       final start =
-          new DateFormat("EEEE, MMMM d, 'at' HH:mm").format(event.start);
+          new DateFormat("EEEE, MMMM d, 'at' HH:mm").format(todo.start);
       return Card(
-          //                           <-- Card widget
-          color: getEventColor(activity),
+          color: getTodoColor(activity),
           elevation: 5,
           child: ListTile(
             leading: Icon(Icons.access_alarm),
@@ -40,42 +41,42 @@ class UpcomingEventTabState extends State<UpcomingEventTab> {
 
   @override
   Widget build(BuildContext context) {
-    final eventList = Provider.of<EventList>(context);
+    final todoList = Provider.of<TodoList>(context);
 
     return ListView.builder(
         padding: const EdgeInsets.all(5.0),
         itemBuilder: (context, idx) {
           final index = idx ~/ 2;
-          final event = eventList.getEventByPosition(index);
-          return _buildRow(event);
+          final todo = todoList.getTodoByPosition(index);
+          return _buildRow(todo);
         });
   }
 }
 
-class UpcomingEventTab extends StatefulWidget {
+class UpcomingTodoTab extends StatefulWidget {
   @override
-  UpcomingEventTabState createState() => UpcomingEventTabState();
+  UpcomingTodoTabState createState() => UpcomingTodoTabState();
 
-  const UpcomingEventTab();
+  const UpcomingTodoTab();
 }
 
-class EventCalendarTabState extends State<EventCalendarTab> {
+class TodoCalendarTabState extends State<TodoCalendarTab> {
   @override
   Widget build(BuildContext context) {
-    final eventListModel = Provider.of<EventList>(context);
-    final eventMap = eventListModel.getEventListByActivities();
-    return EventWeekly(eventMap: eventMap);
+    final todoListModel = Provider.of<TodoList>(context);
+    final todoMap = todoListModel.getTodoListByActivities();
+    return TodoWeekly(todoMap: todoMap);
   }
 }
 
-class EventCalendarTab extends StatefulWidget {
+class TodoCalendarTab extends StatefulWidget {
   @override
-  EventCalendarTabState createState() => EventCalendarTabState();
+  TodoCalendarTabState createState() => TodoCalendarTabState();
 
-  const EventCalendarTab();
+  const TodoCalendarTab();
 }
 
-class EventSliderTabState extends State<EventSliderTab> {
+class TodoSliderTabState extends State<TodoSliderTab> {
   CarouselSlider _carouselSlider;
   int _current = 0;
 
@@ -89,8 +90,8 @@ class EventSliderTabState extends State<EventSliderTab> {
 
   @override
   Widget build(BuildContext context) {
-    final eventListModel = Provider.of<EventList>(context);
-    final eventList = eventListModel.getAllEvents();
+    final todoListModel = Provider.of<TodoList>(context);
+    final todoList = todoListModel.getAllTodos();
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -112,7 +113,8 @@ class EventSliderTabState extends State<EventSliderTab> {
                 _current = index;
               });
             },
-            items: eventList.map((event) {
+            items: todoList.map((todo) {
+              Random random = new Random();
               final int index = random.nextInt(17);
               final image = imageList[index];
               return Builder(
@@ -132,7 +134,7 @@ class EventSliderTabState extends State<EventSliderTab> {
                               left: 10.0,
                               right: 10.0,
                               bottom: 25.0,
-                              child: EventCard(event: event)),
+                              child: TodoCard(todo: todo)),
                         ],
                       ));
                 },
@@ -144,7 +146,7 @@ class EventSliderTabState extends State<EventSliderTab> {
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: map<Widget>(eventList, (index, url) {
+            children: map<Widget>(todoList, (index, url) {
               return Container(
                 width: 10.0,
                 height: 10.0,
@@ -188,9 +190,9 @@ class EventSliderTabState extends State<EventSliderTab> {
   }
 }
 
-class EventSliderTab extends StatefulWidget {
+class TodoSliderTab extends StatefulWidget {
   @override
-  EventSliderTabState createState() => EventSliderTabState();
+  TodoSliderTabState createState() => TodoSliderTabState();
 
-  const EventSliderTab();
+  const TodoSliderTab();
 }

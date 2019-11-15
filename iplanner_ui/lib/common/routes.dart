@@ -2,50 +2,50 @@ import 'package:flutter/material.dart';
 import 'package:iplanner_ui/screen/activities.dart';
 
 import '../screen/activities.dart';
-import '../screen/events.dart';
+import '../screen/todos.dart';
 import '../widget/backdrop_page.dart';
 import '../widget/tabbed_page.dart';
 
-const eventCalendarTab = MyTab(
+const todoCalendarTab = MyTab(
     child: BackdropPage(
-        child: EventCalendarTab(),
-        title: "Event Calendar",
-        description: "Your event calendar",
-        routeName: "eventCalendar"),
-    tabName: "Event Calendar",
+        child: TodoCalendarTab(),
+        title: "Todo Calendar",
+        description: "Your todo calendar",
+        routeName: "todoCalendar"),
+    tabName: "Todo Calendar",
     tabIndex: 0,
     navIcon: Icon(Icons.calendar_today),
     displayText: "Weekly");
 
-const upcomingEventTab = MyTab(
+const upcomingTodoTab = MyTab(
     child: BackdropPage(
-        child: UpcomingEventTab(),
-        title: "Upcoming Events",
-        description: "Your upcoming events",
-        routeName: "upcomingEvent"),
-    tabName: "Upcoming Events",
+        child: UpcomingTodoTab(),
+        title: "Upcoming Todos",
+        description: "Your upcoming todos",
+        routeName: "upcomingTodo"),
+    tabName: "Upcoming Todos",
     tabIndex: 1,
     navIcon: Icon(Icons.alarm),
     displayText: "Upcoming");
 
-const eventSliderTab = MyTab(
+const todoSliderTab = MyTab(
     child: BackdropPage(
-        child: EventSliderTab(),
-        title: "Event Slider",
-        description: "All Your Events",
-        routeName: "eventSlider"),
-    tabName: "Event Slider",
+        child: TodoSliderTab(),
+        title: "Todo Slider",
+        description: "All Your Todos",
+        routeName: "todoSlider"),
+    tabName: "Todo Slider",
     tabIndex: 2,
     navIcon: Icon(Icons.forum),
     displayText: "Cards");
 
-const eventRouteTabs = [eventCalendarTab, upcomingEventTab, eventSliderTab];
+const todoRouteTabs = [todoCalendarTab, upcomingTodoTab, todoSliderTab];
 
-const eventRoute = TabbedPage(
-  tabs: eventRouteTabs,
-  title: 'Events',
-  description: 'Your Events',
-  routeName: 'event',
+const todoRoute = TabbedPage(
+  tabs: todoRouteTabs,
+  title: 'Todos',
+  description: 'Your Todos',
+  routeName: 'todo',
 );
 
 const activityListTab = MyTab(
@@ -80,7 +80,7 @@ const activityRoute = TabbedPage(
 );
 
 final Map<String, WidgetBuilder> appRoutingTable = {
-  Navigator.defaultRouteName: (context) => eventRoute,
-  eventRoute.routeName: (context) => eventRoute,
+  Navigator.defaultRouteName: (context) => todoRoute,
+  todoRoute.routeName: (context) => todoRoute,
   activityRoute.routeName: (context) => activityRoute
 };

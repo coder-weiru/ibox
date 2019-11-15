@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:iplanner_ui/model/event_list.dart';
+import 'package:iplanner_ui/model/todo_list.dart';
 
 import '../common/colors.dart';
 
-class EventCard extends StatelessWidget {
-  final Event _event;
+class TodoCard extends StatelessWidget {
+  final Todo _todo;
 
-  const EventCard({@required event}) : _event = event;
+  const TodoCard({@required todo}) : _todo = todo;
 
-  Event get event => this._event;
+  Todo get todo => this._todo;
 
   @override
   Widget build(BuildContext context) {
-    final summary = event.summary ?? "";
-    final description = event.description ?? "";
-    final activity = event.activity;
-    final start = event.start;
-    final end = event.end;
-    final location = event.location ?? "";
+    final summary = todo.summary ?? "";
+    final description = todo.description ?? "";
+    final activity = todo.activity;
+    final start = todo.start;
+    final end = todo.end;
+    final location = todo.location ?? "";
 
     return Container(
         width: MediaQuery.of(context).size.width,
@@ -28,7 +28,7 @@ class EventCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(25.0),
         ),
         child: Card(
-            color: getEventColor(activity),
+            color: getTodoColor(activity),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(25.0),
             ),

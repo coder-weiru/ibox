@@ -1,16 +1,47 @@
 [
   {
-    "id": "a2bf6775-d649-4c1b-b1d8-ab246b928304",
-    "title": "AP Calculus BC Quiz",
-    "description": "Small Quiz for AP Calculus BC course",
+    "id": "05201b57-79e8-4dad-8a73-586978f18995",
+    "title": "Spanish 4 Quiz",
+    "description": "Spanish 4 Quiz",
     "type": "meeting",
     "creator": {
       "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
-      "email":  "john.doe@gmail.com",
-      "displayName":  "John Doe"
+      "email": "john.doe@gmail.com",
+      "displayName": "John Doe"
     },
     "created": "2019-10-17T13:45:30Z",
     "updated": "2019-10-17T13:45:30Z",
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "tags": {
+      "class": "ibox.iplanner.api.model.TagAttribute",
+      "tags": [
+        {
+          "value":  "Spanish",
+          "argbValue": "0xFFB766EE",
+          "primary": true
+        },
+        {
+          "value":  "School",
+          "argbValue": "0xFFB77293",
+          "primary": false
+        },
+        {
+          "value":  "Quiz",
+          "argbValue": "0xFFB74011",
+          "primary": false
+        }
+      ]
+    },
+    "locationInfo": {
+      "class": "ibox.iplanner.api.model.LocationAttribute",
+      "location": "NNHS Room 203"
+    },
+    "eventInfo": {
+      "class": "ibox.iplanner.api.model.EventAttribute",
+      "start": "2019-10-31T00:00:00.000Z",
+      "end": "2019-11-31T00:00:00.000Z",
+      "frequency": "ONE_TIME",
+      "recurrence": []
+    }
   }
 ]

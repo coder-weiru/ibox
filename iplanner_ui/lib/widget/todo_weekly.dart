@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iplanner_ui/common/colors.dart';
-import 'package:iplanner_ui/model/event_list.dart';
+import 'package:iplanner_ui/model/todo_list.dart';
 
-class EventWeekly extends StatelessWidget {
-  final Map<String, List<Event>> _eventMap;
+class TodoWeekly extends StatelessWidget {
+  final Map<String, List<Todo>> _todoMap;
 
-  const EventWeekly({@required eventMap}) : _eventMap = eventMap;
+  const TodoWeekly({@required todoMap}) : _todoMap = todoMap;
 
-  Map<String, List<Event>> get events => this._eventMap;
+  Map<String, List<Todo>> get todos => this._todoMap;
 
   final List<String> _weekDays = const [
     'Sun',
@@ -21,8 +21,8 @@ class EventWeekly extends StatelessWidget {
   ];
 
   Widget _buildRow(BuildContext context, int index) {
-    final activity = _eventMap.keys.elementAt(index);
-    final eventList = this._eventMap[activity];
+    final activity = _todoMap.keys.elementAt(index);
+    final todoList = this._todoMap[activity];
     return Container(
         height: 60.0,
         decoration: BoxDecoration(
@@ -35,7 +35,7 @@ class EventWeekly extends StatelessWidget {
             itemCount: _weekDays.length,
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              final event = getEventByWeekDay(eventList, index);
+              final todo = getTodoByWeekDay(todoList, index);
               return Container(
                   decoration: BoxDecoration(
                     color: Color.fromRGBO(223, 230, 233, 0.5),
@@ -43,10 +43,10 @@ class EventWeekly extends StatelessWidget {
                         Border.all(color: Colors.lightBlueAccent, width: 0.5),
                   ),
                   child: Visibility(
-                      visible: event != null,
+                      visible: todo != null,
                       child: Center(
                           child: new Card(
-                              color: getEventColor(activity),
+                              color: getTodoColor(activity),
                               elevation: 5.0,
                               child: new Container(
                                   alignment: Alignment.center,
@@ -56,12 +56,12 @@ class EventWeekly extends StatelessWidget {
                                       left: 2.0,
                                       right: 2.0),
                                   child: Tooltip(
-                                      message: event != null
+                                      message: todo != null
                                           ? new DateFormat("EEEE, MMMM d")
-                                              .format(event.start)
+                                              .format(todo.start)
                                           : "",
                                       child: new Text(
-                                          event != null ? event.summary : "",
+                                          todo != null ? todo.summary : "",
                                           style: TextStyle(
                                             color: Colors.black45,
                                             fontSize: 10.0,
@@ -116,14 +116,14 @@ class EventWeekly extends StatelessWidget {
                                     ))));
                       })),
               Expanded(
-                child: // Events by activities
+                child: // Todos by activities
                     Container(
                         decoration: BoxDecoration(
                           color: Color.fromRGBO(223, 230, 233, 0.5),
                           borderRadius: BorderRadius.circular(25.0),
                         ),
                         child: new ListView.builder(
-                            itemCount: _eventMap.keys.toList().length,
+                            itemCount: _todoMap.keys.toList().length,
                             itemBuilder: (BuildContext context, int index) {
                               return _buildRow(context, index);
                             })),
@@ -132,9 +132,9 @@ class EventWeekly extends StatelessWidget {
   }
 }
 
-Event getEventByWeekDay(List<Event> events, int weekdayIndex) {
-  return events.firstWhere((event) {
-    final start = event.start;
+Todo getTodoByWeekDay(List<Todo> todos, int weekdayIndex) {
+  return todos.firstWhere((todo) {
+    final start = todo.start;
     return start.weekday == weekdayIndex;
   }, orElse: () => null);
 }

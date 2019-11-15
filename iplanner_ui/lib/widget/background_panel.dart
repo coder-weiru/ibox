@@ -35,7 +35,7 @@ ListView _getBackdropListTiles(BuildContext context) {
             title: Text(MENU_EVENTS),
             trailing: Icon(Icons.keyboard_arrow_right),
             onTap: () {
-              Navigator.pushNamed(context, 'event');
+              Navigator.pushNamed(context, 'todo');
             },
           )),
       Card(

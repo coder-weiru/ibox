@@ -9,9 +9,9 @@ const List EVENT_COLORS = [
   Colors.blueAccent,
   Colors.limeAccent
 ];
-Random random = new Random();
 
-Color getEventColor(String activity) {
+Color getTodoColor(String activity) {
+  Random random = new Random(17);
   int index = random.nextInt(5);
   return EVENT_COLORS[index];
 }

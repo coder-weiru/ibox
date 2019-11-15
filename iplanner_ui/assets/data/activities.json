@@ -3,7 +3,7 @@
     "id": "a2bf6775-d649-4c1b-b1d8-ab246b928304",
     "title": "AP Calculus BC Quiz",
     "description": "Small Quiz for AP Calculus BC course",
-    "type": "meeting",
+    "activityType": "meeting",
     "creator": {
       "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
       "email":  "john.doe@gmail.com",
@@ -11,7 +11,37 @@
     },
     "created": "2019-10-17T13:45:30Z",
     "updated": "2019-10-17T13:45:30Z",
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "tags": {
+      "class": "ibox.iplanner.api.model.TagAttribute",
+      "tags": [
+        {
+          "value":  "AP Calculus",
+          "argbValue": "0xFFB740EE",
+          "primary": true
+        },
+        {
+          "value":  "School",
+          "argbValue": "0xFFB77293",
+          "primary": false
+        },
+        {
+          "value":  "Quiz",
+          "argbValue": "0xFFB74011"
+        }
+      ]
+    },
+    "locationInfo": {
+      "class": "ibox.iplanner.api.model.LocationAttribute",
+      "location": "NNHS Room 203"
+    },
+    "eventInfo": {
+      "class": "ibox.iplanner.api.model.EventAttribute",
+      "start": "2019-10-31T00:00:00.000Z",
+      "end": "2019-11-31T00:00:00.000Z",
+      "frequency": "ONE_TIME",
+      "recurrence": []
+    }
   },
   {
     "id": "77bd2229-a3b5-4add-9e61-4bdd29522a71",
@@ -25,7 +55,38 @@
     },
     "created": "2019-10-17T13:45:30Z",
     "updated": "2019-10-17T13:45:30Z",
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "tags": {
+      "class": "ibox.iplanner.api.model.TagAttribute",
+      "tags": [
+        {
+          "value":  "AP Physics",
+          "argbValue": "0xFFB799EE",
+          "primary": true
+        },
+        {
+          "value":  "School",
+          "argbValue": "0xFFB77293",
+          "primary": false
+        },
+        {
+          "value":  "Exam",
+          "argbValue": "0xFFAA40EE",
+          "primary": false
+        }
+      ]
+    },
+    "locationInfo": {
+      "class": "ibox.iplanner.api.model.LocationAttribute",
+      "location": "NNHS Room 203"
+    },
+    "eventInfo": {
+      "class": "ibox.iplanner.api.model.EventAttribute",
+      "start": "2019-10-31T00:00:00.000Z",
+      "end": "2019-11-31T00:00:00.000Z",
+      "frequency": "ONE_TIME",
+      "recurrence": []
+    }
   },
   {
     "id": "0d17889e-535c-4be6-ab28-2a7550f18d27",
@@ -39,7 +100,38 @@
     },
     "created": "2019-10-17T13:45:30Z",
     "updated": "2019-10-17T13:45:30Z",
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "tags": {
+      "class": "ibox.iplanner.api.model.TagAttribute",
+      "tags": [
+        {
+          "value":  "AP Statistics",
+          "argbValue": "0xFFAA40EE",
+          "primary": true
+        },
+        {
+          "value":  "School",
+          "argbValue": "0xFFB77293",
+          "primary": false
+        },
+        {
+          "value":  "Exam",
+          "argbValue": "0xFFAA40EE",
+          "primary": false
+        }
+      ]
+    },
+    "locationInfo": {
+      "class": "ibox.iplanner.api.model.LocationAttribute",
+      "location": "NNHS Room 203"
+    },
+    "eventInfo": {
+      "class": "ibox.iplanner.api.model.EventAttribute",
+      "start": "2019-10-31T00:00:00.000Z",
+      "end": "2019-11-31T00:00:00.000Z",
+      "frequency": "ONE_TIME",
+      "recurrence": []
+    }
   },
   {
     "id": "4f581d07-ab52-4800-99df-be5aec71a33a",
@@ -53,7 +145,38 @@
     },
     "created": "2019-10-17T13:45:30Z",
     "updated": "2019-10-17T13:45:30Z",
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "tags": {
+      "class": "ibox.iplanner.api.model.TagAttribute",
+      "tags": [
+        {
+          "value":  "AP US History Exam",
+          "argbValue": "0xFFB733EE",
+          "primary": true
+        },
+        {
+          "value":  "School",
+          "argbValue": "0xFFB77293",
+          "primary": false
+        },
+        {
+          "value":  "Exam",
+          "argbValue": "0xFFAA40EE",
+          "primary": false
+        }
+      ]
+    },
+    "locationInfo": {
+      "class": "ibox.iplanner.api.model.LocationAttribute",
+      "location": "NNHS Room 203"
+    },
+    "eventInfo": {
+      "class": "ibox.iplanner.api.model.EventAttribute",
+      "start": "2019-10-31T00:00:00.000Z",
+      "end": "2019-11-31T00:00:00.000Z",
+      "frequency": "ONE_TIME",
+      "recurrence": []
+    }
   },
   {
     "id": "2dcd4025-ac95-4c22-8819-15ff7f31df5c",
@@ -67,7 +190,38 @@
     },
     "created": "2019-10-17T13:45:30Z",
     "updated": "2019-10-17T13:45:30Z",
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "tags": {
+      "class": "ibox.iplanner.api.model.TagAttribute",
+      "tags": [
+        {
+          "value":  "AP Language Art",
+          "argbValue": "0xFFB755EE",
+          "primary": true
+        },
+        {
+          "value":  "School",
+          "argbValue": "0xFFB77293",
+          "primary": false
+        },
+        {
+          "value":  "Exam",
+          "argbValue": "0xFFAA40EE",
+          "primary": false
+        }
+      ]
+    },
+    "locationInfo": {
+      "class": "ibox.iplanner.api.model.LocationAttribute",
+      "location": "NNHS Room 203"
+    },
+    "eventInfo": {
+      "class": "ibox.iplanner.api.model.EventAttribute",
+      "start": "2019-10-31T00:00:00.000Z",
+      "end": "2019-11-31T00:00:00.000Z",
+      "frequency": "ONE_TIME",
+      "recurrence": []
+    }
   },
   {
     "id": "05201b57-79e8-4dad-8a73-586978f18995",
@@ -81,7 +235,38 @@
     },
     "created": "2019-10-17T13:45:30Z",
     "updated": "2019-10-17T13:45:30Z",
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "tags": {
+      "class": "ibox.iplanner.api.model.TagAttribute",
+      "tags": [
+        {
+          "value":  "Spanish",
+          "argbValue": "0xFFB766EE",
+          "primary": true
+        },
+        {
+          "value":  "School",
+          "argbValue": "0xFFB77293",
+          "primary": false
+        },
+        {
+          "value":  "Quiz",
+          "argbValue": "0xFFB74011",
+          "primary": false
+        }
+      ]
+    },
+    "locationInfo": {
+      "class": "ibox.iplanner.api.model.LocationAttribute",
+      "location": "NNHS Room 203"
+    },
+    "eventInfo": {
+      "class": "ibox.iplanner.api.model.EventAttribute",
+      "start": "2019-10-31T00:00:00.000Z",
+      "end": "2019-11-31T00:00:00.000Z",
+      "frequency": "ONE_TIME",
+      "recurrence": []
+    }
   },
   {
     "id": "732e710a-d4af-46f4-ab8d-34399a480283",
@@ -95,13 +280,33 @@
     },
     "created": "2019-10-17T13:45:30Z",
     "updated": "2019-10-17T13:45:30Z",
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "tags": {
+      "class": "ibox.iplanner.api.model.TagAttribute",
+      "tags": [
+        {
+          "value":  "AP Physics",
+          "argbValue": "0xFFB799EE",
+          "primary": true
+        },
+        {
+          "value":  "School",
+          "argbValue": "0xFFB77293",
+          "primary": false
+        }
+      ]
+    },
+    "timeline": {
+      "class": "ibox.iplanner.api.model.TimelineAttribute",
+      "startBy": "2019-12-31T00:00:00.000Z",
+      "completeBy": "2099-12-31T00:00:00.000Z"
+    }
   },
   {
     "id": "d1666e20-a99a-409c-a80c-bb87b650db82",
     "title": "Tennis Lesson",
     "description": "NTC Tennis Lesson",
-    "type": "task",
+    "type": "meeting",
     "creator": {
       "id": "da6b1310-443c-41ea-8baa-d85ad474cd1b",
       "email": "john.doe@gmail.com",
@@ -109,7 +314,33 @@
     },
     "created": "2019-10-17T13:45:30Z",
     "updated": "2019-10-17T13:45:30Z",
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "tags": {
+      "class": "ibox.iplanner.api.model.TagAttribute",
+      "tags": [
+        {
+          "value":  "Tennis",
+          "argbValue": "0xFFBBAAEE",
+          "primary": true
+        },
+        {
+          "value":  "NTC",
+          "argbValue": "0xFFB740EE",
+          "primary": false
+        }
+      ]
+    },
+    "locationInfo": {
+      "class": "ibox.iplanner.api.model.LocationAttribute",
+      "location": "NTC"
+    },
+    "eventInfo": {
+      "class": "ibox.iplanner.api.model.EventAttribute",
+      "start": "2019-10-31T00:00:00.000Z",
+      "end": "2019-11-31T00:00:00.000Z",
+      "frequency": "ONE_TIME",
+      "recurrence": []
+    }
   },
   {
     "id": "79f5cb92-916b-4aeb-8e35-032df2677ebd",
@@ -123,7 +354,27 @@
     },
     "created": "2019-10-17T13:45:30Z",
     "updated": "2019-10-17T13:45:30Z",
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "tags": {
+      "class": "ibox.iplanner.api.model.TagAttribute",
+      "tags": [
+        {
+          "value":  "AP Calculus",
+          "argbValue": "0xFFB740EE",
+          "primary": true
+        },
+        {
+          "value":  "School",
+          "argbValue": "0xFFB77293",
+          "primary": false
+        }
+      ]
+    },
+    "timeline": {
+      "class": "ibox.iplanner.api.model.TimelineAttribute",
+      "startBy": "2019-12-31T00:00:00.000Z",
+      "completeBy": "2099-12-31T00:00:00.000Z"
+    }
   },
   {
     "id": "837c4e82-9385-4c8d-8c60-4ea305d1cfdc",
@@ -137,7 +388,27 @@
     },
     "created": "2019-10-17T13:45:30Z",
     "updated": "2019-10-17T13:45:30Z",
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "tags": {
+      "class": "ibox.iplanner.api.model.TagAttribute",
+      "tags": [
+        {
+          "value":  "AP Physics",
+          "argbValue": "0xFFB799EE",
+          "primary": true
+        },
+        {
+          "value":  "School",
+          "argbValue": "0xFFB77293",
+          "primary": false
+        }
+      ]
+    },
+    "timeline": {
+      "class": "ibox.iplanner.api.model.TimelineAttribute",
+      "startBy": "2019-12-31T00:00:00.000Z",
+      "completeBy": "2099-12-31T00:00:00.000Z"
+    }
   },
   {
     "id": "83986cfc-a821-4d1c-8d8d-98bfe6183031",
@@ -151,6 +422,21 @@
     },
     "created": "2019-10-17T13:45:30Z",
     "updated": "2019-10-17T13:45:30Z",
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "tags": {
+      "class": "ibox.iplanner.api.model.TagAttribute",
+      "tags": [
+        {
+          "value":  "Magazine Club",
+          "argbValue": "0xFFBBBBEE",
+          "primary": true
+        }
+      ]
+    },
+    "timeline": {
+      "class": "ibox.iplanner.api.model.TimelineAttribute",
+      "startBy": "2019-12-31T00:00:00.000Z",
+      "completeBy": "2099-12-31T00:00:00.000Z"
+    }
   }
 ]

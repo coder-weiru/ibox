@@ -35,6 +35,6 @@
     "status": "OPEN",
     "location": "NNHS",
     "endTimeUnspecified": true,
-    "recurrence": ["12/12/2019"]
+    "recurrence": []
   }
 ]

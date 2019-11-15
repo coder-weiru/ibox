@@ -8,68 +8,68 @@ import 'package:http/http.dart' as http;
 
 import './user.dart';
 
-class EventList {
-  final List<Event> _events = List<Event>();
-  final Set<Event> _savedEvents = Set<Event>();
+class TodoList {
+  final List<Todo> _todos = List<Todo>();
+  final Set<Todo> _savedTodos = Set<Todo>();
 
-  EventList() {
-    loadEvents();
+  TodoList() {
+    loadTodos();
   }
 
-  Set<Event> getSavedEvent() {
-    return _savedEvents;
+  Set<Todo> getSavedTodo() {
+    return _savedTodos;
   }
 
-  void addSavedEvent(Event event) {
-    _savedEvents.add(event);
+  void addSavedTodo(Todo todo) {
+    _savedTodos.add(todo);
   }
 
-  List<Event> getAllEvents() {
-    return _events;
+  List<Todo> getAllTodos() {
+    return _todos;
   }
 
-  Event getEventByPosition(int index) {
-    if (index < _events.length) {
-      return _events.elementAt(index);
+  Todo getTodoByPosition(int index) {
+    if (index < _todos.length) {
+      return _todos.elementAt(index);
     } else {
       return null;
     }
   }
 
-  Map<String, List<Event>> getEventListByActivities() {
-    final Map<String, List<Event>> map = new Map();
-    _events.forEach((event) {
-      final activity = event.activity;
-      map.putIfAbsent(activity, () => new List<Event>());
-      List<Event> list = map[activity];
-      list.add(event);
+  Map<String, List<Todo>> getTodoListByActivities() {
+    final Map<String, List<Todo>> map = new Map();
+    _todos.forEach((todo) {
+      final activity = todo.activity;
+      map.putIfAbsent(activity, () => new List<Todo>());
+      List<Todo> list = map[activity];
+      list.add(todo);
     });
 
     return map;
   }
 
-  void loadEvents() async {
-    var jsonStr = await rootBundle.loadString("assets/data/events.json");
-    _events.addAll(await compute(parseEvents, jsonStr));
+  void loadTodos() async {
+    var jsonStr = await rootBundle.loadString("assets/data/todos.json");
+    _todos.addAll(await compute(parseTodoList, jsonStr));
   }
 
-  void fetchEvents() async {
+  void fetchTodos() async {
     final response =
         await http.Client().get('https://jsonplaceholder.typicode.com/photos');
 
-    // Use the compute function to run parseEvents in a separate isolate.
-    _events.addAll(await compute(parseEvents, response.body));
+    // Use the compute function to run parseTodos in a separate isolate.
+    _todos.addAll(await compute(parseTodoList, response.body));
   }
 }
 
 // Top-level functions
-List<Event> parseEvents(String responseBody) {
+List<Todo> parseTodoList(String responseBody) {
   final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
-  return parsed.map<Event>((json) => Event.fromJson(json)).toList();
+  return parsed.map<Todo>((json) => Todo.fromJson(json)).toList();
 }
 
 @immutable
-class Event {
+class Todo {
   final String id;
   final String summary;
   final String description;
@@ -83,7 +83,7 @@ class Event {
   final String location;
   final Set<String> recurrence;
 
-  Event(
+  Todo(
       {this.id,
       this.summary,
       this.description,
@@ -98,13 +98,13 @@ class Event {
       status})
       : status = status ?? "OPEN";
 
-  factory Event.fromJson(Map<String, dynamic> json) {
+  factory Todo.fromJson(Map<String, dynamic> json) {
     Set<String> recurrence = new Set();
     var iter = json['recurrence'].cast<List>().iterator;
     while (iter.moveNext()) {
       recurrence.add(iter.current);
     }
-    return Event(
+    return Todo(
       id: json['id'] as String,
       summary: json['summary'] as String,
       description: json['description'] as String,
@@ -125,7 +125,7 @@ class Event {
 
   @override
   bool operator ==(Object other) =>
-      other is Event &&
+      other is Todo &&
       other.id == id &&
       other.summary == summary &&
       other.description == description &&
@@ -141,5 +141,5 @@ class Event {
 
   @override
   String toString() =>
-      'Event($id, $summary, $description, $activity, $creator, $start, $end, $created, $updated, $location, $recurrence, $status)';
+      'Todo($id, $summary, $description, $activity, $creator, $start, $end, $created, $updated, $location, $recurrence, $status)';
 }
